@@ -1,0 +1,8 @@
+<figure id="video_player" (contextmenu)="onRightClick($event)">
+    <video width="320" height="240" controls preload="auto">
+        <source type='video/mp4' />
+    </video>
+    <figcaption>
+        <a *ngFor="let url of videoPlayerUrl; let i = index" [ngClass]="i ? 'none' : 'showFirstVideoHighlighted'" (click)="handler($event)" href="{{url}}"><img src="assets/images/empty-img.jpg"></a>
+    </figcaption>
+</figure>

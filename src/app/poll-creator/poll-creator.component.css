@@ -1,0 +1,26 @@
+::ng-deep .svd_container.sv_default_css .svd_toolbox {
+    float: left;
+    width: 15%;
+    height: 50%;
+}
+
+::ng-deep .svd_container .svd_content .svd_survey_designer .svd_editors .svd_questions_editor {
+    height: 35vh;
+    overflow-y: scroll;
+    padding-top: 18px;
+    position: relative;
+    bottom: 40px;
+}
+
+::ng-deep .svd_container .svd_content .svd_survey_designer {
+    position: relative;
+    height: 400px;
+}
+
+::ng-deep svd-splitter {
+    visibility: hidden;
+}
+
+::ng-deep .svd_container pages-editor {
+    visibility: hidden;
+}

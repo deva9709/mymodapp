@@ -1,0 +1,70 @@
+<div class="modal-header">
+  <h1>{{newBlogPageTite}}</h1>
+</div>
+<form [formGroup]="blogForm">
+  <div class="create-topic modal-body" mat-dialog-content>
+    <div class="row">
+      <div class="col-12 mb-3">
+        <mat-form-field>
+          <input matInput placeholder="Blog Title" formControlName="blogTopic">
+          <mat-error *ngIf="blogForm.get('blogTopic').errors?.required">
+            Please enter the blog title</mat-error>
+          <mat-error *ngIf="blogForm.get('blogTopic').errors?.maxlength">
+            blog Title can be maximum 50 characters long.
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-12 mb-3">
+        <div class="drop-box">
+          <input type="file" class="drop-input" #topicThumbnail id="topicThumbnail" (change)="selectThumpnail($event)"
+            accept="image/*" />
+          <label for="topicThumbnail">Upload Thumbnail</label>
+        </div>
+      </div>
+      <div class="col-12 pb-5">
+        <quill-editor formControlName="blogContent" [preserveWhitespace]="true">
+          <div quill-editor-toolbar>
+            <span class="ql-formats">
+              <button class="ql-bold" [title]="'bold'"></button>
+              <button class="ql-italic" [title]="'italic'"></button>
+              <button class="ql-underline" [title]="'underline'"></button>
+              <button class="ql-link" [title]="'Link'"></button>
+              <button class="ql-image" [title]="'Image'"></button>
+            </span>
+          </div>
+        </quill-editor>
+        <!-- <mat-error *ngIf="blogForm.get('blogContent').errors?.required">
+        Please specify the blog content</mat-error> -->
+      </div>
+
+      <div class="col-12 mt-3 mb-3 margin-top">
+        <mat-checkbox [(ngModel)]="isCommentDisabled" [ngModelOptions]="{standalone: true}">Disable Comments
+        </mat-checkbox>
+      </div>
+      <div class="col-12">
+        <mat-form-field>
+          <input matInput placeholder="Tags separated by comma (,)" formControlName="tags">
+          <mat-error *ngIf="blogForm.get('blogContent').errors?.required">
+            Please specify the tags</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="row">
+      <div class="col-12 text-right">
+        <button type="button" class="btn btn_theme mr-3" (click)="publish()" *ngIf="!isUpdate"
+          [disabled]="blogForm.invalid || isPending">
+          Publish
+        </button>
+        <button type="button" class="btn btn_theme mr-3" (click)="updateBlog()" *ngIf="isUpdate"
+          [disabled]="blogForm.invalid">
+          Update
+        </button>
+        <button type="button" class="btn btn-secondary" matDialogClose>
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</form>

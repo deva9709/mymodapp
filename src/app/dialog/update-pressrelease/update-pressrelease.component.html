@@ -1,0 +1,121 @@
+<div class="modal-header">
+    <h1 class="mb-3 ml-2 mt-2">{{dialogTitle}} Press Release : {{title}}</h1>
+</div>
+<form novalidate [formGroup]="pressReleaseForm" autocomplete="off">
+    <div class="modal-body create-topic" mat-dialog-content>
+        <div class="row">
+            <div class="col-3 mb-3" *ngIf="isSuperAdmin">
+                <mat-form-field>
+                    <mat-label>Select Tenants</mat-label>
+                    <mat-select name="tenant" formControlName="tenantId">
+                        <div class="row dropdown-search-row">
+                            <div class="col-10">
+                                <input class="searchInput" #tenantFilter matInput type="text" autocomplete="off"
+                                    placeholder="Search" (keyup)="search($event.target.value, 'tenant')">
+                            </div>
+                            <div class="col-2 text-right">
+                                <button mat-button *ngIf="tenantFilter.value" matSuffix mat-icon-button
+                                    class="clear-icon" matTooltip="Clear" matTooltipPosition="below"
+                                    (click)="tenantFilter.value=''; search('', 'tenant')">
+                                    <mat-icon>close</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                        <mat-divider></mat-divider>
+                        <mat-option *ngFor="let tenant of filteredTenantList"
+                            (click)="filterTenantBasedRecords(tenant.id)" [value]="tenant.id">
+                            {{tenant.tenantName}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="pressReleaseForm.get('tenantId').errors?.required">
+                        {{pressReleaseFormValidationMessages.tenantRequired}}</mat-error>
+                </mat-form-field>
+            </div>
+            <div class="col-3 mb-3">
+                <mat-form-field>
+                    <mat-label>Role</mat-label>
+                    <mat-select panelClass="dropView" name="role" formControlName="roleId" disableOptionCentering>
+                        <mat-option *ngFor="let role of tenantRoles" [value]="role.id" (click)="enableRoleDrodown()">
+                            {{role.name}}
+                        </mat-option>
+                    </mat-select>
+                    <button mat-icon-button [disabled]="isRoleDisabled" color="primary" matSuffix
+                        (click)="onClearRole($event)">
+                        <mat-icon style="cursor: pointer;">clear</mat-icon>
+                    </button>
+                    <mat-error *ngIf="pressReleaseForm.get('roleId').errors?.required">
+                        {{pressReleaseFormValidationMessages.roleRequired}}</mat-error>
+                </mat-form-field>
+            </div>
+            <div class="col-3 mb-3">
+                <mat-form-field>
+                    <mat-label>Batch</mat-label>
+                    <mat-select panelClass="dropView" name="batch" formControlName="batchId" disableOptionCentering>
+                        <mat-option *ngFor="let batch of batchList" [value]="batch.batchId"
+                            (click)="enableBatchDrodown()">
+                            {{batch.name}}
+                        </mat-option>
+                    </mat-select>
+                    <button mat-icon-button [disabled]="isBatchDisabled" color="primary" matSuffix
+                        (click)="onClearBatch($event)">
+                        <mat-icon style="cursor: pointer;">clear</mat-icon>
+                    </button>
+                    <mat-error *ngIf="pressReleaseForm.get('batchId').errors?.required">
+                        {{pressReleaseFormValidationMessages.batchRequired}}</mat-error>
+                </mat-form-field>
+            </div>
+            <div class="col-3 mb-3">
+                <ng-multiselect-dropdown [placeholder]="'Select Users'" [data]="usersList" formControlName="userIds"
+                    [settings]="userDropdownSettings" (onSelect)="onUserSelect($event)"
+                    (onDeSelect)="onUserDeSelect($event)" (onSelectAll)="onUserSelectAll($event)"
+                    (onDeSelectAll)="onDeselectUserAll($event)" #ngMultiSelect>
+                </ng-multiselect-dropdown>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 mb-3">
+                <mat-form-field>
+                    <input matInput placeholder="Press Release Title" formControlName="title" />
+                    <mat-error *ngIf="pressReleaseForm.get('title').errors?.required">
+                        {{pressReleaseFormValidationMessages.titleRequired}}</mat-error>
+                </mat-form-field>
+            </div>
+            <div class="col-12 mb-3">
+                <div class="drop-box">
+                    <input type="file" class="drop-input" #thumbnail id="thumbnail" (change)="selectThumbnail($event)"
+                        accept="image/*" />
+                    <label for="thumbnail">Upload Thumbnail</label>
+                </div>
+            </div>
+            <div class="col-12 pb-5 rich-editor">
+                <quill-editor formControlName="description" [preserveWhitespace]="true">
+                    <div quill-editor-toolbar>
+                        <span class="ql-formats">
+                            <button class="ql-bold" [title]="'bold'"></button>
+                            <button class="ql-italic" [title]="'italic'"></button>
+                            <button class="ql-underline" [title]="'underline'"></button>
+                            <button class="ql-link" [title]="'Link'"></button>
+                            <button class="ql-image" [title]="'Image'"></button>
+                        </span>
+                    </div>
+                </quill-editor>
+                <mat-error *ngIf="pressReleaseForm.get('description').errors?.required">
+                    {{pressReleaseFormValidationMessages.descriptionRequired}}</mat-error>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div class="row">
+            <div class="col-12 text-right">
+                <button type="button" class="btn btn_theme mr-3"
+                    (click)='isCreate ? createPressRelease() : updatePressRelease()'
+                    [disabled]="!pressReleaseForm.valid">
+                    {{submitButtonName}}
+                </button>
+                <button type="button" class="btn btn-secondary" (click)="cancel()">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</form>

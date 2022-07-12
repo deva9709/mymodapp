@@ -1,0 +1,96 @@
+<mat-tab-group>
+    <mat-tab label="Bulk Upload">
+        <div class="row">
+            <div class="col-12">
+                <p class="text-right mb-3">
+                    Only <strong>.xlsx and .xls</strong> file can be uploaded. <br />
+                    Download Sample Template for
+                    <a href="assets/sample template/User-import-template.xlsx" class="sample-template mr-3">
+                        <mat-icon>file_copy</mat-icon> User Upload
+                    </a>
+                </p>
+                <div class="content-block p-3">
+                    <form novalidate [formGroup]="uploadUserForm">
+                        <div class="row">
+                            <!-- For Super Admin -->
+                            <div class="col-3 mb-2" *ngIf="isSuperAdmin">
+                                <mat-form-field>
+                                    <mat-label>Select Tenant</mat-label>
+                                    <mat-select name="tenant" formControlName="tenant" [(ngModel)]="tenantId"
+                                        (openedChange)="tenantFilter.focus()">
+                                        <div class="row dropdown-search-row">
+                                            <div class="col-10">
+                                                <input class="searchInput" #tenantFilter matInput type="text"
+                                                    autocomplete="off" placeholder="Search"
+                                                    (keyup)="search($event.target.value, 'tenant')">
+                                            </div>
+                                            <div class="col-2 text-right">
+                                                <button mat-button *ngIf="tenantFilter.value" matSuffix mat-icon-button
+                                                    class="clear-icon" matTooltip="Clear" matTooltipPosition="below"
+                                                    (click)="tenantFilter.value=''; search('', 'tenant')">
+                                                    <mat-icon>close</mat-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <mat-divider></mat-divider>
+                                        <mat-option *ngFor="let tenant of filteredTenantList" [value]="tenant.id"
+                                            (click)="filterTenantRoles(tenant.id)">
+                                            {{tenant.tenantName}}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error *ngIf="uploadUserForm.get('tenant').errors?.required">
+                                        {{uploadUserFormValidationMessages.tenantRequired}}</mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-3 mb-2">
+                                <mat-form-field>
+                                    <mat-label>Select Role</mat-label>
+                                    <mat-select name="role" formControlName="role" [(ngModel)]="roleId"
+                                        (openedChange)="roleFilter.focus()">
+                                        <div class="row dropdown-search-row">
+                                            <div class="col-10">
+                                                <input class="searchInput" #roleFilter matInput type="text"
+                                                    autocomplete="off" placeholder="Search"
+                                                    (keyup)="search($event.target.value, 'role')">
+                                            </div>
+                                            <div class="col-2 text-right">
+                                                <button mat-button *ngIf="roleFilter.value" matSuffix mat-icon-button
+                                                    class="clear-icon" matTooltip="Clear" matTooltipPosition="below"
+                                                    (click)="roleFilter.value=''; search('', 'role')">
+                                                    <mat-icon>close</mat-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <mat-divider></mat-divider>
+                                        <mat-option *ngFor="let role of filteredRoles" [value]="role.id">
+                                            {{role.name}}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error *ngIf="uploadUserForm.get('role').errors?.required">
+                                        {{uploadUserFormValidationMessages.roleRequired}}</mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-2 offset-4" *ngIf="isSuperAdmin">
+                                <button class="btn btn_theme" (click)="newTenant()">Create tenant</button>
+                            </div>
+                        </div>
+                        <div class="drop-box" (onFileDropped)="onFileChange($event)">
+                            <input type="file" class="drop-input" #fileInput id="fileInput"
+                                (change)="onFileChange($event)" accept=".xls,.xlsx" formControlName="userFile" />
+                            <label for="fileInput">Upload your file here&hellip;</label>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button class="btn btn_theme" mat-button (click)="uploadUsers()"
+                                [disabled]="!uploadUserForm.valid">
+                                <span class="btn-align">Upload</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </mat-tab>
+    <mat-tab label="Single User Registration">
+        <app-user-registration></app-user-registration>
+    </mat-tab>
+</mat-tab-group>

@@ -1,0 +1,54 @@
+.scnd_in {
+    width: 200px;
+    margin: 17px 18px;
+}
+
+.file_box {
+    width: 196px;
+    margin: 0 18px;
+}
+
+.upload {
+    border: 1px solid gray;
+    padding: 17px 32px;
+    margin: 11px;
+}
+
+.up_btn {
+    padding: 9px 17px;
+    margin: 0 11px;
+}
+
+.share_btn {
+    margin-left: 79%;
+}
+
+.lbl {
+    margin: 0 21px;
+}
+
+.bttn {
+    background-color: white;
+    border: none;
+    margin-top: 48px;
+}
+
+.del {
+    margin-left: 56px;
+    color: #da1212;
+}
+
+.del_bt {
+    margin-left: 64px;
+    color: #da1212;
+}
+
+.add {
+    position: absolute;
+    margin: 30px 24px;
+}
+
+.add_bt {
+    position: absolute;
+    margin: 28px 15px;
+}

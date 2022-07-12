@@ -1,0 +1,131 @@
+<div class="content-body scrollBar">
+    <h1>Trainer Details</h1>
+    <button class="btn-icons btn-outline-danger cancel-button" (click)="closePopup()" type="button" mat-button>
+        <mat-icon>close icon</mat-icon>
+    </button>
+    <h1 class="line-bar"></h1>
+    <div class="row view-basic-details div-container">
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">Role</label></div>
+            Trainer
+        </div>
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">Site Display Name</label></div>
+            {{profileUserDetails.tenant?.tenantDisplayName}}
+        </div>
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">Site Name</label></div>
+            {{profileUserDetails.tenant?.tenantName}}
+        </div>
+    </div>
+    <h1 class="line-of-row"></h1>
+    <div class="row view-basic-details div-container">
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">Name</label></div>
+            {{profileUserDetails?.name}}
+        </div>
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">Sur Name</label></div>
+            {{profileUserDetails?.surName}}
+        </div>
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">Phone Number</label></div>
+            {{profileUserDetails?.phoneNumber}}
+        </div>
+    </div>
+    <h1 class="line-of-row"></h1>
+    <div class="row view-basic-details div-container">
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">Email</label></div>
+            {{profileUserDetails?.email}}
+        </div>
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">Location</label></div>
+            {{profileUserDetails?.location}}
+        </div>
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">Date of Joining Institute</label></div>
+            {{profileUserDetails?.dateOfJoiningInstitute}}
+        </div>
+    </div>
+    <h1 class="line-of-row"></h1>
+    <div class="row view-basic-details div-container">
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">Total Experience</label></div>
+            {{profileUserDetails?.totalExperience}}
+        </div>
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">Relavent Experience</label></div>
+            {{profileUserDetails?.relaventExperience}}
+        </div>
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">Department</label></div>
+            {{profileUserDetails?.department}}
+        </div>
+    </div>
+    <h1 class="line-of-row"></h1>
+    <div class="row view-basic-details div-container">
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">Designation</label></div>
+            {{profileUserDetails?.designation}}
+        </div>
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">Micro Tutoring</label></div>
+            {{profileMicrotutoring}}
+        </div>
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">Certificates</label></div>
+            {{profilecertificates}}
+        </div>
+    </div>
+    <h1 class="line-of-row"></h1>
+    <div class="row view-basic-details div-container">
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">Subject Taughts</label></div>
+        </div>
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">Qualifications</label></div>
+        </div>
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">Languages Known</label></div>
+            {{profilelanguages}}
+        </div>
+    </div>
+    <h1 class="line-of-row"></h1>
+    <div class="row view-basic-details div-container">
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">CostFor15Minute</label></div>
+            {{costFor15Minutes}}
+        </div>
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">CostFor30Minute</label></div>
+            {{costFor30Minutes}}
+        </div>
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">CostFor45Minute</label></div>
+            {{costFor45Minutes}}
+        </div>
+    </div>
+    <h1 class="line-of-row"></h1>
+    <div class="row view-basic-details div-container">
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">CostFor1Hour</label></div>
+            {{costFor1Hour}}
+        </div>
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">CostFor4Hour</label></div>
+            {{costFor4Hour}}
+        </div>
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">CostFor8Hour</label></div>
+            {{costFor8Hour}}
+        </div>
+    </div>
+    <h1 class="line-of-row"></h1>
+    <div class="row view-basic-details div-container">
+        <div class="col-4 mb-3">
+            <div class="mb-1"><label class="fontClass-for-label">Cost For Long Terms</label></div>
+            {{costForLongTerms}}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,14 @@
+<div class="modal-body">
+  <mat-form-field>
+    <mat-label>Reply</mat-label>
+    <textarea matInput type="text" name="EditReply" [(ngModel)]="editReply" placeholder="Comment"></textarea>
+  </mat-form-field>
+</div>
+<div class="modal-footer">
+  <button class="btn btn_theme btm-sml mr-2" type="button" (click)="editComment()">
+    Edit
+  </button>
+  <button class="btn btn-secondary btm-sml" type="button" (click)="cancel()">
+    Cancel
+  </button>
+</div>

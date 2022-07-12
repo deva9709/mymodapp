@@ -1,0 +1,382 @@
+<mat-tab-group (selectedTabChange)="tabChanged()">
+    <mat-tab label="Features">
+        <div class="content-block p-3 mt-3 mb-3">
+            <form novalidate [formGroup]="featureForm" autocomplete="off">
+                <div class="row">
+                    <div class="col-4">
+                        <mat-form-field>
+                            <input matInput type="text" name="name" [(ngModel)]="featureName" formControlName="name"
+                                placeholder="Feature Name" />
+                            <mat-error *ngIf="featureForm.get('name').errors?.required">
+                                {{featureFormValidationMessages.name}}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-4">
+                        <mat-form-field>
+                            <input matInput type="text" name="code" [(ngModel)]="featureCode" formControlName="code"
+                                placeholder="Feature code" />
+                            <mat-error *ngIf="featureForm.get('code').errors?.required">
+                                {{featureFormValidationMessages.code}}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-4">
+                        <button type="button" (click)="isEditFeature?updateFeature():createFeature()"
+                            [disabled]="!featureForm.valid" class="btn btn_theme">{{featureButtonName}}</button>
+                        <button type="button" (click)="cancelFeatureForm()" class="btn btn-secondary ml-3">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="content-block pt-1 pb-1">
+            <table mat-table [dataSource]="featuresData" #featuresSort="matSort" matSort class="table">
+                <ng-container matColumnDef="featureName">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Feature</th>
+                    <td mat-cell *matCellDef="let element"> {{element.featureName}} </td>
+                </ng-container>
+                <ng-container matColumnDef="featureCode">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Feature Code</th>
+                    <td mat-cell *matCellDef="let element"> {{element.featureCode}} </td>
+                </ng-container>
+                <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef class="text-right">Actions</th>
+                    <td mat-cell *matCellDef="let element" class="text-right">
+                        <button class="btn-icons btn-outline-warning mr-2" type="button"
+                            (click)="populateFeature(element)" mat-button>
+                            <mat-icon matTooltip="Edit">edit</mat-icon>
+                        </button>
+                        <button class="btn-icons btn-outline-danger" type="button"
+                            (click)="deleteFeature(element.id,element.featureName)" mat-button>
+                            <mat-icon matTooltip="Delete">delete</mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="featuresDisplayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: featuresDisplayedColumns;"></tr>
+            </table>
+            <div *ngIf="featuresData && !featuresData.data.length" class="empty text-center p-4">
+                <p>No Data Found</p>
+            </div>
+            <mat-paginator #featuresPagination [pageSizeOptions]="[10, 20, 30, 40, 50]" showFirstLastButtons>
+            </mat-paginator>
+        </div>
+    </mat-tab>
+    <mat-tab label="Custom Roles">
+        <div class="content-block p-3 mt-3 mb-3">
+            <form novalidate [formGroup]="roleForm" autocomplete="off">
+                <div class="row">
+                    <!-- For Super Admin -->
+                    <div class="col-4" *ngIf="isSuperAdmin">
+                        <mat-form-field>
+                            <mat-label>Select Tenant</mat-label>
+                            <mat-select name="tenant" formControlName="tenant" [(ngModel)]="tenantId"
+                                (openedChange)="tenantFilter.focus()">
+                                <div class="row dropdown-search-row">
+                                    <div class="col-10">
+                                        <input class="searchInput" #tenantFilter matInput type="text" autocomplete="off"
+                                            placeholder="Search" (keyup)="search($event.target.value, 'tenant')">
+                                    </div>
+                                    <div class="col-2 text-right">
+                                        <button mat-button *ngIf="tenantFilter.value" matSuffix mat-icon-button
+                                            class="clear-icon" matTooltip="Clear" matTooltipPosition="below"
+                                            (click)="tenantFilter.value=''; search('', 'tenant')">
+                                            <mat-icon>close</mat-icon>
+                                        </button>
+                                    </div>
+                                </div>
+                                <mat-divider></mat-divider>
+                                <mat-option *ngFor="let tenant of filteredTenantList" [value]="tenant.id">
+                                    {{tenant.tenantName}}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="roleForm.get('tenant').errors?.required">
+                                {{roleFormValidationMessages.tenantRequired}}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-4">
+                        <mat-form-field>
+                            <input matInput type="text" name="roleName" [(ngModel)]="createRoleName"
+                                formControlName="roleName" placeholder="Role Name" />
+                            <mat-error *ngIf="roleForm.get('roleName').errors?.required">
+                                {{roleFormValidationMessages.roleName}}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-4">
+                        <button type="button" (click)='createRole()' [disabled]="!roleForm.valid"
+                            class="btn btn_theme mr-3">
+                            Create
+                        </button>
+                        <button type="button" (click)="cancelRoleForm()" class="btn btn-secondary">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </mat-tab>
+    <mat-tab label="Role Feature Permissions">
+        <div class="content-block p-3 mt-3 mb-3">
+            <form novalidate [formGroup]="roleFeatureForm" autocomplete="off">
+                <div class="row">
+                    <div class="col-10">
+                        <div class="row">
+                            <!-- For Super Admin -->
+                            <div class="col-4" *ngIf="isSuperAdmin">
+                                <mat-form-field>
+                                    <mat-label>Select Tenant</mat-label>
+                                    <mat-select name="tenant" formControlName="tenant" [(ngModel)]="tenantId"
+                                        (openedChange)="tenantFilter.focus()" [disabled]="isEditRoleFeature">
+                                        <div class="row dropdown-search-row">
+                                            <div class="col-10">
+                                                <input class="searchInput" #tenantFilter matInput type="text"
+                                                    autocomplete="off" placeholder="Search"
+                                                    (keyup)="search($event.target.value, 'tenant')">
+                                            </div>
+                                            <div class="col-2 text-right">
+                                                <button mat-button *ngIf="tenantFilter.value" matSuffix mat-icon-button
+                                                    class="clear-icon" matTooltip="Clear" matTooltipPosition="below"
+                                                    (click)="tenantFilter.value=''; search('', 'tenant')">
+                                                    <mat-icon>close</mat-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <mat-divider></mat-divider>
+                                        <mat-option *ngFor="let tenant of filteredTenantList" [value]="tenant.id"
+                                            (click)="filterTenantRoles(tenant.id)">
+                                            {{tenant.tenantName}}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error *ngIf="roleForm.get('tenant').errors?.required">
+                                        {{roleFormValidationMessages.tenantRequired}}</mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-4">
+                                <mat-form-field>
+                                    <mat-label>Select Role</mat-label>
+                                    <mat-select name="role" formControlName="role" [(ngModel)]="newRole"
+                                        panelClass="dropView" [disabled]="isEditRoleFeature">
+                                        <mat-option *ngFor="let role of tenantRoles" [value]="role.id">
+                                            {{role.name}}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error *ngIf="roleFeatureForm.get('role').errors?.required">
+                                        {{roleFeatureFormValidationMessages.roleRequired}}</mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-4">
+                                <mat-form-field>
+                                    <mat-label>Select Feature</mat-label>
+                                    <mat-select name="feature" formControlName="feature" [(ngModel)]="newFeature"
+                                        panelClass="dropView" [disabled]="isEditRoleFeature">
+                                        <mat-option *ngFor="let feature of features" [value]="feature.id" (click)="featureSelect(feature)">
+                                            {{feature.featureName}}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error *ngIf="roleFeatureForm.get('feature').errors?.required">
+                                        {{roleFeatureFormValidationMessages.featureRequired}}</mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-2  my-auto">
+                                <mat-checkbox formControlName="create" [(ngModel)]="newCreate" name="create"
+                                    value="true">Create</mat-checkbox>
+                            </div>
+                            <div class="col-2 my-auto">
+                                <mat-checkbox formControlName="read" [(ngModel)]="newRead" name="read" value="true">
+                                    Read
+                                </mat-checkbox>
+                            </div>
+                            <div class="col-2 my-auto">
+                                <mat-checkbox formControlName="readAll" [(ngModel)]="newReadAll" name="readAll"
+                                    value="true">
+                                    Read All
+                                </mat-checkbox>
+                            </div>
+                            <div class="col-2 my-auto">
+                                <mat-checkbox formControlName="update" [(ngModel)]="newUpdate" name="update"
+                                    value="true">Update
+                                </mat-checkbox>
+                            </div>
+                            <div class="col-2 my-auto">
+                                <mat-checkbox formControlName="delete" [(ngModel)]="newDelete" name="delete"
+                                    value="true">Delete
+                                </mat-checkbox>
+                            </div>
+                            <div class="col-2 my-auto" *ngIf="showApprove">
+                                <mat-checkbox formControlName="approve" [(ngModel)]="newApprove" name="approve"
+                                    value="true">Approve
+                                </mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2 my-auto">
+                        <button type="button" (click)="isEditRoleFeature?updateRoleFeature():addRoleFeature()"
+                            [disabled]="!roleFeatureForm.valid"
+                            class="btn btn_theme">{{roleFeatureButtonName}}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="content-block pt-1 pb-1">
+            <table mat-table [dataSource]="roleFeaturesData" #roleFeatureSort="matSort" matSort class="table">
+                <ng-container matColumnDef="tenantName" *ngIf="isSuperAdmin">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Tenant</th>
+                    <td mat-cell *matCellDef="let element"> {{element.tenantTenantName}} </td>
+                </ng-container>
+                <ng-container matColumnDef="roleName">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Role</th>
+                    <td mat-cell *matCellDef="let element"> {{element.roleName}} </td>
+                </ng-container>
+                <ng-container matColumnDef="featureFeatureName">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Feature</th>
+                    <td mat-cell *matCellDef="let element"> {{element.featureFeatureName}} </td>
+                </ng-container>
+                <ng-container matColumnDef="permission">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Permissions</th>
+                    <td mat-cell *matCellDef="let element"> {{element.permission}} </td>
+                </ng-container>
+                <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef class="text-right">Actions</th>
+                    <td mat-cell *matCellDef="let element" class="text-right">
+                        <button class="btn-icons btn-outline-warning mr-2" type="button"
+                            (click)="populateRoleFeature(element)" mat-button>
+                            <mat-icon matTooltip="Edit">edit</mat-icon>
+                        </button>
+                        <button class="btn-icons btn-outline-danger" type="button"
+                            (click)="deleteRoleFeature(element.id)" mat-button>
+                            <mat-icon matTooltip="Delete">delete</mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="roleFeatureDisplayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: roleFeatureDisplayedColumns;"></tr>
+            </table>
+            <div *ngIf="roleFeaturesData && roleFeaturesData.data.length === 0" class="empty text-center p-4">
+                <p>No Data Found</p>
+            </div>
+            <mat-paginator #roleFeaturePagination [pageSizeOptions]="[10, 20, 30, 40, 50]" showFirstLastButtons>
+            </mat-paginator>
+        </div>
+    </mat-tab>
+    <mat-tab label="Delegation">
+        <div class="content-block p-3 mt-3 mb-3">
+            <form novalidate [formGroup]="delegateForm" autocomplete="off">
+                <div class="row">
+                    <!-- For Super Admin -->
+                    <div class="col-3" *ngIf="isSuperAdmin">
+                        <mat-form-field>
+                            <mat-label>Select Tenant</mat-label>
+                            <mat-select name="tenant" formControlName="tenant" [(ngModel)]="tenantId"
+                                (openedChange)="tenantFilter.focus()">
+                                <div class="row dropdown-search-row">
+                                    <div class="col-10">
+                                        <input class="searchInput" #tenantFilter matInput type="text" autocomplete="off"
+                                            placeholder="Search" (keyup)="search($event.target.value, 'tenant')">
+                                    </div>
+                                    <div class="col-2 text-right">
+                                        <button mat-button *ngIf="tenantFilter.value" matSuffix mat-icon-button
+                                            class="clear-icon" matTooltip="Clear" matTooltipPosition="below"
+                                            (click)="tenantFilter.value=''; search('', 'tenant')">
+                                            <mat-icon>close</mat-icon>
+                                        </button>
+                                    </div>
+                                </div>
+                                <mat-divider></mat-divider>
+                                <mat-option *ngFor="let tenant of filteredTenantList" [value]="tenant.id"
+                                    (click)="filterTenantRoles(tenant.id)">
+                                    {{tenant.tenantName}}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="delegateForm.get('tenant').errors?.required">
+                                {{delegateFormValidationMessages.tenantRequired}}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-3">
+                        <mat-form-field>
+                            <mat-label>Role</mat-label>
+                            <mat-select panelClass="dropView" name="majorRole" formControlName="majorRole"
+                                [(ngModel)]="selectedMajorRole" disableOptionCentering>
+                                <mat-option *ngFor="let role of tenantRoles" (click)="filterSubordinateRoles(role.id)"
+                                    [value]="role.id">
+                                    {{role.name}}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="delegateForm.get('majorRole').errors?.required">
+                                {{delegateFormValidationMessages.majorRoleRequired}}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-3">
+                        <mat-form-field>
+                            <mat-label>New Role</mat-label>
+                            <mat-select panelClass="dropView" name="subordinateRole" formControlName="subordinateRole"
+                                [(ngModel)]="selectedSubordinateRole" disableOptionCentering>
+                                <mat-option *ngFor="let role of subordinateRoles" [value]="role.id">
+                                    {{role.name}}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="delegateForm.get('subordinateRole').errors?.required">
+                                {{delegateFormValidationMessages.subordinateRoleRequired}}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-3">
+                        <!-- <mat-label>Select Users</mat-label> -->
+                        <ng-multiselect-dropdown [placeholder]="'Select Users'" [data]="usersList"
+                            [(ngModel)]="selectedUsers" [settings]="userDropdownSettings"
+                            (onSelect)="onUserSelect($event)" (onDeSelect)="onUserDeSelect($event)"
+                            (onSelectAll)="onUserSelectAll($event)" (onDeSelectAll)="onDeselectUserAll($event)"
+                            [formControl]="delegateForm.controls['selectedUser']">
+                        </ng-multiselect-dropdown>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4 offset-8 mt-2">
+                        <button type="button" (click)='delegateRoles()' [disabled]="!delegateForm.valid"
+                            class="btn btn_theme mr-3">
+                            Create
+                        </button>
+                        <button type="button" (click)="cancelDelegateRoles()" class="btn btn-secondary">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="content-block pt-1 pb-1">
+            <table mat-table [dataSource]="delegatedRoleUserData" #delegateRoleUsersSort="matSort" matSort
+                class="table">
+                <ng-container matColumnDef="tenantName" *ngIf="isSuperAdmin">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Tenant</th>
+                    <td mat-cell *matCellDef="let element"> {{element.tenantName}} </td>
+                </ng-container>
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+                    <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+                </ng-container>
+                <ng-container matColumnDef="existingRole">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>ExistingRole</th>
+                    <td mat-cell *matCellDef="let element"> {{element.existingRoleName}} </td>
+                </ng-container>
+                <ng-container matColumnDef="newRole">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>NewRole</th>
+                    <td mat-cell *matCellDef="let element"> {{element.newRoleName}} </td>
+                </ng-container>
+                <ng-container matColumnDef="action">
+                    <th mat-header-cell *matHeaderCellDef class="text-right mr-2">Action</th>
+                    <td mat-cell *matCellDef="let element" class="text-right mr-2">
+                        <button type="button" (click)="removeDelegationForUser(element)"
+                            class="btn btn-outline-danger btn-sm">Remove</button>
+                    </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="roleDelatedUsersDisplayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: roleDelatedUsersDisplayedColumns;"></tr>
+            </table>
+            <div *ngIf="delegatedRoleUserData && !delegatedRoleUserData.data.length" class="empty text-center p-4">
+                <p>No Data Found</p>
+            </div>
+            <mat-paginator #delegateRoleUsersPagination [pageSizeOptions]="[10, 20, 30, 40, 50]" showFirstLastButtons>
+            </mat-paginator>
+        </div>
+    </mat-tab>
+</mat-tab-group>

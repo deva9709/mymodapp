@@ -1,0 +1,42 @@
+<div class="content-header">
+    <button type="button" class="btn-icons btn-outline-info mr-2" mat-button [routerLink]="['/app/home']">
+        <mat-icon>keyboard_backspace</mat-icon>
+    </button>
+    <h2 class="col-blue">Feedback Details</h2>
+</div>
+<div class="content-block mt-3 pt-1 pb-1">
+    <table [dataSource]="dataSource_Feedback" mat-table matSort class="table">
+        <ng-container matColumnDef="sessionTitle">
+            <th mat-header-cell *matHeaderCellDef> Session Title </th>
+            <td mat-cell *matCellDef="let element"> {{element.sessionTitle}} </td>
+        </ng-container>
+        <ng-container matColumnDef="trainerName">
+            <th mat-header-cell *matHeaderCellDef> Trainer Name </th>
+            <td mat-cell *matCellDef="let element"> {{element.trainerName}} </td>
+        </ng-container>
+        <ng-container matColumnDef="traineeRating">
+            <th mat-header-cell *matHeaderCellDef> Trainee Rating </th>
+            <td mat-cell *matCellDef="let element"> {{element.traineeRating}} </td>
+        </ng-container>
+        <ng-container matColumnDef="feedback">
+
+            <th mat-header-cell *matHeaderCellDef> Feedback </th>
+            <td mat-cell *matCellDef="let element ">
+                <span class="feedbackline">
+
+                    {{element.feedback}}</span> <button class="btn btn_theme"
+                    (click)="feedbackMoreDetails(element.feedback)" type="submit">More details</button>
+            </td>
+
+        </ng-container>
+        <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef> Date </th>
+            <td mat-cell *matCellDef="let element"> {{element.date | date:'dd/MM/yyyy'}} </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="feedBackDetails_Columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: feedBackDetails_Columns;">
+        </tr>
+    </table>
+    <mat-paginator [length]="dataSource_Feedback?.data.length" #paginator [pageSizeOptions]="[10, 20, 30, 40, 50]"
+        showFirstLastButtons></mat-paginator>
+</div>

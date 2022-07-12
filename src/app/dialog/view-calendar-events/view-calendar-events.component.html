@@ -1,0 +1,60 @@
+<mat-dialog-content>
+  <div class="mb=2" id="viewTable">
+    <table mat-table [dataSource]="calendarEventDataSource" matSort class="table">
+      <ng-container matColumnDef="sessionTitle">
+        <th mat-header-cell *matHeaderCellDef>Session Title</th>
+        <td mat-cell *matCellDef="let element">
+          {{element.title}}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="sessionStartDate">
+        <th mat-header-cell *matHeaderCellDef>Start Date</th>
+        <td mat-cell *matCellDef="let element">
+          {{element.sessionStartDate| date:'dd/MM/yy h:mm:ss a'}}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="sessionEndDate">
+        <th mat-header-cell *matHeaderCellDef>End Date</th>
+        <td mat-cell *matCellDef="let element">
+          {{element.sessionEndDate| date:'dd/MM/yy h:mm:ss a'}}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="sessionStatus">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let element">
+          {{element.status}}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="viewDetails">
+        <th mat-header-cell *matHeaderCellDef>Action</th>
+        <td mat-cell *matCellDef="let element">
+          <button class="btn .btn_theme sml-btn" (click)="routeToSessionDetailsTab(element.id)">
+            View Details
+          </button>
+        </td>
+      </ng-container>            
+      <!-- Notify Me for Mentee -->
+      <ng-container matColumnDef="Alerts">
+        <th mat-header-cell *matHeaderCellDef>Notify me</th>
+        <td mat-cell *matCellDef="let element">
+          <button class="btn .btn_theme sml-btn" [disabled]="element.isNotifyMe" (click)="sendalerts(element)">
+            <mat-icon>settings</mat-icon>       
+          </button>          
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="calendarEventColumn; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: calendarEventColumn;"></tr>
+
+    </table>
+    <div *ngIf="calendarEventDataSource && !calendarEventDataSource.data.length" class="empty text-center">
+      <p>No Records Found</p>
+    </div>
+    <mat-paginator [length]="calendarEventDataSource?.data.length"
+      #calendarEventPaginator [pageSize]="5" [pageSizeOptions]="[5,10, 15, 20]" showFirstLastButtons>
+    </mat-paginator>
+  </div>
+</mat-dialog-content>

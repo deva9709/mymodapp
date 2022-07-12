@@ -1,0 +1,7 @@
+::ng-deep .mat-dialog-container {
+    padding: 24px !important;
+}
+
+.pointer{
+    cursor:pointer;
+}

@@ -1,0 +1,7 @@
+::ng-deep sva-grid muuri element.style {
+    width: 500px;
+}
+
+::ng-deep .mat-dialog-container {
+    padding: 0 !important;
+}

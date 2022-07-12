@@ -1,0 +1,181 @@
+<div [ngClass]="isNewAssignment ? 'row mb-4' : 'd-none'">
+  <div class="col-12 mb-2">
+    <h1>
+      Add New Assignment
+    </h1>
+  </div>
+  <div class="col-12">
+    <div class="content-block p-3">
+      <form [formGroup]="assignmentForm">
+        <div class="row">
+          <div class="col-6">
+            <mat-form-field>
+              <input matInput type="text" placeholder="Assignment Title" name="Title" #title formControlName="assignmentTitle" />
+              <mat-error *ngIf="assignmentForm.get('assignmentTitle').errors?.required">
+                Please enter the assignment title</mat-error>
+              <mat-error *ngIf="assignmentForm.get('assignmentTitle').errors?.maxlength">
+                Assignment Title can be maximum 50 characters long.
+              </mat-error>
+            </mat-form-field>
+            </div>
+            <div class="col-6">
+              <mat-form-field>
+                <input matInput type="text" placeholder="Skills (separated by commas)" name="Skills" formControlName="skills" />
+                <mat-error *ngIf="assignmentForm.get('skills').errors?.required">
+                  Please enter the skills</mat-error>
+              </mat-form-field>
+              <mat-error *ngIf="assignmentForm.get('skills').errors?.maxlength">
+                Skills can be maximum 50 characters long.
+              </mat-error>
+          </div>
+          <div class="col-6">
+            <div class="text-right">*Only <strong>PDF,Word,Zip</strong> files can be uploaded.</div>
+            <div class="drop-box">
+              <input type="file" id="document" #fileInput1 (click)="fileInput1.value = null" value=""
+                class="drop-input" (change)="selectFiles($event)" multiple="multiple"
+                accept="text/plain, application/pdf,.doc,.dot,.docx,.dotz,.xls,.xlt,.xla,.zip,.rar,.7zip"/>
+              <label for="document">Upload Documents</label>
+            </div>
+            <span>
+              <div *ngFor="let document of documents ; let i = index">
+                <i class="fa fa-remove remove" (click)="removeFromArray(i)"></i>
+                <span> {{document.name}}</span>
+              </div>
+            </span>
+            <span *ngIf="showEdit">
+              <div *ngFor="let document of updateDocuments; let i = index">
+                <i class="fa fa-remove remove" (click)="removeFromDocument(document.document,i)"></i>
+                {{document.documentName}}
+              </div>
+            </span>
+            <span *ngIf="!totalFiles && !showEdit">No Files Choosen</span>
+          </div>
+          <div class="col-6">
+            <div class="text-right">*Only <strong>images</strong> can be uploaded.</div>
+            <div class="drop-box">
+              <input type="file" id="resourse" #fileInput2 (click)="fileInput2.value = null" value=""
+                class="drop-input" (change)="selectResources($event)" multiple="multiple" accept="image/*" />
+              <label for="resourse">Upload Resources</label>
+            </div>
+            <span *ngIf="!totalResources && !showEdit">No Files Choosen</span>
+            <span>
+              <div *ngFor="let resourse of resourses ; let i = index">
+                <i class="fa fa-remove remove" (click)="removeFromResourceArray(i)"></i>
+                <span> {{resourse.name}}</span>
+              </div>
+            </span>
+            <span *ngIf="showEdit">
+              <div *ngFor="let resource of updateResources; let i = index">
+                <i class="fa fa-remove remove" (click)="removeFromResource(resource.document,i)"></i>
+                {{resource.documentName}}
+              </div>
+            </span>
+          </div>
+          <div class="col-12 text-right mt-3">
+            <button type="button" class="btn btn_theme mr-3" *ngIf="!showEdit" mat-button
+             [disabled]="assignmentForm.invalid || !documents.length || isPending" (click)="createAssignment()">Create Assignment</button>
+            <button type="button" class="btn btn_theme mr-3" [disabled]="assignmentForm.invalid" mat-button (click)="updateAssignment()" *ngIf="showEdit">Update
+              Assignment</button>
+
+            <button type="button" class="btn btn-secondary" mat-button
+              (click)="showEdit ? cancelEdit(): addNewAssignment()">Cancel</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="row mb-2" *ngIf="!isNewAssignment">
+  <div class="col-12 text-right">
+    <button type="button" class="btn sml-btn btn_theme" mat-button (click)="addNewAssignment()" *ngIf="currentUserType != userRoles[1]">
+      Add New Assignment
+    </button>
+  </div>
+</div>
+
+<div *ngIf="currentUserType === userRoles[1]">
+  <div class="content-block pt-3 pl-3 pr-3 pb-1 mb-3">
+    <div class="row">
+      <div class="col-4">
+        <mat-form-field>
+          <mat-label>Select Tenant</mat-label>
+          <mat-select name="tenant" [(ngModel)]="selectedTenantName" required>
+            <mat-option *ngFor="let tenant of tenantsList" [value]="tenant.tenantName" (click)="filterByAssignmentTitle()">
+              {{tenant.tenantName}}
+            </mat-option>
+            <mat-option *ngIf="!tenantsList.length">
+              --none--
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-6 search-form">
+        <form action="">
+          <mat-form-field>
+              <input matInput type="text" name="titleSearchText" placeholder="Enter Assignment Title" [(ngModel)]="titleSearchText"> 
+          </mat-form-field>
+          <button class="btn-icons btn-outline-theme" type="submit" (click)="filterByAssignmentTitle()" mat-button>
+            <mat-icon>search</mat-icon>
+          </button>
+        </form>
+      </div>
+  </div>
+</div>
+</div>  
+
+<div class="row">
+  <div class="col-12">
+    <div class="content-block pt-1 pb-1">
+      <table mat-table [dataSource]="dataSource" matSort class="table" *ngIf="!showNoAssignments">
+        <ng-container matColumnDef="tenantName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header width="15%">Tenant</th>
+          <td mat-cell *matCellDef="let element"> {{element.tenantName}} </td>
+        </ng-container>
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header width="25%">Assignment Title</th>
+          <td mat-cell *matCellDef="let element"> {{element.title}} </td>
+        </ng-container>
+        <ng-container matColumnDef="skill">
+          <th mat-header-cell *matHeaderCellDef width="15%">Skills</th>
+          <td mat-cell *matCellDef="let element"> {{element.skills}} </td>
+        </ng-container>
+        <ng-container matColumnDef="create">
+          <th mat-header-cell *matHeaderCellDef width="10%">Created Date</th>
+          <td mat-cell *matCellDef="let element"> {{element.createdDate | date:'d/M/yyyy'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="modify">
+          <th mat-header-cell *matHeaderCellDef width="10%">Modified Date</th>
+          <td mat-cell *matCellDef="let element"> {{element.modifiedDate | date:'d/M/yyyy'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="attachments">
+          <th mat-header-cell *matHeaderCellDef width="20%">Attachments</th>
+          <td mat-cell *matCellDef="let element">
+            <a class="keywords mr-2" (click)="viewDocuments(element,documentFileType[1])">
+              Documents <mat-icon>pageview</mat-icon>
+            </a>
+            <a class="keywords" (click)=viewDocuments(element,documentFileType[2])>
+              Resources <mat-icon>get_app</mat-icon>
+            </a>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="text-right" width="10%">Actions</th>
+          <td mat-cell *matCellDef="let element" class="text-right">
+            <button class="btn-icons btn-outline-warning mr-2" type="button" mat-button *ngIf="currentUserType != userRoles[1]" (click)="populate(element.id)">
+              <mat-icon matTooltip="Edit">edit</mat-icon>
+            </button>
+            <button class="btn-icons btn-outline-danger" type="button" mat-button *ngIf="currentUserType != userRoles[1]" (click)="delete(element.id)">
+              <mat-icon matTooltip="Delete">clear</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <div class="empty text-center p-5" *ngIf="showNoAssignments">
+        <p>No Assignments Found</p>
+      </div>
+      <mat-paginator [length]="dataSource?.data.length" #paginator [pageSizeOptions]="[10, 20, 30, 40, 50]" *ngIf="!showNoAssignments" showFirstLastButtons></mat-paginator>
+    </div>
+  </div>
+</div>

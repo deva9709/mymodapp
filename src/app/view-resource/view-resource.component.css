@@ -1,0 +1,38 @@
+.sk_in{width: 200px;margin: 17px 40px;}
+.mat_tb{width: 100%;}
+.mat_box{border: 1px solid gray;
+    border-radius: 5px 5px;}
+    table {
+        font-family: arial, sans-serif;
+        
+        width: 100%;
+      }
+      
+      td, th {
+       
+        text-align: left;
+        padding: 8px;
+      }
+      
+      .td_l{width: 207px;}
+        .share_btn{padding: 5px 20px;
+          margin-left: 69%;background: #e4e3e3;}
+        .txt{margin-right: 150px;}
+        .snd_div{margin: 26px 0 0 64px;}
+        .skill_u{margin-right: 43px;}
+        
+        .tabs { 
+          list-style: none; 
+          margin-top: 16px; 
+          width: 660px;
+          padding: 0;
+        }
+        .tabs li { 
+          float: left; 
+          padding: 10px 16px; 
+          text-decoration: none;
+          position: relative; 
+         
+          border: 2px solid #676565;
+        }    
+        .lst{list-style: none}

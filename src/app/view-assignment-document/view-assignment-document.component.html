@@ -1,0 +1,25 @@
+<h2 class="text-center mb-2">Assignment Name: <b>{{previewAssignmentTitle}}</b></h2>
+<p *ngIf=!isDocumentsAvailble class="empty">{{emptyMessage}}<p>
+    <table mat-table [dataSource]="previewDocumentsdatasource" class="table" *ngIf=isDocumentsAvailble>
+
+      <ng-container matColumnDef="Documents Name">
+        <th mat-header-cell *matHeaderCellDef> File Name </th>
+        <td mat-cell *matCellDef="let element"> {{element.documentName}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Type">
+        <th mat-header-cell *matHeaderCellDef>Type</th>
+        <td mat-cell *matCellDef="let element"> {{element.type}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Download">
+        <th mat-header-cell *matHeaderCellDef> Download </th>
+        <td mat-cell *matCellDef="let element">
+          <button type="button" class="btn-icons btn-outline-theme" mat-button (click)="download(element.document)">
+            <mat-icon>get_app</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="previewColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: previewColumns;"></tr>
+    </table>

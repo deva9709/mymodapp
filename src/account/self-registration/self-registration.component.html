@@ -1,0 +1,79 @@
+<header class="preLogin">
+  <div class="container">
+      <a href="javascript:void(0)" class="logo" [routerLink]="['/account/landing']">
+          Virutor
+      </a>
+      <ul class="navigations">
+          <li>
+              <a href="javascript:void(0)" [routerLink]="['/account/landing']">
+                  Home
+              </a>
+          </li>
+          <li>
+              <a href="javascript:void(0)">
+                  About us
+              </a>
+          </li>
+          <li>
+              <a href="javascript:void(0)">
+                  Trainership
+              </a>
+          </li>
+          <li>
+              <a href="javascript:void(0)">
+                  Contact us
+              </a>
+          </li>
+          <li>
+              <a href="javascript:void(0)" [routerLink]="['/account/register']">
+                  Join as Trainer
+              </a>
+           </li>
+           <!-- <li>
+              <a href="javascript:void(0)" [routerLink]="['/account/self-registration']">
+               Self-registration 
+              </a>
+          </li> -->
+      </ul>
+  </div>
+</header>
+<section class="introduction">
+  <div class="container text-right">
+      
+  </div>
+</section>
+<section class="register-form mt-4">
+  <div class="container">
+    <form novalidate [formGroup]="selfRegistrationForm" autocomplete="off">
+          <h1 class="mt-5 mb-5">Self Registration</h1>
+          <div class="row">
+              <div class="col-6 mb-4">
+                  <mat-form-field>
+                      <input matInput placeholder="First Name" name="firstName" formControlName="firstName">
+                      <mat-error *ngIf="selfRegistrationForm.get('firstName').errors?.required">
+                        {{selfRegistrationFormValidationMessages.firstNameRequired}}</mat-error>
+                  </mat-form-field>
+              </div>
+              <div class="col-6 mb-4">
+                  <mat-form-field>
+                      <input matInput placeholder="Last Name" name="lastName" formControlName="lastName">
+                      <mat-error *ngIf="selfRegistrationForm.get('lastName').errors?.required">
+                        {{selfRegistrationFormValidationMessages.lastNameRequired}}</mat-error>
+                  </mat-form-field>
+              </div>
+              <div class="col-6 mb-4">
+                  <mat-form-field>
+                      <input matInput placeholder="Email" name="email" formControlName="email">
+                      <mat-error *ngIf="selfRegistrationForm.get('email').errors?.required">
+                        {{selfRegistrationFormValidationMessages.emailRequired}}</mat-error>
+                  </mat-form-field>
+              </div>
+              <div class="col-12 text-center mb-5">
+                <button class="btn btn-primary" type="button" (click)="selfRegistration()">
+                    Register
+                </button>
+            </div>
+           </div> 
+       </form>
+   </div>
+ </section>            

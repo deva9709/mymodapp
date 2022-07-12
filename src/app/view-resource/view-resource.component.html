@@ -1,0 +1,112 @@
+    <div class="content-block pt-3 pl-3 pr-3 pb-1 mb-3">
+        <button class="btn btn_theme" (click)="navigateBack()">
+            Back
+        </button>
+          <div class="row">
+              <div class="col-4" style="margin-top: 39px;">
+                <label>Skill : </label> {{skill}}
+              </div>
+          </div>          
+          <div class=" mt-3 pt-1 pb-1" *ngIf="readingMaterialFlag">
+          <table mat-table [dataSource]="dataSourceForReadingMaterialTable" #usersSort="matSort" matSort class="table" style="margin-top: 20px;" >
+            <ng-container matColumnDef="title">
+                <th mat-header-cell *matHeaderCellDef>Title </th>
+                <td mat-cell *matCellDef="let element"> {{element.resourceDetails.resourceTitle}} </td>
+            </ng-container>
+            <ng-container matColumnDef="trainee">
+              <th mat-header-cell *matHeaderCellDef> Trainee </th>
+              <td mat-cell *matCellDef="let element"> {{element.traineeResourceDetails.trainee.name}} </td>
+          </ng-container>
+            <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef> Sent On </th>
+                <td mat-cell *matCellDef="let element"> {{element.traineeResourceDetails.sendOn  | date:'d/M/yyyy'}} </td>
+            </ng-container>
+            <ng-container matColumnDef="downloded">
+                <th mat-header-cell *matHeaderCellDef> Download On </th>
+                <td mat-cell *matCellDef="let element">{{element.traineeResourceDetails.downlodedOn | date:'d/M/yyyy'}}</td>
+            </ng-container>       
+            <tr mat-header-row *matHeaderRowDef="displayedColumnsForReadingMaterial"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumnsForReadingMaterial;"></tr>
+        </table>
+        <mat-paginator [length]="dataSourceForReadingMaterialTable?.data.length" #batchPaginator [pageSizeOptions]="[10, 20, 30, 40, 50]"
+        showFirstLastButtons></mat-paginator>
+          </div>
+          <div class="pt-3 pl-3 pr-3 pb-1 mb-3" *ngIf="assignMentFlag">
+        <table mat-table [dataSource]="dataSourceForAssignmentTable" #usersSort="matSort"  matSort class="table" style="margin-top: 20px;">
+            <ng-container matColumnDef="resource">
+                <th mat-header-cell *matHeaderCellDef>Assignment Title </th>
+                <td mat-cell *matCellDef="let element"> {{element.resourceDetails.resourceTitle}} </td>
+            </ng-container>
+            <ng-container matColumnDef="train">
+              <th mat-header-cell *matHeaderCellDef> Trainee </th>
+              <td mat-cell *matCellDef="let element"> {{element.traineeResourceDetails.trainee.name}} </td>
+          </ng-container>
+            <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef> Due Date </th>
+                <td mat-cell *matCellDef="let element"> {{element.dueDate | date:'d/M/yyyy'}} </td>
+            </ng-container>
+            <ng-container matColumnDef="createdby">
+                <th mat-header-cell *matHeaderCellDef>Status </th>
+                <td mat-cell *matCellDef="let element"> {{resourceStatus[element.traineeResourceDetails.status]}} </td>
+            </ng-container>
+            <ng-container matColumnDef="reviewer">
+                <th mat-header-cell *matHeaderCellDef> Download  </th>
+                <td mat-cell *matCellDef="let element"> <button type="button" class="btn-icons btn-outline-theme" *ngIf="element.traineeResourceDetails.url" mat-button>
+                  <a href={{element.traineeResourceDetails.url}} target="_blank" class="sample-template mr-3" >
+                    <mat-icon>get_app</mat-icon>
+                </a>
+                  </button></td>
+            </ng-container>          
+            <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef>Action </th>
+                <td mat-cell *matCellDef="let element">
+                  <button class="btn .btn_theme text-primary" (click)="reviewPage(element)">
+                    Review
+                  </button>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumnsForAssignment"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumnsForAssignment;"></tr>
+        </table>
+        <mat-paginator [length]="dataSourceForAssignmentTable?.data.length" #batchPaginator [pageSizeOptions]="[10, 20, 30, 40, 50]"
+        showFirstLastButtons></mat-paginator>
+        </div>
+        <div class=" pt-3 pl-3 pr-3 pb-1 mb-3" *ngIf="assegmentFlag">
+        <table mat-table [dataSource]="dataSourceForAssesmentTable" #usersSort="matSort"  matSort class="table" style="margin-top: 20px;">            
+            <ng-container matColumnDef="resource">
+                <th mat-header-cell *matHeaderCellDef>Title </th>
+                <td mat-cell *matCellDef="let element"> {{element.resourceDetails.resourceTitle}} </td>
+            </ng-container>
+            <ng-container matColumnDef="train">
+              <th mat-header-cell *matHeaderCellDef> Trainee </th>
+              <td mat-cell *matCellDef="let element"> {{element.traineeResourceDetails.trainee.name}} </td>
+          </ng-container>
+            <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef> Completed On </th>
+                <td mat-cell *matCellDef="let element"> {{element.traineeResourceDetails.progressJson?.RecommendationJson?.end}} </td>
+            </ng-container>           
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status </th>
+                <td mat-cell *matCellDef="let element"> {{resourceStatus[element.traineeResourceDetails.status]}} </td>
+            </ng-container>
+            <ng-container matColumnDef="noOfAttempt">
+                <th mat-header-cell *matHeaderCellDef> No of Attempt  </th>
+                <td mat-cell *matCellDef="let element"> {{element.traineeResourceDetails.progressJson?.RecommendationJson?.noOfAttempts}}</td>
+            </ng-container>        
+            <ng-container matColumnDef="url">
+                <th mat-header-cell *matHeaderCellDef>Url </th>
+                <td mat-cell *matCellDef="let element">
+                    <button class="btn-icons btn-outline-warning mr-2" matTooltip="pageview"type="button" mat-button  (click)="showAssessmentUrl(element.resourceDetails.resourceUrl)">
+                        <mat-icon class="page-view">pageview</mat-icon>
+                       </button>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumnsForAssegment"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumnsForAssegment;"></tr>
+        </table>
+        <mat-paginator [length]="dataSourceForAssesmentTable?.data.length" #batchPaginator [pageSizeOptions]="[10, 20, 30, 40, 50]"
+        showFirstLastButtons></mat-paginator>
+       </div>
+
+      
+       

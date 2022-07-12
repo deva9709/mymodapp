@@ -1,0 +1,36 @@
+.search-form {
+    position: relative;
+}
+
+.search-form .btn-icons {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    z-index: 5;
+}
+
+::ng-deep .popular-skills li a {
+    display: block;
+    padding: 10px 0;
+}
+
+::ng-deep .popular-skills li a:hover {
+    padding: 10px 0 10px 10px;
+}
+
+.forum-topics {
+    cursor: pointer;
+}
+
+.forum-topics h4 {
+    font-size: 1.2rem;
+    font-weight: 300;
+    display: block;
+    color: rgba(0, 113, 188, 1);
+}
+
+.forum-topics ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}

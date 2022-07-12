@@ -1,0 +1,26 @@
+<div class="row">
+  <div class="col-md-6">
+    <input type="text" placeholder="Trainee Id" [(ngModel)]="callingUser"/>
+    <input type="text" placeholder="Trainer Id" [(ngModel)]="calledUser" />
+    <input type="text" placeholder="Dialout Number" [(ngModel)]="dialoutNumber" />
+    <input type="text" placeholder="Trainee Name" [(ngModel)]="traineeName" />
+    <input type="text" placeholder="Call Time In MilliSec" [(ngModel)]="calltimeInMilliSec" />
+    <button type="button" mat-button (click)="dialOut()">
+      Dialout
+    </button>
+  </div>
+  <div class="col-md-6" *ngIf="isCallGoingOn">
+    <div class="controls" id="controls" style="background-color: grey;
+                position: fixed;
+                width: 300px;
+                text-align: center;">
+      <p>{{this.callStatus}}</p>
+      <img src="../../assets/images/mike.png" style="margin-right: 20px; cursor: pointer;" (click)="audioMute()"
+        title="mute audio" *ngIf="showAudioImg == true" />
+      <img src="../../assets/images/mute-mike.png" style="margin-right: 20px; cursor: pointer;" (click)="audioUnmute()"
+        title="Unmute audio" *ngIf="showAudioImg == false" />
+      <img src="../../assets/images/end-call.png" style="margin-right: 20px; cursor: pointer;" title="End_call"
+        (click)="endCall()" />
+    </div>
+  </div>
+</div>

@@ -1,0 +1,50 @@
+<div class="row">
+    <div class="col-12">
+        <form novalidate (ngSubmit)="addCategories()" [formGroup]="categoryForm" autocomplete="off">
+            <div class="content-block p-3">
+                <div class="row">
+                    <div class="col-6">
+                        <mat-form-field>
+                            <input matInput type="text" formControlName="skills"
+                                placeholder="Skills (separated by commas)" />
+                        </mat-form-field>
+                    </div>
+                    <div class="col-6">
+                        <mat-form-field>
+                            <input matInput type="text" formControlName="technologies"
+                                placeholder="Technologies (separated by commas)" />
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 text-center mt-3">
+                        <button type="submit" class="btn btn_theme" mat-button>Add New Category</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="row mt-3">
+    <div class="col-12">
+        <p class="text-right mb-3">
+            Only <strong>.xlsx and .xls</strong> file can be uploaded. <br />
+            Download Sample Template for
+            <a href="assets/sample template/Trainer-Categories.xlsx" class="sample-template mr-3">
+                <mat-icon>file_copy</mat-icon>Trainer Categories
+            </a>
+        </p>
+        <div class="content-block p-3">
+            <form novalidate (ngSubmit)="importCategories()" [formGroup]="importCategoryForm">
+                <div class="drop-box" (onFileDropped)="onFileChange($event)">
+                    <input type="file" class="drop-input" #fileInput id="fileInput" (change)="onFileChange($event)"
+                        accept=".xls,.xlsx" formControlName="categoryFile" />
+                    <label for="fileInput">Upload your file here&hellip;</label>
+                </div>
+                <div class="text-center mt-4">
+                    <button class="btn btn_theme" mat-button type="submit" [disabled]="isImportCategoryFormSubmitted">
+                        Upload
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

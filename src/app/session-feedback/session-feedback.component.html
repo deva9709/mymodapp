@@ -1,0 +1,140 @@
+<!-- <div class="row" *ngIf="isMenteeBlockFlag">
+    <div class="col-12">
+        <div class="feedback mx-auto">
+            <form>
+                <div class="feedback-header">
+                    Quick Feedback
+                </div>
+                <div class="feedback-content">
+                    <div class="row mb-2  offset-5"><b class="title">Technical Call Quality </b></div>
+                    <div class="row mb-3">
+                        <div class="col-6 text-right mt-2">
+                            Session Audio Quality <span class="col-red">*</span>
+                        </div>
+                        <div class="col-5 my-auto">
+                            <star-rating value=0 totalstars="5" checkedcolor="orange" uncheckedcolor="grey" size="30px"
+                                readonly="false" (rate)="onRateDefault($event,audioQuality)">
+                            </star-rating>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6 text-right mt-2">
+                            Session Video Quality <span class="col-red">*</span>
+                        </div>
+                        <div class="col-5 my-auto">
+                            <star-rating value=0 totalstars="5" checkedcolor="orange" uncheckedcolor="grey" size="30px"
+                                readonly="false" (rate)="onRateDefault($event,videoQuality)">
+                            </star-rating>
+                        </div>
+                    </div>
+                    <div class="row mb-2  offset-5"><b class="title">Session Feedback </b></div>
+                    <div class="row mb-3" *ngFor="let question of feedbackQuestionLists">
+                        <div class="col-6 mt-2 text-right">
+                            {{question.description}}
+                        </div>
+                        <div class="col-5 my-auto">
+                            <star-rating value=0 totalstars="5" checkedcolor="orange" uncheckedcolor="grey" size="30px"
+                                readonly="false" (rate)="onRate($event,question.id)"></star-rating>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6 text-right mt-2">
+                            Overall Trainer rating <span class="col-red">*</span>
+                        </div>
+                        <div class="col-5 my-auto">
+                            <star-rating value=0 totalstars="5" name="overAllRating" checkedcolor="orange"
+                                uncheckedcolor="grey" size="30px" readonly="false"
+                                (rate)="onRateDefault($event,overAllRating)">
+                            </star-rating>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <mat-form-field>
+                                <textarea matInput name="description" [(ngModel)]="feedbackDescription"
+                                    placeholder="General Feedback"></textarea>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <span class="col-red offset-1">* Fields are mandatory.</span>
+                </div>
+                <div class="text-right">
+                    <button type="submit" (click)="addRating()" class="btn btn_theme mr-3 mb-4">Submit</button>
+                    <button type="button" (click)="backToSession()" class="btn btn-secondary mr-3 mb-4">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> -->
+
+<!-- Trainee feedback by Trainer-->
+<!-- <div class="content-block mt-3 pt-1 pb-1" *ngIf="isMentorBlockFlag">
+    <table [dataSource]="dataSource" mat-table matSort class="table">
+        <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+                <mat-checkbox (change)="$event ? masterToggle() : null"
+                    [checked]="selection.hasValue() && isAllSelected()"
+                    [indeterminate]="selection.hasValue() && !isAllSelected()">
+                </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let element">
+                <mat-checkbox (click)="$event.stopPropagation(checkBoxValue)"
+                    (change)="$event ? selection.toggle(element) : null;individualFeedBackCheckBoxSelection($event)"
+                    [checked]="selection.isSelected(element)">
+                </mat-checkbox>
+            </td>
+        </ng-container>
+        <!-- Name Column -->
+        <!-- <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef> Name </th>
+            <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+        </ng-container> -->
+        <!-- Email Column -->
+        <!-- <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef> Email </th>
+            <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="feedBackDetailsColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: feedBackDetailsColumns;">
+        </tr>
+    </table>
+    <mat-paginator [length]="dataSource?.data.length" #paginator [pageSizeOptions]="[10, 20, 30, 40, 50]"
+        showFirstLastButtons></mat-paginator>
+</div> --> 
+<!-- <div class="row" *ngIf="isHideFlgaForBulkFeedback">
+    <div class="col-12">
+        <div class="mx-auto mentee-block">
+            <form novalidate [formGroup]="feedbackForm" autocomplete="off">
+                <div class="feedback-header">
+                    Trainer Feedback
+                </div>
+                <div class="row mb-3">
+                    <div class="col-6 mentee-feedback-textArea mt-2">
+                        Overall Trainer rating <span class="col-red">*</span>
+                    </div>
+                    <div class="col-5 my-auto">
+                        <star-rating value=1 totalstars="5" name="trainerRating" checkedcolor="orange"
+                            uncheckedcolor="grey" size="30px" readonly="false" (rate)="raitinggivenBTrainer($event)">
+                        </star-rating>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <mat-form-field class="mentee-feedback-textArea">
+                            <textarea matInput name="description" formControlName="feedbackDescription"
+                                placeholder="General Feedback *"></textarea>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <button type="submit" class="btn btn_theme mr-3 mb-4" (click)="submitmitFeedback()"
+                        *ngIf="isSubmitFeedback==true">SubmitFeedback</button>
+                    <button type="button" (click)="cancelTraineeFeedback()"
+                        class="btn btn-secondary mr-3 mb-4">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> -->

@@ -1,0 +1,19 @@
+<div class="modal-body">
+  <ng-container *ngIf="hasPollName">
+    <mat-form-field>
+      <input matInput name="pollName" [placeholder]="'Poll Name'" [(ngModel)]=pollName>
+    </mat-form-field>
+    <button type="button" class="btn btn_theme mr-3" (click)="saveName()"> Save </button>
+    <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+  </ng-container>
+</div>
+<div class="modal-body">
+  <ng-container *ngIf="showPollCretor">
+    <div class="mb-2 p-2">
+      <button type="button" class="btn-icons btn-outline-info" mat-button (click)="backToSession()">
+        <mat-icon>keyboard_backspace</mat-icon>
+      </button>
+    </div>
+  </ng-container>
+  <div id="pollCreator"></div>
+</div>

@@ -1,0 +1,17 @@
+::ng-deep .mat-dialog-container {
+    padding: 0 !important;
+}
+
+.rich-editor:after {
+    content: " ";
+    display: table;
+    clear: both;
+}
+
+.new-article .drop-input {
+    height: 60px;
+}
+::ng-deep .create-topic {
+    margin: 0px !important;
+    padding: 16px !important;
+}

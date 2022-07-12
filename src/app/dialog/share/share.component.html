@@ -1,0 +1,85 @@
+<div class="contentainer">
+<form novalidate [formGroup]="shareResourceForm" autocomplete="off">
+  <div class="row">
+    <div class="col-4" *ngIf="showTenantDropDown">
+      <mat-form-field>
+      <mat-label>Select Tenant</mat-label>
+      <mat-select name="tenant"  formControlName="tenant" [(ngModel)]="selectedTenantId" (openedChange)="tenantFilter.focus()" required>
+        <div class="row dropdown-search-row">
+          <div class="col-10">
+            <input class="searchInput" #tenantFilter matInput type="text" autocomplete="off" placeholder="Search"
+              (keyup)="search($event.target.value, 'tenant')">
+          </div>
+          <div class="col-2 text-right">
+            <button mat-button *ngIf="tenantFilter.value" matSuffix mat-icon-button class="clear-icon"
+              matTooltip="Clear" matTooltipPosition="below" (click)="tenantFilter.value=''; search('', 'tenant')">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </div>
+        <mat-divider></mat-divider>
+        <mat-option *ngFor="let tenant of filteredTenantList" [value]="tenant.id" (click)="getAllTrainerTraineeDetails(tenant.id)">
+          {{tenant.tenantName}}
+        </mat-option>
+        <mat-option *ngIf="!filteredTenantList.length">
+          --none--
+        </mat-option>
+      </mat-select>
+    </mat-form-field>    
+    </div>   
+    <div class="col-4">
+      <mat-form-field>
+          <mat-label>Session</mat-label>
+          <mat-select formControlName="session">
+            <mat-option *ngFor="let session of allSessions" [value]="session.sessionId" (click)="showSessionParticipants(session)">
+              {{session.sessionTitle}}
+            </mat-option>
+            <mat-option (click)="sessionUnSelected()">
+              --none--
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+    </div> 
+  </div>
+  <div class="row">
+    <div class="col-4">
+      <mat-form-field>
+          <mat-label>Select Trainer</mat-label>
+          <mat-select name="trainer" [(ngModel)]="selectedTrainer" formControlName="selectedTrainer" required>
+            <mat-option *ngFor="let trainer of allTrainers" [value]="trainer.id">
+              {{trainer.name}}
+            </mat-option>
+            <mat-option *ngIf="!allTrainers.length">
+              --none--
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+    </div>
+    <div class="col-4">
+      <ng-multiselect-dropdown [placeholder]="'Select Trainees'" [data]="allTrainees"
+        [(ngModel)]="selectedTrainees" [settings]="traineeDropdownSettings"
+        (onSelect)="onTraineeSelect($event)" (onDeSelect)="onTraineeDeSelect($event)"
+        (onSelectAll)="onTraineeSelectAll($event)"
+        (onDeSelectAll)="onDeselectAllTrainee()"
+        formControlName="selectedTrainee">
+      </ng-multiselect-dropdown>
+    </div>
+    <div class="col-4">
+        <mat-form-field>
+          <input matInput [matDatepicker]="dueDate" placeholder="Due Date"
+              formControlName="dueDate" [min]="minDate"
+              (dateChange)="onSessionTimeChange($event.value)" readonly
+              (click)="dueDate.open()"/>
+          <mat-datepicker-toggle matSuffix [for]="dueDate"></mat-datepicker-toggle>
+          <mat-datepicker #dueDate disabled="false"></mat-datepicker>          
+      </mat-form-field>
+    </div>
+  </div>
+  <hr>
+  <div class="row">
+    <div class="offset-7">
+      <button class="btn btn_theme" (click)='shareResource()'>Share</button>
+    </div>
+  </div>  
+  </form>
+</div>

@@ -1,0 +1,7 @@
+::ng-deep .mat-dialog-container {
+    padding: 0 !important;
+}
+
+::ng-deep .cdk-overlay-pane {
+    width: 500px;
+}

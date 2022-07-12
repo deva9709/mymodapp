@@ -1,0 +1,77 @@
+<div class="modal-body">
+    <p class="text-center mb-3">Reschedule Session : {{sessionTitle}}</p>
+    <form novalidate [formGroup]="reScheduleForm" autocomplete="off">
+        <div class="row" *ngIf="showTrainee">
+            <div class="col-3 mb-3">
+                <ng-multiselect-dropdown [placeholder]="'Select Users'" [data]="mentees" formControlName="selectedMentees"
+                    [settings]="menteeDropdownSettings" (onSelect)="onUserSelect($event)"
+                    (onDeSelect)="onUserDeSelect($event)" (onSelectAll)="onUserSelectAll($event)"
+                    (onDeSelectAll)="onDeselectUserAll($event)" #ngMultiSelect>
+                </ng-multiselect-dropdown>
+            </div>
+        </div>
+        <div class="row">
+            <!-- Start date -->
+            <div class="col-3 cursor">
+                <mat-form-field>
+                    <input matInput [min]="minDate" [matDatepicker]="start" [(ngModel)]="startDate"
+                        formControlName="startDate" placeholder="Start Date"
+                        (dateChange)="onSessionTimeChange('startDate',$event.value)" readonly (click)="start.open()" />
+                    <mat-datepicker-toggle matSuffix [for]="start"></mat-datepicker-toggle>
+                    <mat-datepicker #start disabled="false"></mat-datepicker>
+                    <mat-error *ngIf="reScheduleForm.get('startDate').errors?.required">
+                        {{reScheduleFormValidationMessages.startDateRequired}}</mat-error>
+                </mat-form-field>
+            </div>
+            <!-- Start time -->
+            <div class="col-3">
+                <mat-form-field>
+                    <input matInput placeholder="Start Time" [ngxTimepicker]="startTimePicker" [min]="startMinTime"
+                        formControlName="startTime" [value]="defaultStartTime==undefined ?'':defaultStartTime"
+                        readonly />
+                    <ngx-material-timepicker #startTimePicker (timeSet)="onSessionTimeChange('startTime',$event)">
+                    </ngx-material-timepicker>
+                    <mat-error *ngIf="reScheduleForm.get('startTime').errors?.required">
+                        {{reScheduleFormValidationMessages.startTimeRequired}}</mat-error>
+                    <mat-error *ngIf="reScheduleForm.get('startTime').hasError('pattern')">
+                        {{reScheduleFormValidationMessages.startTimePattern}}</mat-error>
+                    <mat-error *ngIf="reScheduleForm.get('startTime').hasError('startTimeCheck')">
+                        {{reScheduleFormValidationMessages.startTimeCheck}}</mat-error>
+                </mat-form-field>
+            </div>
+            <!-- End date -->
+            <div class="col-3 cursor">
+                <mat-form-field>
+                    <input matInput [matDatepicker]="end" [min]="endMinDate" placeholder="End Date"
+                        [(ngModel)]="endDate" formControlName="endDate"
+                        (dateChange)="onSessionTimeChange('endDate',$event.value)" readonly (click)="end.open()" />
+                    <mat-datepicker-toggle matSuffix [for]="end"></mat-datepicker-toggle>
+                    <mat-datepicker #end disabled="false"></mat-datepicker>
+                    <mat-error *ngIf="reScheduleForm.get('endDate').errors?.required">
+                        {{reScheduleFormValidationMessages.endDateRequired}}</mat-error>
+                </mat-form-field>
+            </div>
+            <!-- End time -->
+            <div class="col-3">
+                <mat-form-field>
+                    <input type="text" matInput placeholder="End Time" [ngxTimepicker]="endTimePicker"
+                        [min]="endMinTime" formControlName="endTime" readonly
+                        [value]="defaultEndTime == undefined ?'':defaultEndTime" />
+                    <ngx-material-timepicker #endTimePicker (timeSet)="onSessionTimeChange('endTime',$event)">
+                    </ngx-material-timepicker>
+                    <mat-error *ngIf="reScheduleForm.get('endTime').errors?.required">
+                        {{reScheduleFormValidationMessages.endTimeRequired}}</mat-error>
+                    <mat-error *ngIf="reScheduleForm.get('endTime').hasError('pattern')">
+                        {{reScheduleFormValidationMessages.endTimePattern}}</mat-error>
+                    <mat-error *ngIf="reScheduleForm.get('endTime').hasError('endTimeCheck')">
+                        {{reScheduleFormValidationMessages.endTimeCheck}}</mat-error>
+                </mat-form-field>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" (click)="reScheduleSession()" mat-button class="btn btn_theme mr-3"
+        [disabled]="!reScheduleForm.valid">Reschedule</button>
+    <button type="button" (click)="cancel()" mat-button class="btn btn-secondary">Close</button>
+</div>

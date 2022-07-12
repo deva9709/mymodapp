@@ -1,0 +1,64 @@
+<div class="modal-header">
+  <h1>
+   Trainee Manual Attendance
+  </h1>
+</div> 
+ <form novalidate [formGroup]="TraineeAttendanceForm" autocomplete="off">
+  <div class="modal-body">
+    <div class="row">
+          <div class="col-12 mb-2">
+          <p class="text-right mb-3">
+            Only <strong>.xlsx and .xls</strong> file can be uploaded. <br />
+            Download Sample Template for
+            <a href="assets/sample template/Trainee-Attendance-Report.xlsx" class="sample-template mr-3">
+                <mat-icon>file_copy</mat-icon> Manual Attendance Upload
+            </a>
+        </p>
+      </div>
+  <div class="col-6" *ngIf="isSuperAdmin">
+<mat-form-field>
+  <mat-label>Select Tenant</mat-label>
+  <mat-select name="tenant" formControlName="tenant" [(ngModel)]="selectedTenant" (openedChange)="tenantFilter.focus()" required>
+    <div class="row dropdown-search-row">
+      <div class="col-10">
+        <input class="searchInput" #tenantFilter matInput type="text" autocomplete="off" placeholder="Search"
+          (keyup)="search($event.target.value, 'tenant')">
+      </div>
+      <div class="col-2 text-right">
+        <button mat-button *ngIf="tenantFilter.value" matSuffix mat-icon-button class="clear-icon"
+          matTooltip="Clear" matTooltipPosition="below" (click)="tenantFilter.value=''; search('', 'tenant')">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+    <mat-divider></mat-divider>
+    <mat-option *ngFor="let tenant of filteredTenantList" [value]="tenant.id" (click)="getTenantDetails(tenant)">
+      {{tenant.tenantName}}
+    </mat-option>
+    <mat-option *ngIf="!filteredTenantList.length">
+    </mat-option>
+  </mat-select>
+  <mat-error *ngIf="TraineeAttendanceForm.get('tenant').errors?.required">
+    {{TraineeAttendanceFormValidationMessages.tenantRequired}}</mat-error>
+</mat-form-field>
+</div>
+      <div class="col-12">
+          <div class="drop-box" (onFileDropped)="onFileChange($event)">
+            <input type="file" class="drop-input" #fileInput id="fileInput" name="attendanceFile"
+                (change)="onFileChange($event)" accept=".xls,.xlsx" formControlName="attendanceFile" [disabled]="!isCorrectTenantSelected" />
+            <label for="fileInput">Upload your file here&hellip;</label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn_theme" mat-button (click)="uploadManualAttendance()" [disabled]="!TraineeAttendanceForm.valid">
+              Upload
+      </button>
+      <button type="button" (click)="cancelAttendance()" class="btn btn-secondary">
+       Cancel
+      </button>
+  </div>
+</form>  
+
+ 

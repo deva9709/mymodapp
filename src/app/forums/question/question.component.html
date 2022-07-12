@@ -1,0 +1,184 @@
+<div class="row" *ngIf="isQuestionCreated">
+  <div class="col-12 mb-4 mt-4">
+    <button type="button" mat-button class="btn-icons btn-outline-info float-left mr-3" (click)="backToForumList()">
+      <mat-icon>keyboard_arrow_left</mat-icon>
+    </button>
+    <div class="float-left">
+      <h1 class="mb-1">{{forumTopic.title}}</h1>
+      <div class="mb-1">
+        <span class="mr-3"><b>Created by :</b> {{forumTopic.creatorName}}</span><span
+          class="mr-3">{{forumTopic.createdOn | date:'dd/MM/yyyy'}}</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 mt-2">
+    <div class="content-block pt-3 pl-3 pr-3 pb-1 mb-3">
+      <div class="row">
+        <div class="col-12">
+          <button type="button" class="btn-icons btn-outline-danger float-right"
+            (click)="deleteForumTopic(forumTopic?.id)"
+            *ngIf="forumTopic?.platformUserId === userId ||currentUserType === userRoles[1] || (currentUserType === userRoles[7] && forumTopic?.platformUserId !== 1)"
+            matTooltip="Delete" mat-button>
+            <mat-icon>delete</mat-icon>
+          </button>
+          <button type="button" class="btn-icons btn-outline-warning float-right" (click)="editForumTopic()"
+            *ngIf="!isForumEdit && (forumTopic?.platformUserId === userId ||currentUserType === userRoles[1] || (currentUserType === userRoles[7] && forumTopic?.platformUserId !== 1))"
+            matTooltip="Edit" mat-button>
+            <mat-icon>edit</mat-icon>
+          </button>
+          {{forumTopic.description}}
+        </div>
+        <div class="col-12 pt-2 pb-2">
+          <small class="skills skill mr-1" *ngFor="let skill of topicSkills">{{skill.name}}</small>
+          <hr>
+        </div>
+        <div class="col-12">
+          <button type="button" class="btn-icons btn-outline-info" (click)="topicUpvote()" mat-button>
+            <mat-icon>thumb_up_alt</mat-icon>
+          </button>
+          <span class="keywords mr-4">{{forumTopic.upVoteCount}}</span>
+          <button type="button" class="btn-icons btn-outline-info" (click)="topicDownVote()" mat-button>
+            <mat-icon>thumb_down_alt</mat-icon>
+          </button>
+          <span class="keywords mr-4">{{forumTopic.downVoteCount}}</span>
+          <button type="button" class="btn-icons btn-outline-info" mat-button (click)="postCommentToggle()">
+            <mat-icon>reply</mat-icon>
+          </button>
+          <span class="keywords">{{forumTopic.totalComment}}</span> Comments
+        </div>
+      </div>
+    </div>
+
+    <div class="content-block reply-form p-3 mb-3" *ngIf="postCommentStatus">
+      <form [formGroup]="commentForm">
+        <div class="row">
+          <div class="col-12 mb-2">
+            <mat-form-field>
+              <mat-label>Comment</mat-label>
+              <textarea matInput type="text" name="newComment" formControlName="newComment"
+                placeholder="Comment"></textarea>
+            </mat-form-field>
+          </div>
+          <div class="col-12 text-right">
+            <button class="btn btn_theme btm-sml mr-3" type="button" (click)="postComment()"
+              [disabled]="commentForm.invalid">
+              Submit
+            </button>
+            <button class="btn btn-secondary btm-sml" type="button" (click)="postCommentCancel()">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div *ngFor="let parentComment of parentComments">
+      <div class="row ml-4 user-comments">
+        <div class="col-12">
+          <div class="content-block p-3 mb-3">
+            <!-- parent comment -->
+            <div class="row">
+              <div class="col-12 my-auto">
+
+                <button type="button" class="btn-icons btn-outline-danger float-right"
+                  (click)="deleteCommentDialog(parentComment.id)"
+                  *ngIf="parentComment.addedByUserDetail.platformUserId === userId ||currentUserType === userRoles[1] || (currentUserType === userRoles[7] && parentComment.addedByUserDetail.platformUserId !== 1)"
+                  matTooltip="Delete" mat-button>
+                  <mat-icon>delete</mat-icon>
+                </button>
+                <button type="button" class="btn-icons btn-outline-warning float-right"
+                  *ngIf="parentComment.addedByUserDetail.platformUserId === userId"
+                  (click)="editDialogButton(parentComment.id,parentComment.comment)" matTooltip="Edit" mat-button>
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <span class="profile-pic float-left mr-3"></span>
+                <div class="float-left">
+                  <h3>{{parentComment.addedByUserDetail.name}} </h3> <br>
+                  <small>{{parentComment.addedOn | date:'dd/MM/yyyy'}}</small>
+                </div>
+              </div>
+              <div class="col-12 mt-3 mb-3">
+                <p>
+                  {{parentComment.comment}}
+                </p>
+              </div>
+              <div class="col-12 my-auto">
+                <button type="button" class="btn-icons btn-outline-info" (click)="commentUpVote(parentComment.id)"
+                  mat-button>
+                  <mat-icon>thumb_up_alt</mat-icon>
+                </button>
+                <span class="keywords mr-4">{{parentComment.upVoteCount}}</span>
+                <button type="button" class="btn-icons btn-outline-info" (click)="commentDownVote(parentComment.id)"
+                  mat-button>
+                  <mat-icon>thumb_down_alt</mat-icon>
+                </button>
+                <span class="keywords mr-4">{{parentComment.downVoteCount}}</span>
+                <button type="button" class="btn-icons btn-outline-info ml-3" mat-button
+                  (click)="postReplyToggle(parentComment.id)">
+                  <mat-icon>reply</mat-icon>
+                </button>
+                <span class="keywords">{{parentComment.totalComment}}</span> Reply
+              </div>
+            </div>
+          </div><!-- parent comments ends -->
+
+          <div class="content-block p-3 reply-form mb-3" *ngIf="parentComment.id === id && postReplyStatus">
+            <form [formGroup]="replyForm">
+              <div class="row">
+                <div class="col-12 mb-2">
+                  <mat-form-field>
+                    <mat-label>Reply</mat-label>
+                    <textarea matInput type="text" name="newReply" formControlName="newReply"
+                      placeholder="Comment"></textarea>
+                  </mat-form-field>
+                </div>
+                <div class="col-12 text-right">
+                  <button class="btn btn_theme btm-sml mr-2" type="button" (click)="postReply(parentComment.id)"
+                    [disabled]="replyForm.invalid">
+                    Reply
+                  </button>
+                  <button class="btn btn-secondary btm-sml" type="button" (click)="postReplyCancel()">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+          <!--child comment-->
+          <div *ngFor="let childComment of childComments">
+            <div class="content-block p-3 ml-5 mb-3" *ngIf="parentComment.id === childComment.parentForumCommentId">
+              <div class="row">
+                <div class="col-12">
+                  <div class="row">
+                    <div class="col-12 my-auto">
+                      <button type="button" class="btn-icons btn-outline-danger float-right"
+                        (click)="deleteCommentDialog(childComment.id)"
+                        *ngIf="childComment.addedByUserDetail.platformUserId === userId ||currentUserType === userRoles[1] || (currentUserType === userRoles[7] && childComment.addedByUserDetail.platformUserId !== 1)"
+                        matTooltip="Delete" mat-button>
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                      <button type="button" class="btn-icons btn-outline-warning float-right"
+                        *ngIf="childComment.addedByUserDetail.platformUserId === userId"
+                        (click)="editDialogButton(childComment.id,childComment.comment)" matTooltip="Edit" mat-button>
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                      <span class="profile-pic float-left mr-3"></span>
+                      <div class="float-left">
+                        <h3>{{childComment.addedByUserDetail.name}}</h3> <br>
+                        <small>{{childComment.addedOn | date:'dd/MM/yyyy'}}</small>
+                      </div>
+                    </div>
+                    <div class="col-12 mt-3 mb-3">
+                      <p>
+                        {{childComment.comment}}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

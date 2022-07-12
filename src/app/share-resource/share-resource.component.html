@@ -1,0 +1,358 @@
+<mat-tab-group (selectedTabChange)="tabClicked($event)"[(selectedIndex)]="seletedTabName">
+    <mat-tab label="{{resources}}" *ngIf="readAllPermission || canBeMentor" class="tab-bodyColor">
+        <div class="content-block pt-3 pl-3 pr-3 pb-1 mb-3">
+            <button type="button" class="btn btn_theme share_btn" (click)="navigateRosource()">
+                Create Resources
+            </button>
+            <form [formGroup]="createResourceForm" novalidate autocomplete="off">
+                <div class="row filter">
+                    <div class="col-9">
+                        <div class="row filter">
+                            <div *ngIf="isSuperAdmin" class="col-4 search-form">
+                                <mat-form-field>
+                                    <mat-label>Select Tenant</mat-label>
+                                    <mat-select name="tenant" formControlName="tenant" [(ngModel)]="selectedTenantId"
+                                        (openedChange)="tenantFilter.focus()">
+                                        <div class="row dropdown-search-row">
+                                            <div class="col-10">
+                                                <input class="searchInput" #tenantFilter matInput type="text"
+                                                    autocomplete="off" placeholder="Search"
+                                                    (keyup)="search($event.target.value)">
+                                            </div>
+                                            <div class="col-2 text-right">
+                                                <button mat-button *ngIf="tenantFilter.value" matSuffix mat-icon-button
+                                                    class="clear-icon" matTooltip="Clear" matTooltipPosition="below"
+                                                    (click)="tenantFilter.value=''; search('')">
+                                                    <mat-icon>close</mat-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <mat-divider></mat-divider>
+                                        <mat-option *ngFor="let tenant of filteredTenantList" [value]="tenant.id"
+                                            (click)="getCreatedBy() ; getReviewer()">
+                                            {{tenant.tenantName}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-4">
+                                <mat-form-field>
+                                    <mat-label>Select Skill</mat-label>
+                                    <mat-select name="skill" formControlName="skill" [(ngModel)]="selectedSkillId">
+                                        <mat-option *ngFor="let skill of skillList" [value]="skill.id">
+                                            {{skill.name}}
+                                        </mat-option>
+                                        <mat-option *ngIf="!skillList.length">
+                                            --none--
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-4">
+                                <mat-form-field>
+                                    <mat-label>Created By</mat-label>
+                                    <mat-select name="createdBy" formControlName="createdBy"
+                                        [(ngModel)]="selectedCreatedBy">
+                                        <mat-option *ngFor="let createdBy of createdByList" [value]="createdBy.id">
+                                            {{createdBy.name}}
+                                        </mat-option>
+                                        <mat-option *ngIf="!createdByList.length">
+                                            --none--
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="auto col-4">
+                                <mat-form-field>
+                                    <mat-label>Reviewer</mat-label>
+                                    <mat-select name="reviewer" formControlName="reviewer"
+                                        [(ngModel)]="selectedreviewer">
+                                        <mat-option *ngFor="let reviewer of reviewerList" [value]="reviewer.id">
+                                            {{reviewer.name}}
+                                        </mat-option>
+                                        <mat-option *ngIf="!reviewerList.length">--none--</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3 text-center mt-sm-2">
+                        <button name="search" class="btn btn_theme sml-btn"
+                            (click)='getAllResources()'>Filter</button>
+                        <button name="search" class="btn btn btn-secondary sml-btn ml-2"
+                            (click)='resetFilter()'>Reset</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="content-block mt-3 pt-1 pb-1">
+            <table mat-table [dataSource]="resourcesTabData" #resourcesTabSort="matSort" matSort class="table">
+                <ng-container *ngIf="isSuperAdmin" matColumnDef="tenant">
+                    <th mat-header-cell *matHeaderCellDef> Tenant </th>
+                    <td mat-cell *matCellDef="let element"> {{element.tenant}} </td>
+                </ng-container>
+                <ng-container matColumnDef="resourceTitle">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Resource Title </th>
+                    <td mat-cell *matCellDef="let element"> {{element.resourceTitle}} </td>
+                </ng-container>
+                <ng-container matColumnDef="resourceType">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Resource Type </th>
+                    <td mat-cell *matCellDef="let element"> {{element.resourceType}} </td>
+                </ng-container>
+                <ng-container matColumnDef="skill">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Skill </th>
+                    <td mat-cell *matCellDef="let element"> {{element.skill}} </td>
+                </ng-container>
+                <ng-container matColumnDef="createdby">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Created By </th>
+                    <td mat-cell *matCellDef="let element"> {{element.createdby}} </td>
+                </ng-container>
+                <ng-container matColumnDef="download">
+                    <th mat-header-cell *matHeaderCellDef> Download </th>
+                    <td mat-cell *matCellDef="let element">
+                        <button type="button" class="btn-icons btn-outline-theme"
+                            *ngIf="element.resourceType!=='Assessment'" (click)="downloadResource(element)" mat-button>
+                            <mat-icon>get_app</mat-icon>
+                        </button>
+                        <span style="margin-left: 15px;" *ngIf="element.resourceType==='Assessment'">-</span>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="reviewer">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Reviewer </th>
+                    <td mat-cell *matCellDef="let element"> {{element.reviewer}} </td>
+                </ng-container>
+                <ng-container matColumnDef="action">
+                    <th mat-header-cell *matHeaderCellDef> Action </th>
+                    <td mat-cell *matCellDef="let element">
+                        <li class="lst">
+                            <a class="a_link" *ngIf="(element.reviewer !== '-')"
+                                (click)="openViewResourceShareDetails(element)">
+                                View,
+                            </a>
+                            <a class="a_link" (click)="openShareResourcePopup(element.resourceId)">Share</a>
+                        </li>
+                    </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumnsForResourcesTab"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumnsForResourcesTab;"></tr>
+            </table>
+            <div *ngIf="resourcesTabData && !resourcesTabData.data.length" class="empty p-4 text-center">
+                <p class="mb-3">No Data Found</p>
+            </div>
+            <mat-paginator [length]="resourcesTabData?.data.length" #resourcesTabPaginator
+                [pageSizeOptions]="[10, 20, 30, 40, 50]" showFirstLastButtons></mat-paginator>
+        </div>
+    </mat-tab>
+
+    <mat-tab label="{{trackResources}}" *ngIf="readAllPermission" class="tab-bodyColor">
+        <div class="row mt-2">
+            <!-- For Super Admin -->
+            <div class="col-3" *ngIf="isSuperAdmin">
+                <mat-form-field>
+                    <mat-label>Select Tenant</mat-label>
+                    <mat-select name="tenant" [(ngModel)]="tenantId" (openedChange)="tenantFilter.focus()">
+                        <div class="row dropdown-search-row">
+                            <div class="col-10">
+                                <input class="searchInput" #tenantFilter matInput type="text" autocomplete="off"
+                                    placeholder="Search" (keyup)="search($event.target.value)">
+                            </div>
+                            <div class="col-2 text-right">
+                                <button mat-button *ngIf="tenantFilter.value" matSuffix mat-icon-button
+                                    class="clear-icon" matTooltip="Clear" matTooltipPosition="below"
+                                    (click)="tenantFilter.value=''; search('')">
+                                    <mat-icon>close</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                        <mat-divider></mat-divider>
+                        <mat-option *ngFor="let tenant of filteredTenantList" [value]="tenant.id"
+                            (click)="getTrackResourceDetails(tenant.id)">
+                            {{tenant.tenantName}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="content-block mt-3 pt-1 pb-1">
+            <table mat-table [dataSource]="resourceTrackingData" #resourceTrackingSort="matSort" matSort class="table">
+                <ng-container matColumnDef="resourceTitle">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Resource Name </th>
+                    <td mat-cell *matCellDef="let element"> {{element.resourceTitle}} </td>
+                </ng-container>
+                <ng-container matColumnDef="type">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Type of Resource </th>
+                    <td mat-cell *matCellDef="let element"> {{element.type}} </td>
+                </ng-container>
+                <ng-container matColumnDef="createdBy">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Created By </th>
+                    <td mat-cell *matCellDef="let element"> {{element.createdByUserDetail.name}} </td>
+                </ng-container>
+                <ng-container matColumnDef="createdDate">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Created Date </th>
+                    <td mat-cell *matCellDef="let element"> {{element.createdDate | date:'d/M/yyyy'}} </td>
+                </ng-container>
+                <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
+                    <td mat-cell *matCellDef="let element"> {{element.status}}</td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumnsForResourceTracking"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumnsForResourceTracking;"></tr>
+            </table>
+            <mat-paginator [length]="resourceTrackingData?.data.length" #resourceTrackingPaginator
+                [pageSizeOptions]="[5, 10, 20, 30, 40, 50]" showFirstLastButtons></mat-paginator>
+        </div>
+    </mat-tab>
+
+    <mat-tab label="{{Assignments}}" class="tab-bodyColor" *ngIf="canBeMentee">
+        <div class="content-block mt-3 pt-1 pb-1">
+            <table mat-table [dataSource]="dataSourceTableForMenteeAssignment" #assignmentSort="matSort" matSort
+                class="table">
+                <ng-container matColumnDef="assignmentTitle">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Assesment Title</th>
+                    <td mat-cell *matCellDef="let element"> {{element.assignmentTitle}} </td>
+                </ng-container>
+                <ng-container matColumnDef="skill">
+                    <th mat-header-cell *matHeaderCellDef>Skill</th>
+                    <td mat-cell *matCellDef="let element"> {{element.skill}} </td>
+                </ng-container>
+                <ng-container matColumnDef="trainer">
+                    <th mat-header-cell *matHeaderCellDef> Trainer </th>
+                    <td mat-cell *matCellDef="let element"> {{element.trainer}} </td>
+                </ng-container>
+                <ng-container matColumnDef="dueDate">
+                    <th mat-header-cell *matHeaderCellDef> Due Date </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{element.dueDate == null ? '-' : element.dueDate | date:'dd/MM/yy'}} </td>
+                </ng-container>
+                <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef>Status </th>
+                    <td mat-cell *matCellDef="let element"> {{element.status}} </td>
+                </ng-container>
+                <ng-container matColumnDef="downloadDocument">
+                    <th mat-header-cell *matHeaderCellDef> Download </th>
+                    <td mat-cell *matCellDef="let element">
+                        <button type="button" class="btn-icons btn-outline-theme" mat-button
+                            (click)="downloadResource(element)">
+                            <mat-icon>get_app</mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="action">
+                    <th mat-header-cell *matHeaderCellDef>Action </th>
+                    <td mat-cell *matCellDef="let element">
+                        <button class="btn btn_theme" (click)="uploadAssignment(element)">
+                            Upload
+                        </button>
+                    </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumnsForTraineeAssignment"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumnsForTraineeAssignment;"></tr>
+            </table>
+            <div *ngIf="dataSourceTableForMenteeAssignment && !dataSourceTableForMenteeAssignment.data.length"
+                class="empty text-center">
+                <p>No Records Found</p>
+            </div>
+            <mat-paginator [length]="dataSourceTableForMenteeAssignment?.data.length" #assignmentPaginator
+                [pageSizeOptions]="[10, 20, 30, 40, 50]" showFirstLastButtons></mat-paginator>
+        </div>
+    </mat-tab>
+
+    <mat-tab label="{{Assessment}}" class="tab-bodyColor" *ngIf="canBeMentee">
+        <div class="content-block mt-3 pt-1 pb-1">
+            <table mat-table [dataSource]="dataSourceTableForMenteeAssessnment" #assessmentSort="matSort" matSort
+                class="table">
+                <ng-container matColumnDef="assessmentTitle">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Title </th>
+                    <td mat-cell *matCellDef="let element"> {{element.assessmentTitle}} </td>
+                </ng-container>
+                <ng-container matColumnDef="skill">
+                    <th mat-header-cell *matHeaderCellDef>Skill </th>
+                    <td mat-cell *matCellDef="let element"> {{element.skill}} </td>
+                </ng-container>
+                <ng-container matColumnDef="trainer">
+                    <th mat-header-cell *matHeaderCellDef> Trainer </th>
+                    <td mat-cell *matCellDef="let element"> {{element.trainer}} </td>
+                </ng-container>
+                <ng-container matColumnDef="completedOn">
+                    <th mat-header-cell *matHeaderCellDef> Completed On </th>
+                    <td mat-cell *matCellDef="let element">{{element.progressJson?.RecommendationJson?.end}} </td>
+                </ng-container>
+                <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef>Status </th>
+                    <td mat-cell *matCellDef="let element"> {{element.status}} </td>
+                </ng-container>
+                <ng-container matColumnDef="noOfAttempt">
+                    <th mat-header-cell *matHeaderCellDef> No of Attempt </th>
+                    <td mat-cell *matCellDef="let element"> {{element.progressJson?.RecommendationJson?.noOfAttempts}}</td>
+                </ng-container>
+                <ng-container matColumnDef="url">
+                    <th mat-header-cell *matHeaderCellDef>Url </th>
+                    <td mat-cell *matCellDef="let element">
+                        <button class="btn-icons btn-outline-warning mr-2" matTooltip="pageview" type="button"
+                            mat-button (click)="openAssessmentUrl(element)">
+                            <mat-icon class="page-view">pageview</mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumnsForAssessment"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumnsForAssessment;"></tr>
+            </table>
+            <div *ngIf="dataSourceTableForMenteeAssessnment && !dataSourceTableForMenteeAssessnment.data.length"
+                class="empty text-center">
+                <p>No Records Found</p>
+            </div>
+            <mat-paginator [length]="dataSourceTableForMenteeAssessnment?.data.length" #assessmentPaginator
+                [pageSizeOptions]="[10, 20, 30, 40, 50]" showFirstLastButtons></mat-paginator>
+        </div>
+    </mat-tab>
+
+    <mat-tab label="{{ReadingMaterial}}" class="tab-bodyColor" *ngIf="canBeMentee">
+        <div class="content-block mt-3 pt-1 pb-1">
+            <table mat-table [dataSource]="dataSourceTableForMenteeReadingMaterial" #readingMaterialSort="matSort"
+                matSort class="table">
+                <ng-container matColumnDef="readingMaterialTitle">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Title </th>
+                    <td mat-cell *matCellDef="let element"> {{element.readingMaterialtitle}} </td>
+                </ng-container>
+                <ng-container matColumnDef="skill">
+                    <th mat-header-cell *matHeaderCellDef>Skill </th>
+                    <td mat-cell *matCellDef="let element"> {{element.skill}} </td>
+                </ng-container>
+                <ng-container matColumnDef="trainer">
+                    <th mat-header-cell *matHeaderCellDef> Trainer </th>
+                    <td mat-cell *matCellDef="let element"> {{element.trainer}} </td>
+                </ng-container>
+                <ng-container matColumnDef="sendOn">
+                    <th mat-header-cell *matHeaderCellDef> Sent On </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{element.sendOn == null ? '-' : element.sendOn | date:'dd/MM/yy'}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="downlodedOn">
+                    <th mat-header-cell *matHeaderCellDef> Download On </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{element.downlodedOn == null ? '-' : element.downlodedOn | date:'dd/MM/yy'}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="documentDownloded">
+                    <th mat-header-cell *matHeaderCellDef>Downloaded </th>
+                    <td mat-cell *matCellDef="let element">
+                        <button type="button" class="btn-icons btn-outline-theme" mat-button
+                            (click)="downloadResource(element)">
+                            <mat-icon>get_app</mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumnsForTraineeReadingMaterial"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumnsForTraineeReadingMaterial;"></tr>
+            </table>
+            <div *ngIf="dataSourceTableForMenteeReadingMaterial && !dataSourceTableForMenteeReadingMaterial.data.length"
+                class="empty text-center">
+                <p>No Records Found</p>
+            </div>
+            <mat-paginator [length]="dataSourceTableForMenteeReadingMaterial?.data.length" #readingMaterialPaginator
+                [pageSizeOptions]="[10, 20, 30, 40, 50]" showFirstLastButtons></mat-paginator>
+        </div>
+    </mat-tab>
+</mat-tab-group>
+<router-outlet></router-outlet>

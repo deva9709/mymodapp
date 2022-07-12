@@ -1,0 +1,51 @@
+.search-form {
+    position: relative;
+}
+
+.search-form .btn-icons {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    z-index: 5;
+}
+
+.blog-posts .thumbnail {
+    max-width: 250px;
+    max-height: 250px;
+}
+
+.blog-posts .thumbnail .blog-thumbnail {
+    max-width: 235px;
+    max-height: 250px;
+}
+
+.popular-topics .topic-thumbnail {
+    max-width: 100px;
+    max-height: 75px;
+}
+
+.blog-posts li, .popular-topics li {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 15px 0;
+    border-bottom: 1px solid #e2e2e2;
+}
+
+.blog-posts li:first-child, .popular-topics li:first-child {
+    padding: 0 0 15px 0;
+}
+
+.blog-posts li:after, .popular-topics li:after {
+    content: " ";
+    clear: both;
+    display: table;
+}
+
+.popular-topics li small {
+    opacity: 0.4;
+}
+
+::ng-deep .blog-posts .blog-contents img {
+    display: none;
+}

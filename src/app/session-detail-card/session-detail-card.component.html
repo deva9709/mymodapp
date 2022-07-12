@@ -1,0 +1,257 @@
+<div class="content-block" *ngIf="isSessionCardViewEnabled">
+  <div class="content-header">
+    <b>{{session.sessionTitle}}</b>
+    <div class="more-options" *ngIf="showModifyCancelSession && !isSuperAdmin && !isTrainerTrainee">
+      <button mat-icon-button [matMenuTriggerFor]="menu" class="mb-1">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu" >
+        <button mat-menu-item (click)="reScheduleSession(session)">
+          <span>Reschedule</span>
+        </button>
+        <button mat-menu-item (click)="cancelSession(session)">
+          <span>Cancel</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+  <div class="content-body">
+    <div class="row">
+      <div class="col-5 mb-1 text-right">
+        <b>Session Type:</b>
+      </div>
+      <div class="col-7 mb-1">
+        {{sessionType[session.sessionType]}}
+      </div>
+      <div class="col-5 mb-1 text-right">
+        <b>Trainer Name:</b>
+      </div>
+      <div class="col-7 mb-1">
+        {{session.participants[0].participantUser.name}}
+      </div>
+      <div class="col-5 mb-1 text-right" *ngIf="session.participantCount>1">
+        <b>No of Trainees:</b>
+      </div>
+      <div class="col-7 mb-1" *ngIf="session.participantCount>1">
+        {{session.participantCount - 1}}
+      </div>
+      <div class="col-5 mb-1 text-right">
+        <b>Start Date Time:</b>
+      </div>
+      <div class="col-7 mb-1">
+        {{session.startDate | date:'d/M/yyyy, h:mm a'}}
+      </div>
+      <div class="col-5 mb-1 text-right">
+        <b>End Date Time:</b>
+      </div>
+      <div class="col-7 mb-1">
+        {{session.endDate | date:'d/M/yyyy, h:mm a'}}
+      </div>
+    </div>
+  </div>
+  <!-- Upcoming session actions -->
+  <div class="content-footer"
+    *ngIf="session.sessionStatus === sessionStatus.Scheduled || session.sessionStatus === sessionStatus.InProgress">
+    <div class="flex-action-bar">
+      <div class="btn-holder" *ngIf="session.sessionType != sessionType.Webinar">
+        <button type="button" class="btn sml-btn btn_theme"
+          (click)="session.isMentee ? viewAssignments(session) : viewMore(session.sessionScheduleId)">
+          View More
+        </button>
+      </div>
+      <div class="btn-custom-tooltip-holder"
+        [ngClass]="session.sessionType == sessionType.Webinar ? 'col-12 text-right' : 'action-holder'"
+        *ngIf="isSuperAdmin">
+        <button type="button" *ngIf="session.sessionType != sessionType.Webinar" class="btn-icons btn-outline-warning "
+          (click)="newPoll(session)">
+          <mat-icon matTooltip="Create poll">poll</mat-icon>
+        </button>
+        <button type="button" *ngIf="session.sessionType != sessionType.Webinar" class="btn-icons btn-outline-warning "
+          (click)="viewPollsAnalysisList(session.sessionScheduleId)">
+          <mat-icon matTooltip="Analysis poll">pie_chart</mat-icon>
+        </button>
+        <button type="button" *ngIf="session.sessionType != sessionType.Webinar" class="btn-icons btn-outline-warning "
+          (click)="copyUrl(session.sessionUrl,false)">
+          <mat-icon matTooltip="Integration URL">file_copy</mat-icon>
+        </button>
+        <button type="button" class="btn-icons btn-outline-theme" (click)="copyUrl(session.sessionUrl,true)">
+          <mat-icon matTooltip="MOD URL">file_copy</mat-icon>
+        </button>
+        <button type="button" *ngIf="session.sessionType != sessionType.Webinar&& canGuestJoinSession(session)"
+          class="btn-icons btn-outline-warning" matTooltip="Copy Guest join session link"
+          (click)="copyGuestSessionJoinLink(session)">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+        <label *ngIf="msgHideAndShow" class="btn-custom-tooltip">{{textMessage}}</label>
+      </div>
+      <div *ngIf="session.isMentor || session.isMentee">
+        <button type="button" class="btn sml-btn btn_theme" (click)="joinSession(session)"
+          *ngIf="canJoinSession(session)">
+          Join
+        </button>
+      </div>
+      <!-- for generating guest user session url  -->
+      <div class="btn-custom-tooltip-holder"
+        *ngIf="session.sessionType != sessionType.Webinar&& canGuestJoinSession(session) && !isSuperAdmin && !session.isMentee">
+        <button type="button" class="btn-icons btn-outline-warning" matTooltip="Copy Guest join session link"
+          (click)="copyGuestSessionJoinLink(session)">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+        <label *ngIf="msgHideAndShow" class="btn-custom-tooltip">{{textMessage}}</label>
+      </div>
+    </div>
+  </div>
+  <!-- Completed session actions -->
+  <div class="content-footer" *ngIf="session.sessionStatus === sessionStatus.Completed">
+    <div class="row">
+      <div class="col-5" *ngIf="!isSuperAdmin">
+        <button type="button" class="btn sml-btn btn_theme"
+          (click)="session.isMentee ? viewAssignments(session) : viewReviewAssignments(session.sessionScheduleId)">
+          Assignments
+        </button>
+      </div>
+      <div class="col-5">
+        <button type="button" class="btn sml-btn btn_theme" (click)="addAttendance()">
+          Attendance
+        </button>
+      </div>
+      <div [ngClass]="isSuperAdmin ? 'col-12 text-right' : 'col-7 text-right'">
+        <button type="button" class="btn-icons btn-outline-warning mr-2" matTooltip="Join session"
+          (click)="joinSession(session)" *ngIf="(session.isMentor || session.isMentee) && canJoinSession(session)">
+          <mat-icon>group_add</mat-icon>
+        </button>
+        <!-- Disabling recording option for absentees -->
+        <button type="button" class="btn-icons btn-outline-warning mr-2" matTooltip="Request recording"
+          *ngIf='(absentees === attendanceStatus) && (session.isMentee); else:elseBlock'
+          (click)="sendRecordingRequest()">
+          <mat-icon>rate_review</mat-icon>
+        </button>
+        <ng-template #elseBlock>
+          <button type="button" class="btn-icons btn-outline-warning mr-2" matTooltip="Session recording(s)"
+              (click)="viewPlayBack(session)">
+              <mat-icon>play_arrow</mat-icon>
+            </button>
+        </ng-template>
+        <button type="button" class="btn-icons btn-outline-warning mr-2" matTooltip="Poll"
+          (click)="viewPollsAnalysisList(session.sessionScheduleId)">
+          <mat-icon>pie_chart</mat-icon>
+        </button>
+        <button type="button" class="btn-icons btn-outline-warning mr-2" matTooltip="Rating"
+          (click)="viewFeedback(session.sessionScheduleId)">
+          <mat-icon>star</mat-icon>
+        </button>
+        <button type="button" class="btn-icons btn-outline-warning mr-2" matTooltip="Attendance"
+          (click)="downloadAttendance(session)" *ngIf="this.currentUserRole != 'TRAINEE'">
+          <mat-icon>groups</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="content-block" *ngIf="isApprovalCardViewEnabled">
+  <div class="content-header">
+    <b>{{approval.sessionTitle}}</b>
+  </div>
+  <div class="content-body">
+    <div class="row">
+      <div class="col-5 mb-1 text-right">
+        <b>Approval Status:</b>
+      </div>
+      <div class="col-7 mb-1">
+        <b>{{recordingApprovalStatus[recordingApproval.recordingApprovalStatus]}}</b>
+      </div>
+      <!-- <div class="col-5 mb-1 text-right">
+        <b>Trainer Name:</b>
+      </div>
+      <div class="col-7 mb-1">
+        {{approval.trainerName}}
+      </div> -->
+      <!-- <div class="col-5 mb-1 text-right">
+        <b>No of Trainees:</b>
+      </div>
+      <div class="col-7 mb-1">
+        {{approval.traineeCount}}
+      </div> -->
+      <div class="col-5 mb-1 text-right">
+        <b>Start Date Time:</b>
+      </div>
+      <div class="col-7 mb-1">
+        {{recordingApproval.createdDate}}
+      </div>
+      <div class="col-5 mb-1 text-right">
+        <b>End Date Time:</b>
+      </div>
+      <div class="col-7 mb-1">
+        {{recordingApproval.endDate }}
+      </div>
+    </div>
+  </div>
+  <div class="content-footer">
+    <div class="row col-12">
+      <!-- <div class="col-5">
+        <button type="button" class="btn btn-sm btn_theme" (click)="viewMoreApprovalDetails()">
+          View more
+        </button>
+      </div> -->
+      <div class="col-7 text-right">
+        <!-- <button type="button" class="btn btn-sm btn-success"
+          *ngIf="sessionApprovalStatus[approval.sessionApprovalStatus] === sessionApprovalStatus[1]">
+          Approved
+        </button>
+        <button type="button" class="btn btn-sm btn-danger"
+          *ngIf="sessionApprovalStatus[approval.sessionApprovalStatus] === sessionApprovalStatus[3]">
+          Rejected
+        </button>
+        <button type="button" class="btn btn-sm btn-warning"
+          *ngIf="sessionApprovalStatus[approval.sessionApprovalStatus] === sessionApprovalStatus[4]">
+          Time Out
+        </button> -->
+        <div
+          *ngIf="recordingApprovalStatus[recordingApproval.recordingApprovalStatus] == recordingApprovalStatus[1]">
+          <button type="button" class="btn-icons btn-outline-theme ml-2" matTooltip="Approve" (click)="approveRecording()">
+            <mat-icon>check</mat-icon>
+          </button>
+          <button type="button" class="btn-icons btn-outline-danger ml-2" matTooltip="Reject" (click)="reject()">
+            <mat-icon>clear</mat-icon>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="content-block" *ngIf="isRecordringCardViewApproval">
+  <div class="content-body">
+    <div class="row">
+      <div class="col-5 mb-1 text-right">
+        <b>Approval Status:</b>
+      </div>
+      <div class="col-7 mb-1">
+        <b>{{recordingApprovalStatus[recordingApproval.recordingApprovalStatus]}}</b>
+      </div>
+      <div class="col-5 mb-1 text-right">
+        <b>Trainer Name:</b>
+      </div>
+      <div class="col-7 mb-1">
+        {{recordingApproval.trainerName}}
+      </div>
+      
+    </div>
+  </div>
+  <div class="content-footer">
+    <div class="row col-12">
+      <div class="col-7 text-right">
+        <div
+          *ngIf="recordingApprovalStatus[recordingApproval.recordingApprovalStatus] == recordingApprovalStatus[1]">
+          <button type="button" class="btn-icons btn-outline-theme ml-2" matTooltip="Approve" (click)="approveRecording()">
+            <mat-icon>check</mat-icon>
+          </button>
+          <button type="button" class="btn-icons btn-outline-danger ml-2" matTooltip="Reject" (click)="reject()">
+            <mat-icon>clear</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

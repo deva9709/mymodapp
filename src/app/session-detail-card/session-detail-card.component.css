@@ -1,0 +1,56 @@
+.content-block .content-header .more-options {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.content-block .content-header b {
+    display: inline-block;
+    margin-right: 20px;
+}
+.flex-action-bar {
+    display: flex;
+    justify-content: space-between;
+}
+.flex-action-bar .btn-holder {
+    width: 100px;
+}
+.flex-action-bar .btn-holder .btn{
+    max-width: 100% !important;
+    min-width: 100% !important;
+}
+.flex-action-bar .action-holder {
+    display: inline-flex;
+    width: calc(100% - 120px);
+    justify-content: flex-end;
+}
+.flex-action-bar .action-holder .btn-icons {
+    margin-left: 10px;
+}
+
+.btn-custom-tooltip-holder {
+    position: relative;
+}
+
+.btn-custom-tooltip-holder .btn-custom-tooltip  {
+    position: absolute;
+    top: 48px;
+    right: 0px;
+    width: 100px;
+    background-color: #333333;
+    color: #ffffff;
+    border-radius: 4px;
+    padding: 5px;
+    text-align: center;
+}
+
+.btn-custom-tooltip-holder .btn-custom-tooltip:before {
+    content: '';
+    width: 0px;
+    height: 0px;
+    border: solid 10px transparent;
+    border-bottom-color: #333333;
+    position: absolute;
+    top: -18px;
+    right: 10px;
+}

@@ -1,0 +1,583 @@
+<div class="session-list">
+    <mat-tab-group [(selectedIndex)]="seletedTabName">
+        <mat-tab label="Upcoming">
+            <div class="content-block p-3 mb-3 mt-3">
+                <form novalidate [formGroup]="upcomingFilterForm" autocomplete="off">
+                    <div class="row filter">
+                        <div class="col-3 search-form">
+                            <mat-form-field>
+                                <input matInput type="text" maxLength="100" name="searchWord" placeholder="Search Title"
+                                    formControlName="searchWord"
+                                    (keyup)="filterByUpcomingSessionName($event.target.value)">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3">
+                            <mat-form-field>
+                                <input matInput [min]="upcomingSessionStartMinDate" [matDatepicker]="upcomingStartDate"
+                                    placeholder="Start Date" formControlName="startDate" readonly
+                                    (click)="upcomingStartDate.open()"
+                                    (dateChange)="onUpcomingSessionFilterDateChange($event.value)" />
+                                <mat-datepicker-toggle matSuffix [for]="upcomingStartDate"></mat-datepicker-toggle>
+                                <mat-datepicker #upcomingStartDate disabled="false"></mat-datepicker>
+                                <mat-error *ngIf="upcomingFilterForm.get('startDate').errors?.required">
+                                    {{scheduleFormValidationMessages.startDateRequired}}</mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3">
+                            <mat-form-field>
+                                <input matInput [min]="upcomingSessionEndMinDate" [matDatepicker]="upcomingEndDate"
+                                    placeholder="End Date" formControlName="endDate" readonly
+                                    (click)="upcomingEndDate.open()" />
+                                <mat-datepicker-toggle matSuffix [for]="upcomingEndDate"></mat-datepicker-toggle>
+                                <mat-datepicker #upcomingEndDate disabled="false"></mat-datepicker>
+                                <mat-error *ngIf="upcomingFilterForm.get('endDate').errors?.required">
+                                    {{scheduleFormValidationMessages.endDateRequired}}</mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3 my-auto">
+                            <button class="btn btn_theme sml-btn mr-4" type="button" (click)="upcomingFilterData()"
+                                [disabled]="!upcomingFilterForm.valid">
+                                Filter
+                            </button>
+                            <button class="btn btn btn-secondary sml-btn" type="button"
+                                (click)="resetUpcomingSessionFilter()">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="row mt-3 session-lists">
+                <div class="col3 col4" *ngFor="let session of upcomingObservable | async">
+                    <app-session-detail-card [session]="session" (loadUpcomingTab)="getUpcomingSessionList()">
+                    </app-session-detail-card>
+                </div>
+            </div>
+            <div *ngIf="upcomingDataSource && !upcomingDataSource.data.length" class="empty p-4 text-center">
+                <p class="mb-3">No Records Found</p>
+            </div>
+            <mat-paginator [length]="upcomingDataSource?.data.length" #upComingPaginator [pageSize]="12"
+                [pageSizeOptions]="[12, 24, 36, 48, 60]" showFirstLastButtons>
+            </mat-paginator>
+        </mat-tab>
+        <mat-tab label="Completed">
+            <div class="content-block p-3 mb-3 mt-3">
+                <form novalidate [formGroup]="completedFilterForm" autocomplete="off">
+                    <div class="row filter">
+                        <div class="col-3 search-form">
+                            <mat-form-field>
+                                <input matInput type="text" maxLength="100" name="searchWord" placeholder="Search Title"
+                                    formControlName="searchWord"
+                                    (keyup)="filterByCompletedSessionName($event.target.value)">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3">
+                            <mat-form-field>
+                                <input matInput [matDatepicker]="completedStartDate" placeholder="Start Date"
+                                    [max]="completedSessionstartMaxDate" formControlName="startDate" readonly
+                                    (click)="completedStartDate.open()"
+                                    (dateChange)="onCompletedSessionFilterDateChange($event.value)" />
+                                <mat-datepicker-toggle matSuffix [for]="completedStartDate"></mat-datepicker-toggle>
+                                <mat-datepicker #completedStartDate disabled="false"></mat-datepicker>
+                                <mat-error *ngIf="completedFilterForm.get('startDate').errors?.required">
+                                    {{scheduleFormValidationMessages.startDateRequired}}</mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3">
+                            <mat-form-field>
+                                <input matInput [min]="completedSessionendMinDate" [max]="completedSessionendMaxDate"
+                                    [matDatepicker]="completedEndDate" placeholder="End Date" formControlName="endDate"
+                                    readonly (click)="completedEndDate.open()" />
+                                <mat-datepicker-toggle matSuffix [for]="completedEndDate"></mat-datepicker-toggle>
+                                <mat-datepicker #completedEndDate disabled="false"></mat-datepicker>
+                                <mat-error *ngIf="completedFilterForm.get('endDate').errors?.required">
+                                    {{scheduleFormValidationMessages.endDateRequired}}</mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3 my-auto">
+                            <button class="btn btn_theme sml-btn mr-4" type="button" (click)="completedFilterData()"
+                                [disabled]="!completedFilterForm.valid">
+                                Filter
+                            </button>
+                            <button class="btn btn btn-secondary sml-btn" type="button"
+                                (click)="resetCompletedSessionFilter()">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="row mt-3 session-lists">
+                <div class="col3 col4 mb-4" *ngFor="let session of completedObservable | async">
+                    <app-session-detail-card [session]="session" (loadCompletedTab)="getCompletedSessionList()">
+                    </app-session-detail-card>
+                </div>
+            </div>
+            <div *ngIf="completedDataSource && !completedDataSource.data.length" class="empty p-4 text-center">
+                <p class="mb-3">No Records Found</p>
+            </div>
+            <mat-paginator [length]="completedDataSource?.data.length" #completedPaginator [pageSize]="12"
+                [pageSizeOptions]="[12, 24, 36, 48, 60]" showFirstLastButtons>
+            </mat-paginator>
+        </mat-tab>
+        <mat-tab label="Webinar">
+            <div class="content-block p-3 mb-3 mt-3">
+                <form novalidate [formGroup]="webinarFilterForm" autocomplete="off">
+                    <div class="row filter">
+                        <div class="col-3 search-form">
+                            <mat-form-field>
+                                <input matInput type="text" maxLength="100" name="searchWord" placeholder="Search Title"
+                                    formControlName="searchWord"
+                                    (keyup)="filterByCompletedSessionName($event.target.value)">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3">
+                            <mat-form-field>
+                                <input matInput [matDatepicker]="webinarStartDate" placeholder="Start Date"
+                                    [min]="webinarSessionStartMinDate" formControlName="startDate" readonly
+                                    (click)="webinarStartDate.open()"
+                                    (dateChange)="onWebinarSessionFilterDateChange($event.value)" />
+                                <mat-datepicker-toggle matSuffix [for]="webinarStartDate"></mat-datepicker-toggle>
+                                <mat-datepicker #webinarStartDate disabled="false"></mat-datepicker>
+                                <mat-error *ngIf="webinarFilterForm.get('startDate').errors?.required">
+                                    {{scheduleFormValidationMessages.startDateRequired}}</mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3">
+                            <mat-form-field>
+                                <input matInput [min]="webinarSessionEndMinDate" [matDatepicker]="webinarEndDate"
+                                    placeholder="End Date" formControlName="endDate" readonly
+                                    (click)="webinarEndDate.open()" />
+                                <mat-datepicker-toggle matSuffix [for]="webinarEndDate"></mat-datepicker-toggle>
+                                <mat-datepicker #webinarEndDate disabled="false"></mat-datepicker>
+                                <mat-error *ngIf="webinarFilterForm.get('endDate').errors?.required">
+                                    {{scheduleFormValidationMessages.endDateRequired}}</mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3 my-auto">
+                            <button class="btn btn_theme sml-btn mr-4" type="button" (click)="webinarFilterData()"
+                                [disabled]="!webinarFilterForm.valid">
+                                Filter
+                            </button>
+                            <button class="btn btn btn-secondary sml-btn" type="button"
+                                (click)="resetWebinarSessionFilter()">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="row mt-3 session-lists">
+                <div class="col3 col4 mb4" *ngFor="let session of webinarObservable | async">
+                    <app-session-detail-card [session]="session" (loadWebinarTab)="getWebinarList()">
+                    </app-session-detail-card>
+                </div>
+            </div>
+            <div *ngIf="webinarDataSource && !webinarDataSource.data.length" class="empty p-4 text-center">
+                <p class="mb-3">No Records Found</p>
+            </div>
+            <mat-paginator [length]="webinarDataSource?.data.length" #webinarPaginator [pageSize]="12"
+                [pageSizeOptions]="[12, 24, 36, 48, 60]" showFirstLastButtons>
+            </mat-paginator>
+        </mat-tab>
+        <mat-tab *ngIf="createPermission && !isTrainerTrainee" label="Create New Session">
+            <div class="container-fluid">
+                <div class="content-block p-3 mt-3 mb-3">
+                    <form novalidate [formGroup]="scheduleForm" autocomplete="off">
+                        <div class="content-body">
+                            <div class="row">
+                                <div class="col-4 mb-3">
+                                    <mat-form-field>
+                                        <input matInput placeholder="Session Title" formControlName="sessionTitle" />
+                                        <mat-error *ngIf="scheduleForm.get('sessionTitle').errors?.required">
+                                            {{scheduleFormValidationMessages.sessionTitleRequired}}</mat-error>
+                                        <mat-error
+                                            *ngIf="!scheduleForm.get('sessionTitle').errors?.required && scheduleForm.get('sessionTitle').errors?.whitespace">
+                                            {{scheduleFormValidationMessages.sessionTitleWhiteSpace}}</mat-error>
+                                        <mat-error
+                                            *ngIf="!scheduleForm.get('sessionTitle').errors?.required && scheduleForm.get('sessionTitle').errors?.maxlength">
+                                            {{scheduleFormValidationMessages.sessionTitleMaxLimit}}</mat-error>
+                                    </mat-form-field>
+                                </div>
+                                <!-- Select Webinar -->
+                                <div class="col-1 ">
+                                    <mat-checkbox (change)="webinar($event)" [(ngModel)]="webinarStatus"
+                                        [ngModelOptions]="{standalone: true}">Webinar</mat-checkbox>
+                                </div>
+                                <!-- External Trainers -->
+                                <div class="col-2 ">
+                                    <mat-checkbox (change)="externalTrainer($event)" [(ngModel)]="externalTrainerStatus"
+                                        [ngModelOptions]="{standalone: true}">Use External Trainers</mat-checkbox>
+                                </div>
+                                <!-- Outsource External Trainers -->
+                                <div class="col-2 ">
+                                    <mat-checkbox (change)="outSourceExternalTrainer($event)"
+                                        [(ngModel)]="outSourceExternalTrainerStatus"
+                                        [ngModelOptions]="{standalone: true}">Use Outsource Trainers</mat-checkbox>
+                                </div>
+                                <div class="col-2 ">
+                                    <a> <button class="btn btn_theme batch-create batch-create-button"
+                                            (click)="gotoBatchCreatePage()" type="submit"
+                                            [disabled]="!createBatchPermission">Create Batch</button></a>
+                                </div>
+                                <!-- Select skills -->
+                                <div class="col-4 mb-3">
+                                    <ng-multiselect-dropdown [placeholder]="'Select Skills'" [data]="skillList"
+                                        [(ngModel)]="selectedSkill" [settings]="skillDropdownSettings"
+                                        (onSelect)="onSkillSelect($event)" (onDeSelect)="onSkillDeSelect($event)"
+                                        (onSelectAll)="onSkillSelectAll($event)"
+                                        (onDeSelectAll)="onDeselectSkillAll($event)" formControlName="selectedSkill">
+                                    </ng-multiselect-dropdown>
+                                </div>
+                                <div>
+                                    <button class="btn-icons bttn add_bt material-icons icon-theme" type="button"
+                                        (click)="addSkill()" mat-button>
+                                        <mat-icon style="font-size: 20px;" matTooltip="Add  Skills">add</mat-icon>
+                                    </button>
+                                </div>
+                                <!-- Select mentor outSourceTrainer -->
+                                <div class="col-4 mb-3">
+                                    <mat-form-field>
+                                        <!-- <mat-label>Pokemon</mat-label> -->
+                                        <mat-select placeholder="Select Trainer" formControlName="selectedMentor"
+                                            (selectionChange)="onMentorSelect($event.value)">
+                                            <mat-option>-- None --</mat-option>
+                                            <mat-optgroup *ngFor="let mentor of mentors" [label]="mentor.tenantName">
+                                                <mat-option *ngFor="let details of mentor.mentorDetails"
+                                                    [value]="details.platformUserId" (click)="filterMentees(details)">
+                                                    {{details.name}}<span class="ml-1"
+                                                        *ngIf="details?.externalTrainer && details?.tenant.id==currentTenantId">
+                                                        <mat-chip color="primary" selected>Ext</mat-chip>
+                                                    </span>
+                                                    <span class="ml-1" *ngIf="details?.tenant.id!=currentTenantId">
+                                                        <mat-chip color="warn" selected>
+                                                            Ext-{{details.tenant.tenantName}}</mat-chip>
+                                                    </span>
+                                                </mat-option>
+                                            </mat-optgroup>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-3">
+                                    <mat-form-field class="select-tenant-button">
+                                        <mat-label>Select Batch</mat-label>
+                                        <mat-select name="tenant" [disabled]="webinarStatus" panelClass="dropView"
+                                            name="batchValue" formControlName="batchValue" disableOptionCentering
+                                            [disabled]="isHideFlagForTraineeAndBatch"
+                                            (openedChange)="batchFilter.focus()">
+                                            <div class="row dropdown-search-row">
+                                                <div class="col-10">
+                                                    <input class="searchInput" #batchFilter matInput type="text"
+                                                        autocomplete="off" placeholder="Search"
+                                                        (keyup)="search($event.target.value, 'batch')">
+                                                </div>
+                                                <div class="col-2 text-right">
+                                                    <button mat-button *ngIf="batchFilter.value" matSuffix
+                                                        mat-icon-button class="clear-icon" matTooltip="Clear"
+                                                        matTooltipPosition="below"
+                                                        (click)="batchFilter.value=''; search('', 'batch')">
+                                                        <mat-icon>close</mat-icon>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <mat-divider></mat-divider>
+                                            <mat-option *ngFor="let batch of batchListValue" [value]="batch"
+                                                (click)="getBatchDetails(batch)">
+                                                {{batch.name}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <!-- Select mentees -->
+                                <div class="col-4 mb-3">
+                                    <ng-multiselect-dropdown [placeholder]="'Select Trainees'" [data]="mentees"
+                                        [(ngModel)]="selectedMentees" [settings]="menteeDropdownSettings"
+                                        (onSelect)="onMenteeSelect($event)" (onDeSelect)="onMenteeDeSelect($event)"
+                                        (onSelectAll)="onMenteeSelectAll($event)"
+                                        (onDeSelectAll)="onDeselectAllMentee($event)" [disabled]="webinarStatus"
+                                        formControlName="selectedMentee">
+                                    </ng-multiselect-dropdown>
+                                </div>
+                                <!-- Start date -->
+                                <div class="col-2 cursor">
+                                    <mat-form-field>
+                                        <input matInput [min]="minDate" [matDatepicker]="start" placeholder="Start Date"
+                                            formControlName="startDate"
+                                            (dateChange)="onSessionTimeChange('startDate',$event.value)" readonly
+                                            (click)="start.open()" />
+                                        <mat-datepicker-toggle matSuffix [for]="start"></mat-datepicker-toggle>
+                                        <mat-datepicker #start disabled="false"></mat-datepicker>
+                                        <mat-error *ngIf="scheduleForm.get('startDate').errors?.required">
+                                            {{scheduleFormValidationMessages.startDateRequired}}</mat-error>
+                                    </mat-form-field>
+                                </div>
+                                <!-- Start time -->
+                                <div class="col-2">
+                                    <mat-form-field>
+                                        <input matInput placeholder="Start Time" [ngxTimepicker]="startTimePicker"
+                                            [min]="startMinTime" formControlName="startTime"
+                                            [value]="defaultStartTime==undefined ?'':defaultStartTime" readonly />
+                                        <ngx-material-timepicker #startTimePicker
+                                            (timeSet)="onSessionTimeChange('startTime',$event)">
+                                        </ngx-material-timepicker>
+                                        <mat-error *ngIf="scheduleForm.get('startTime').errors?.required">
+                                            {{scheduleFormValidationMessages.startTimeRequired}}</mat-error>
+                                        <mat-error *ngIf="scheduleForm.get('startTime').hasError('pattern')">
+                                            {{scheduleFormValidationMessages.startTimePattern}}</mat-error>
+                                        <mat-error *ngIf="scheduleForm.get('startTime').hasError('startTimeCheck')">
+                                            {{scheduleFormValidationMessages.startTimeCheck}}</mat-error>
+                                    </mat-form-field>
+                                </div>
+                                <!-- End date -->
+                                <div class="col-2 cursor">
+                                    <mat-form-field>
+                                        <input matInput [min]="endMinDate" [matDatepicker]="end" placeholder="End Date"
+                                            formControlName="endDate"
+                                            (dateChange)="onSessionTimeChange('endDate',$event.value)" readonly
+                                            (click)="end.open()" />
+                                        <mat-datepicker-toggle matSuffix [for]="end"></mat-datepicker-toggle>
+                                        <mat-datepicker #end disabled="false"></mat-datepicker>
+                                        <mat-error *ngIf="scheduleForm.get('endDate').errors?.required">
+                                            {{scheduleFormValidationMessages.endDateRequired}}</mat-error>
+                                    </mat-form-field>
+                                </div>
+                                <!-- End time -->
+                                <div class="col-2">
+                                    <mat-form-field>
+                                        <input type="text" matInput placeholder="End Time"
+                                            [ngxTimepicker]="endTimePicker" [min]="endMinTime" formControlName="endTime"
+                                            readonly [value]="defaultEndTime == undefined ?'':defaultEndTime" />
+                                        <ngx-material-timepicker #endTimePicker
+                                            (timeSet)="onSessionTimeChange('endTime',$event)">
+                                        </ngx-material-timepicker>
+                                        <mat-error *ngIf="scheduleForm.get('endTime').errors?.required">
+                                            {{scheduleFormValidationMessages.endTimeRequired}}</mat-error>
+                                        <mat-error *ngIf="scheduleForm.get('endTime').hasError('pattern')">
+                                            {{scheduleFormValidationMessages.endTimePattern}}</mat-error>
+                                        <mat-error *ngIf="scheduleForm.get('endTime').hasError('endTimeCheck')">
+                                            {{scheduleFormValidationMessages.endTimeCheck}}</mat-error>
+                                    </mat-form-field>
+                                </div>
+                                <!-- Communication channel -->
+                                <div class="col-4">
+                                    <mat-form-field>
+                                        <mat-select placeholder="Communication Channel"
+                                            [(ngModel)]="selectedjoinMechanism" formControlName="joinMechanism"
+                                            panelClass="dropView" disableOptionCentering>
+                                            <mat-option *ngFor="let mechanism of joinMechanisms"
+                                                [value]="mechanism.key">
+                                                {{mechanism.value}}
+                                            </mat-option>
+                                        </mat-select>
+                                        <mat-error *ngIf="scheduleForm.get('joinMechanism').errors?.required">
+                                            {{scheduleFormValidationMessages.joinMechanismRequired}}</mat-error>
+                                    </mat-form-field>
+                                </div>
+                                <div [ngClass]="assignmentStatus ? 'col-3 my-auto' : 'col-12'">
+                                    <mat-checkbox (change)="addAssignment($event)" [(ngModel)]="includeAssignment"
+                                        [ngModelOptions]="{standalone: true}" [disabled]="webinarStatus">Include
+                                        Assignments</mat-checkbox>
+                                </div>
+                                <div [ngClass]="assignmentStatus ? 'col-9' : 'd-none'">
+                                    <mat-form-field>
+                                        <input matInput placeholder="Search Assignments" (focusOut)="autoResult()"
+                                            (keyup)="applyFilter($event.target.value)"
+                                            formControlName="searchAssignment" />
+                                        <button type="button" (click)="clearSearch()" mat-button matSuffix
+                                            mat-icon-button>
+                                            <mat-icon matTooltip="clear search">clear</mat-icon>
+                                        </button>
+                                    </mat-form-field>
+                                    <div [ngClass]="autoComplete ? 'autocomplete content-block' : 'd-none'">
+                                        <table class="table">
+                                            <tbody>
+                                                <tr *ngFor="let assignment of filteredAssignments">
+                                                    <td>
+                                                        {{assignment.title}}
+                                                    </td>
+                                                    <td>
+                                                        {{assignment.skills}}
+                                                    </td>
+                                                    <td>
+                                                        <a class="keywords mr-1"
+                                                            (click)="viewDocuments(assignment,documentFileType[1])">
+                                                            Documents <mat-icon>pageview</mat-icon></a>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn-icons btn-outline-theme" type="button"
+                                                            mat-button>
+                                                            <mat-icon
+                                                                (click)="selectedAssignmentId.includes(assignment.id) ? '' : addAssignmentSelectedList(assignment,assignment.id)">
+                                                                {{selectedAssignmentId.includes(assignment.id) ? 'done'
+                                                                : 'add'}}
+                                                            </mat-icon>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                <tr *ngIf="showNoAssignments">
+                                                    <td class="empty">No Assignments</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div [ngClass]="assignmentStatus ? 'col-12' : 'd-none'">
+                                    <table class="table">
+                                        <tbody>
+                                            <tr *ngFor="let assignment of selectedAssignments">
+                                                <td>
+                                                    {{assignment.title}}
+                                                </td>
+                                                <td>
+                                                    {{assignment.skills}}
+                                                </td>
+                                                <td>
+                                                    {{assignment.createdDate | date:'d/M/yyyy'}}
+                                                </td>
+                                                <td>
+                                                    {{assignment.modifiedDate | date:'d/M/yyyy'}}
+                                                </td>
+                                                <td>
+                                                    <a class="keywords mr-1"
+                                                        (click)="viewDocuments(assignment,documentFileType[1])">
+                                                        Documents <mat-icon>pageview</mat-icon></a>
+                                                </td>
+                                                <td>
+                                                    <button class="btn-icons btn-outline-danger" type="button"
+                                                        mat-button>
+                                                        <mat-icon (click)="removeSelected(assignment.id)">clear
+                                                        </mat-icon>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="content-footer text-right">
+                            <button mat-button class="btn btn_theme mr-4" type="button" (click)="schedule()"
+                                [disabled]="!scheduleForm.valid || isFormSubmitted">
+                                Schedule Session
+                            </button>
+                            <button mat-button type="button" class="btn btn-secondary" (click)="editSession(0)">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="content-block p-3 mt-3 mb-3">
+                    <h3>Trainer Details</h3>
+                    <hr>
+                    <table mat-table [dataSource]="trainersDetails" #trainersSort="matSort" matSort
+                        class="table table-hover">
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="name">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+                            <td mat-cell *matCellDef="let element"> {{element?.name}}<span class="ml-1"
+                                    *ngIf="element?.externalTrainer && element?.tenant.id==currentTenantId">
+                                    <mat-chip color="primary" selected>Ext</mat-chip>
+                                </span><span class="ml-1" *ngIf="element?.tenant.id!=currentTenantId">
+                                    <mat-chip color="warn" selected>Ext-{{element.tenant.tenantName}}</mat-chip>
+                                </span> </td>
+                        </ng-container>
+
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="experience">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Experience (Years) </th>
+                            <td mat-cell *matCellDef="let element"> {{element?.totalExperience}} </td>
+                        </ng-container>
+
+                        <!-- Skill-Technology Column -->
+                        <ng-container matColumnDef="skillTech">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Skill/Technology </th>
+                            <td mat-cell *matCellDef="let element">
+                                <ul *ngIf="element.userSkillTechs?.length">
+                                    <li class="mt-1" *ngFor="let userSkillTech of element.userSkillTechs">
+                                        {{userSkillTech?.skill}} / {{userSkillTech?.technology}}
+                                    </li>
+                                </ul>
+                            </td>
+                        </ng-container>
+
+                        <!-- Language Column -->
+                        <ng-container matColumnDef="languages">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Languages </th>
+                            <td mat-cell *matCellDef="let element"> {{element?.languages}} </td>
+                        </ng-container>
+
+                        <!-- Location Column -->
+                        <ng-container matColumnDef="location">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Location </th>
+                            <td mat-cell *matCellDef="let element"> {{element?.location}} </td>
+                        </ng-container>
+
+                        <!-- Cost Column -->
+                        <ng-container matColumnDef="cost">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Cost/hr (₹) </th>
+                            <td mat-cell *matCellDef="let element">
+                                <span *ngIf="!element?.externalTrainer && element?.tenant.id==currentTenantId"> ---
+                                </span>
+                                <ul
+                                    *ngIf="element.trainingCostDetails?.length && element?.externalTrainer || element?.tenant.id!=currentTenantId">
+                                    <li class="mt-1" *ngFor="let trainingCostDetail of element?.trainingCostDetails">
+                                        <span *ngIf="trainingCostDetail?.costTypeDuration==duration60Min">
+                                            {{trainingCostDetail?.cost}}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="trainersDisplayedColumns"></tr>
+                        <tr mat-row (click)="viewMoreUserDetails(row)"
+                            *matRowDef="let row; columns: trainersDisplayedColumns;">
+                        </tr>
+                    </table>
+                    <div *ngIf="trainersDetails && !trainersDetails.data.length" class="empty p-4 text-center">
+                        <p class="mb-3">No Records Found</p>
+                    </div>
+                    <mat-paginator #trainersPaginator [pageSizeOptions]="[5, 10, 20, 30, 40, 50]" showFirstLastButtons>
+                    </mat-paginator>
+                </div>
+            </div>
+        </mat-tab>
+        <mat-tab label="Approval" *ngIf="approvePermission">
+            <mat-tab-group [selectedIndex]="selectedTabName">
+                <mat-tab label="Session and External Approval">
+                    <div class="row mt-3 session-lists">
+                        <div class="col3 col4 mb4" *ngFor="let approvalData of approvalObservable | async">
+                            <app-session-detail-card [approval]="approvalData"
+                                (loadApprovalTab)="refreshApprovalsAndSessions()">
+                            </app-session-detail-card>
+                        </div>
+                    </div>
+                    <div *ngIf="approvalDataSource && !approvalDataSource.data.length" class="empty p-4 text-center">
+                        <p class="mb-3">No Records Found</p>
+                    </div>
+                    <mat-paginator [length]="approvalDataSource?.data.length" #approvalPaginator [pageSize]="12"
+                        [pageSizeOptions]="[12, 24, 36, 48, 60]" showFirstLastButtons>
+                    </mat-paginator>
+                </mat-tab>
+                <!-- code added for Recording approval api -->
+                <mat-tab label="Recording Approval">
+                    <div class="row mt-3 session-lists">
+                        <div class="col3 col4" *ngFor="let recordingData of recodingApprovalObservable | async">
+                            <app-session-detail-card [recordingApproval]="recordingData"
+                                (loadApprovalTab)="refreshApprovalsAndSessions()">
+                            </app-session-detail-card>
+                        </div>
+                    </div>
+                    <div *ngIf="approvalRecordingDataSource && !approvalRecordingDataSource.data.length"
+                        class="empty p-4 text-center">
+                        <p class="mb-3">No Records Found</p>
+                    </div>
+                    <mat-paginator [length]="approvalRecordingDataSource?.data.length" #approvalPaginator
+                        [pageSize]="12" [pageSizeOptions]="[12, 24, 36, 48, 60]" showFirstLastButtons>
+                    </mat-paginator>
+                </mat-tab>
+            </mat-tab-group>
+        </mat-tab>
+    </mat-tab-group>
+</div>

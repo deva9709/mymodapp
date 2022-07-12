@@ -1,0 +1,12 @@
+.mat-column-feedback{
+    width:30%
+}
+.feedbackline{
+    display: inline-block;
+    width: 180px;
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+    border: 0px;
+    margin-top: 14px;
+}

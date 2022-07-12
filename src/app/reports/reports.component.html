@@ -1,0 +1,241 @@
+<div class="content-block pt-3 pl-3 pr-3 pb-1 mb-3">
+  <div class="col-12">
+    <div class="row">
+      <div class="col-3">
+        <mat-form-field>
+          <mat-label>Select Report Type</mat-label>
+          <mat-select name="report" [(ngModel)]="selectedReport" required>
+            <mat-option *ngFor="let report of reportTypes" [value]="report.id" (click)="refresh()">
+              {{report.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- For Super Admin -->
+      <div class="col-3" *ngIf="showTenantDropDown">
+        <mat-form-field>
+          <mat-label>Select Tenant</mat-label>
+          <mat-select name="tenant" [(ngModel)]="selectedTenant" (openedChange)="tenantFilter.focus()" required>
+            <div class="row dropdown-search-row">
+              <div class="col-10">
+                <input class="searchInput" #tenantFilter matInput type="text" autocomplete="off" placeholder="Search"
+                  (keyup)="search($event.target.value, 'tenant')">
+              </div>
+              <div class="col-2 text-right">
+                <button mat-button *ngIf="tenantFilter.value" matSuffix mat-icon-button class="clear-icon"
+                  matTooltip="Clear" matTooltipPosition="below" (click)="tenantFilter.value=''; search('', 'tenant')">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            </div>
+            <mat-divider></mat-divider>
+            <mat-option *ngFor="let tenant of filteredTenantList" [value]="tenant.id" (click)="showTraineeAttendance ? getSessionTitle():getTrainers()">
+              {{tenant.tenantName}}
+            </mat-option>
+            <mat-option *ngIf="!filteredTenantList.length">
+              --none--
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3" *ngIf="showTrainerSessions">
+        <mat-form-field>
+          <mat-label>Select Trainer</mat-label>
+          <mat-select name="trainer" [(ngModel)]="selectedTrainer" required>
+            <mat-option *ngFor="let trainer of trainersList" [value]="trainer.id">
+              {{trainer.name}} <span class= "ml-1" *ngIf="trainer?.externalTrainer && element?.tenant.id==currentTenantId">
+                <mat-chip color="primary" selected>Ext</mat-chip>
+            </span>
+            </mat-option>
+            <mat-option *ngIf="!trainersList.length">
+              --none--
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3" *ngIf="showTrainerSessions">
+        <mat-form-field>
+          <mat-label>Select Session Status</mat-label>
+          <mat-select name="status" [(ngModel)]="selectedSessionStatus" required>
+            <mat-option *ngFor="let status of sessionStatusList" [value]="status.id">
+              {{status.name}}
+            </mat-option>
+            <mat-option *ngIf="!sessionStatusList.length">
+              --none--
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <!--To show SessionTitle-->
+      <div class="col-3" *ngIf="showTraineeAttendance">
+        <mat-form-field>
+          <mat-label>Select Session Title</mat-label>
+          <mat-select name="sessionTitle" [(ngModel)]="selectedSessionTitle" required>
+            <mat-option *ngFor="let sessionTitle of filteredSessionTitleList" [value]="sessionTitle.sessionTitleName">
+              {{sessionTitle.sessionTitleName}}
+            </mat-option>
+            <mat-option *ngIf="!sessionStatusList.length">
+              --none--
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <!--End of showing SessionTitle-->
+    </div>
+    <div class="row">
+      <div class="offset-8 col-2 text-right">
+        <button name="search" class="btn btn_theme" (click)='getReportsData()'>Search Report</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row" *ngIf="showTrainerSessions">
+  <div class="col-12">
+    <div class="content-block pt-1 pb-1">
+      <table mat-table id="trainersSessions" [dataSource]="trainerSessions" #trainerSessionsSort="matSort" matSort
+        class="table">
+        <ng-container matColumnDef="Session Title">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Session Title</th>
+          <td mat-cell *matCellDef="let element"> {{element.sessionTitle}} </td>
+        </ng-container>
+        <ng-container matColumnDef="Trainer">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Trainer</th>
+          <td mat-cell *matCellDef="let element"> {{element.trainerName}} </td>
+        </ng-container>
+        <ng-container matColumnDef="Trainee Count">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Trainee Count</th>
+          <td mat-cell *matCellDef="let element"> {{element.traineeCount}} </td>
+        </ng-container>
+        <ng-container matColumnDef="Trainees">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Trainees</th>
+          <td mat-cell *matCellDef="let element">
+            <ul *ngIf="element.participants">
+              <li class="mt-1" *ngFor="let participant of element.participants">
+                {{participant}}
+              </li>
+            </ul>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="Start Date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Start Date</th>
+          <td mat-cell *matCellDef="let element"> {{element.start  | date: 'dd/M/yyyy, hh:mm a'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="End Date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>End Date</th>
+          <td mat-cell *matCellDef="let element"> {{element.end  | date: 'dd/M/yyyy, hh:mm a'}} </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="trainerSessionDisplayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: trainerSessionDisplayedColumns;"></tr>
+      </table>
+      <div *ngIf="trainerSessions && !trainerSessions.data.length" class="empty p-4 text-center">
+        <p class="mb-3">No Data Found</p>
+      </div>
+      <mat-paginator [pageSizeOptions]="[10, 20, 30, 40, 50]" #trainerSessionsPagination
+        [length]="trainerSessions?.data.length" showFirstLastButtons></mat-paginator>
+    </div>
+  </div>
+</div>
+
+<div class="row" *ngIf="showTrainers">
+  <div class="col-12">
+    <div class="content-block pt-1 pb-1">
+      <table mat-table id="trainersData" [dataSource]="trainersData" #trainersListSort="matSort" matSort class="table">
+        <ng-container matColumnDef="Trainer">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Trainer Name</th>
+          <td mat-cell *matCellDef="let element"> {{element.name}} <span class= "ml-1" *ngIf="element?.externalTrainer">
+            <mat-chip color="primary" selected>Ext</mat-chip>
+        </span></td>
+        </ng-container>
+        <ng-container matColumnDef="Trainer Email">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Trainer Email</th>
+          <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+        </ng-container>
+        <ng-container matColumnDef="Department">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Department</th>
+          <td mat-cell *matCellDef="let element"> {{element.department}} </td>
+        </ng-container>
+        <ng-container matColumnDef="Designation">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Designation</th>
+          <td mat-cell *matCellDef="let element"> {{element.designation}} </td>
+        </ng-container>
+        <ng-container matColumnDef="Specialization">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Specialization</th>
+          <td mat-cell *matCellDef="let element"> {{element.qualifications}} </td>
+        </ng-container>
+        <ng-container matColumnDef="Skill">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Skill</th>
+          <td mat-cell *matCellDef="let element"> {{element.skillTechnologyCategory.skill}} </td>
+        </ng-container>
+        <ng-container matColumnDef="Technology">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Technology</th>
+          <td mat-cell *matCellDef="let element"> {{element.skillTechnologyCategory.technology}} </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="trainersDisplayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: trainersDisplayedColumns;"></tr>
+      </table>
+      <div *ngIf="trainersData && !trainersData.data.length" class="empty p-4 text-center">
+        <p class="mb-3">No Data Found</p>
+      </div>
+      <mat-paginator [pageSizeOptions]="[10, 20, 30, 40, 50]" #trainersListPagination
+        [length]="trainersData?.data.length" showFirstLastButtons></mat-paginator>
+    </div>
+  </div>
+</div>
+<!--To Show Attendance Report-->
+<div class="row" *ngIf="showTraineeAttendance">
+  <div class="col-12">
+    <div class="content-block pt-1 pb-1">
+      <table mat-table id="traineeAttendance" [dataSource]="traineeAttendance" #traineeAttendanceSort="matSort" matSort
+        class="table">
+        <ng-container matColumnDef="Session Title">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Session Title</th>
+          <td mat-cell *matCellDef="let element"> {{element.sessionTitle}} </td>
+        </ng-container>
+        <ng-container matColumnDef="Trainer">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Trainer</th>
+          <td mat-cell *matCellDef="let element"> {{element.trainerName}} </td>
+        </ng-container>
+        <ng-container matColumnDef="Skill">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Skill</th>
+          <td mat-cell *matCellDef="let element"> {{element.sessionSkill}} </td>
+        </ng-container>
+        <ng-container matColumnDef="Trainee Name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Trainee Name</th>
+          <td mat-cell *matCellDef="let element"> {{element.traineeName}} </td>
+        </ng-container>
+        <ng-container matColumnDef="Trainee Email">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Trainee Email</th>
+          <td mat-cell *matCellDef="let element"> {{element.traineeEmail}} </td>
+        </ng-container>
+        <ng-container matColumnDef="Start Date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Start Date</th>
+          <td mat-cell *matCellDef="let element"> {{element.startDate  | date: 'dd/M/yyyy, hh:mm a'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="End Date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>End Date</th>
+          <td mat-cell *matCellDef="let element"> {{element.endDate  | date: 'dd/M/yyyy, hh:mm a'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="Attended">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Attended</th>
+          <td mat-cell *matCellDef="let element"> {{element.isAttended}} </td>
+        </ng-container>  
+        <tr mat-header-row *matHeaderRowDef="traineeAttendanceDisplayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: traineeAttendanceDisplayedColumns;"></tr>
+      </table>
+      <div *ngIf="traineeAttendance && !traineeAttendance.data.length" class="empty p-4 text-center">
+        <p class="mb-3">No Data Found</p>
+      </div>
+      <mat-paginator [pageSizeOptions]="[10, 20, 30, 40, 50]" #traineeAttendancePagination
+        [length]="traineeAttendance?.data.length" showFirstLastButtons></mat-paginator>
+    </div>
+  </div>
+</div>
+<!--End of showing Attendance Report-->
+<div class="row mt-2" *ngIf="showExport">
+  <div class=" offset-4 col-4">
+    <button name="search" class="btn btn_theme" (click)='downloadAsPDF(selectedReport)'>Export as PDF</button>
+    <button name="search" class="btn btn_theme ml-2" (click)='downloadAsCSV()'>Export as CSV</button>
+  </div>
+</div>

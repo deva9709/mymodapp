@@ -1,0 +1,230 @@
+<div class="overlay">
+    <div class="mod-spinner-text" *ngIf="isWaitingForMentor">
+        <div class="row">
+            <div class="col-auto custom-spinner">
+                <mat-spinner mode="indeterminate" strokeWidth="3" [diameter]="25"></mat-spinner>
+            </div>
+            <div class="col-auto">
+                <p>Waiting for trainer...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content-block p-3 mb-3">
+    <form [formGroup]="findMentorForm" (ngSubmit)="findMentor()" novalidate autocomplete="off">
+        <div class="row">
+            <!-- Skill -->
+            <div class="col-4">
+                <mat-form-field>
+                    <mat-label>Select Skill</mat-label>
+                    <mat-select formControlName="skillId" panelClass="dropView" disableOptionCentering
+                        (openedChange)="skillFilter.focus()">
+                        <div class="row dropdown-search-row">
+                            <div class="col-10">
+                                <input class="searchInput" #skillFilter matInput type="text" autocomplete="off"
+                                    placeholder="Search" (keyup)="search($event.target.value, 'skill')">
+                            </div>
+                            <div class="col-2 text-right">
+                                <button mat-button *ngIf="skillFilter.value" matSuffix mat-icon-button
+                                    class="clear-icon" matTooltip="Clear"
+                                    (click)="skillFilter.value=''; search('', 'skill')">
+                                    <mat-icon>close</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                        <mat-divider></mat-divider>
+                        <mat-option *ngFor="let skill of filteredSkillList" [value]="skill.id">
+                            {{ skill.name }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="findMentorForm.get('skillId').errors?.required">Please select skill</mat-error>
+                </mat-form-field>
+            </div>
+            <!-- Technology -->
+            <div class="col-4">
+                <mat-form-field>
+                    <mat-label>Select Technology</mat-label>
+                    <mat-select formControlName="technologyId" panelClass="dropView" disableOptionCentering
+                        (openedChange)="technologyFilter.focus()">
+                        <div class="row dropdown-search-row">
+                            <div class="col-10">
+                                <input class="searchInput" #technologyFilter matInput type="text" autocomplete="off"
+                                    placeholder="Search" (keyup)="search($event.target.value, 'technology')">
+                            </div>
+                            <div class="col-2 text-right">
+                                <button mat-button *ngIf="technologyFilter.value" matSuffix mat-icon-button
+                                    class="clear-icon" matTooltip="Clear"
+                                    (click)="technologyFilter.value=''; search('', 'technology')">
+                                    <mat-icon>close</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                        <mat-divider></mat-divider>
+                        <mat-option [value]="0"
+                            *ngIf="(technologyFilter.value && filteredTechnologyList.length === 0) || (technologyFilter.value === '')">
+                            None</mat-option>
+                        <mat-option *ngFor="let technology of filteredTechnologyList" [value]="technology.id">
+                            {{ technology.name }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <!-- Language -->
+            <div class="col-4">
+                <mat-form-field>
+                    <mat-label>Select Language</mat-label>
+                    <mat-select formControlName="languageId" panelClass="dropView" disableOptionCentering
+                        (openedChange)="languageFilter.focus()">
+                        <div class="row dropdown-search-row">
+                            <div class="col-10">
+                                <input class="searchInput" #languageFilter matInput type="text" autocomplete="off"
+                                    placeholder="Search" (keyup)="search($event.target.value, 'language')">
+                            </div>
+                            <div class="col-2 text-right">
+                                <button mat-button *ngIf="languageFilter.value" matSuffix mat-icon-button
+                                    class="clear-icon" matTooltip="Clear"
+                                    (click)="languageFilter.value=''; search('', 'language')">
+                                    <mat-icon>close</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                        <mat-divider></mat-divider>
+                        <mat-option [value]="0"
+                            *ngIf="(languageFilter.value && filteredLanguageList.length === 0) || (languageFilter.value === '')">
+                            All</mat-option>
+                        <mat-option *ngFor="let language of filteredLanguageList" [value]="language.id">
+                            {{ language.language }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <!--Duration type and value -->
+            <div class="col-4">
+                <mat-form-field>
+                    <mat-label>Select Session Duration</mat-label>
+                    <mat-select formControlName="durationTypeId" panelClass="dropView" disableOptionCentering
+                        (openedChange)="durationFilter.focus()" (selectionChange)="showCostRange($event)">
+                        <div class="row dropdown-search-row">
+                            <div class="col-10">
+                                <input class="searchInput" #durationFilter matInput type="text" autocomplete="off"
+                                    placeholder="Search" (keyup)="search($event.target.value, 'duration')">
+                            </div>
+                            <div class="col-2 text-right">
+                                <button mat-button *ngIf="durationFilter.value" matSuffix mat-icon-button
+                                    class="clear-icon" matTooltip="Clear"
+                                    (click)="durationFilter.value=''; search('', 'duration')">
+                                    <mat-icon>close</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                        <mat-divider></mat-divider>
+                        <mat-option [value]="0"
+                            *ngIf="(durationFilter.value && filteredDurationTypeList.length === 0) || (durationFilter.value === '')">
+                            All</mat-option>
+                        <mat-option *ngFor="let duration of filteredDurationTypeList" [value]="duration.id">
+                            {{ duration.duration }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-2" *ngIf="isMaximumCost">
+                <mat-form-field>
+                    <input matInput type="text" maxLength="6" id="cost" name="maximumCost" placeholder="Cost Max"
+                        formControlName="maximumCost">
+                    <mat-error *ngIf="findMentorForm.get('maximumCost').errors?.pattern">Please enter valid cost value
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <!-- External Trainers -->
+            <div class="col-2 mt-2">
+                <mat-checkbox (change)="externalTrainer($event)" [(ngModel)]="externalTrainerStatus"
+                    [ngModelOptions]="{standalone: true}">Use External Trainers</mat-checkbox>
+            </div>
+            <!-- OutSource Trainers -->
+            <div class="col-2 mt-2">
+                <mat-checkbox (change)="outSourceExternalTrainer($event)" [(ngModel)]="outSourceExternalTrainerStatus"
+                    [ngModelOptions]="{standalone: true}">Use OutSource Trainers</mat-checkbox>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 text-right">
+                <button class="btn btn_theme" type="submit" [disabled]="!findMentorForm.valid">
+                    Find Trainer
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="row mb-3" *ngIf="mentors.length > 0">
+    <div class="col-12">
+        <button type="button" mat-button class="btn-icons btn-outline-danger float-right" (click)="close()">
+            <mat-icon>clear</mat-icon>
+        </button>
+        <h2>Search Results</h2>
+    </div>
+</div>
+<div *ngIf="isMentorList">
+    <!--- card view & paginator-->
+    <mat-card class="col-12 mb-1" *ngFor="let mentor of  mentorObservable | async">
+        <mat-card-header>
+            <div class="row mb-3">
+                <div class="col-12">
+                    <span class="mentor-pic float-left mr-3"
+                        style="background-image: url('../../assets/images/profile.png')"></span>
+                    <div class="float-left">
+                        <h3 class="mb-2">{{ mentor.name }}</h3><span class="ml-1"
+                            *ngIf="mentor?.externalTrainer && mentor?.tenantId==currentTenantId">
+                            <mat-chip color="primary" selected>Ext</mat-chip>
+                        </span>
+                        <span class="ml-1" *ngIf="mentor?.tenantId!=currentTenantId">
+                            <mat-chip color="warn" selected>Ext-{{mentor.tenantName}}</mat-chip>
+                        </span>
+                        <p>
+                            <span class="keywords mr-1">{{mentor.skills}}</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </mat-card-header>
+        <mat-card-content>
+            <form [formGroup]="connectMentorForm">
+                <div class="row">
+                    <div class="col-6">
+                        <mat-form-field>
+                            <input matInput placeholder="Brief information about the session"
+                                formControlName="sessionTitle">
+                            <mat-error *ngIf="connectMentorForm.get('sessionTitle').errors?.required">Please enter
+                                your session title</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-6">
+                        <mat-form-field>
+                            <mat-select placeholder="Communication Channel" [(ngModel)]="selectedjoinMechanism"
+                                formControlName="joinMechanism" panelClass="dropView" disableOptionCentering>
+                                <mat-option *ngFor="let mechanism of joinMechanisms" [value]="mechanism.key">
+                                    {{mechanism.value}}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="connectMentorForm.get('joinMechanism').errors?.required">Please select
+                                the communication channel</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12 text-right mt-3">
+                        <button class="btn btn_theme" type="button" (click)="requestSession(mentor)"
+                            [disabled]="isConnectMentorFormSubmitted">
+                            Connect Trainer
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </mat-card-content>
+    </mat-card>
+    <div *ngIf="mentorDataSource && !mentorDataSource.data.length" class="empty p-4 text-center">
+        <p class="mb-3">No Records Found</p>
+    </div>
+    <mat-paginator [length]="mentorDataSource?.data.length" #mentorPaginator [pageSize]="5"
+        [pageSizeOptions]="[5, 10, 15, 20, 25, 30]" showFirstLastButtons>
+    </mat-paginator>
+</div>

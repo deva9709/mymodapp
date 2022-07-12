@@ -1,0 +1,52 @@
+<!-- <div [ngClass]="messages ? 'col-12 open-chat' : 'col-12'">
+  <div class="chat-block">
+    <div id="channel-messages">
+      <ul class="chats">
+
+      </ul>
+      <div class="form-group chat-form">
+        <form>
+          <mat-form-field class="ml-4">
+            <input id="message-body-input" [value]="fileName" matInput placeholder="Type Here...">
+          </mat-form-field>
+          <button type="submit" class="icon-btn" id="send-message">
+            <mat-icon class="material-icons col-blue">send</mat-icon>
+          </button>
+        </form>
+        <form action="" id="formInputFile">
+          <label class="icon-btn attach-file">
+            <mat-icon class="material-icons col-blue" (click)="fileupload.click()">attach_file</mat-icon>
+          </label>
+          <input type="file" #fileupload id="file-upload" (change)="onFileChange($event)" hidden />
+          <div class="attachments">
+            <div class="mx-auto">
+              {{fileName}}
+              <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+
+
+  <div class="chat-section" #scrollMe [scrollTop]="scrollMe.scrollHeight">
+    <!-- Chat message -->
+    <div class="chat-message" id="channel-messages">
+
+    </div>
+  </div>
+
+<!-- Chat action  -->
+<div class="chat-action">
+  <mat-form-field>
+    <input matInput placeholder="Type a new message" id="message-body-input" autocomplete="off">
+    <mat-icon matSuffix class="mr-2" matTooltip="Attach" (click)="fileupload.click()">attach_file</mat-icon>
+    <mat-icon matSuffix matTooltip="Send" id="send-message">send</mat-icon>
+    <input type="file" #fileupload id="file-upload" (change)="onFileChange($event)" hidden />
+  </mat-form-field>
+</div>
+
+<script src="https://apis.google.com/js/platform.js" async defer></script>

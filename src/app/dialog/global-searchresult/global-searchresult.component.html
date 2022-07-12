@@ -1,0 +1,17 @@
+<div class="modal-header">
+  <h1>
+   Search Results
+  </h1>
+</div> 
+<div class="modal-body">
+  <div class="row">
+    <div class="col-12 text-left">
+      <p style="font-size:15px" *ngFor="let searchList of globalSearchList">
+        <span >
+          <a  style="font-size:20px" id="{{searchList.name}}" name="{{searchList.link}}"(mousedown)="navigateToEntity($event)">{{searchList.description}}</a><br>
+          <p>{{searchList.linkDescription}}</p>
+        </span>
+      </p>
+    </div>
+</div>
+</div>

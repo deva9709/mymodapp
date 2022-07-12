@@ -1,0 +1,15 @@
+<div class="container-fluid"> 
+  <h2 class="text-center mb-2">Batch List</h2>
+<div class="row">
+<div class="col-6 mb-6">
+     <ng-multiselect-dropdown [placeholder]="'Batch List'" [data]="batchListValue" [settings]="langugeDropdownSettings"
+         (onSelect)="onBatchSelect($event)" (onDeSelect)="onLanguageDeSelect($event)">
+     </ng-multiselect-dropdown>
+</div>
+<div class="col-3 mb-3">
+  <button class="btn btn_theme batch-create" (click)="addMembersToBatchList()" type="submit">Add Member</button>
+  </div>
+</div>
+
+</div>
+

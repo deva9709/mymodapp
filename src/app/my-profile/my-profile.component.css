@@ -1,0 +1,155 @@
+.profile-pic,
+.upload-pic {
+	position: absolute;
+	width: 120px;
+	height: 120px;
+	border-radius: 50%;
+	overflow: hidden;
+	display: block;
+	top: -60px;
+	left: 20%;
+	-webkit-transform: translateX(-50%);
+	transform: translateX(-50%);
+	background-color: #ccc;
+	z-index: 5;
+}
+
+.profile-pic img {
+	width: 125px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.upload-pic {
+	background-color: transparent;
+}
+
+.upload-pic .drop-box {
+	border-radius: 0px;
+	border: none;
+	background-color: rgba(0, 0, 0, 0.8);
+}
+
+.upload-pic .drop-box label {
+	font-size: 0.8rem;
+	color: white;
+}
+
+.quick-links {
+	border-top: 1px solid #ccc;
+	margin: 0 -16px -16px -16px;
+}
+
+.quick-links li a {
+	display: block;
+	padding: 10px;
+	text-align: center;
+	border-bottom: 1px solid #ccc;
+}
+
+.quick-links li a:hover {
+	background-color: #f1f1f1;
+}
+
+.quick-links li:last-child a {
+	border-bottom: none;
+}
+
+.tab-bodyColor {
+	background-color: white;
+	margin-top: 26px;
+}
+
+.info-body {
+	margin-left: 1px;
+	margin-right: 1px;
+}
+
+.editButton {
+	margin-left: 956px;
+	position: absolute;
+}
+
+.updateButton {
+	margin-bottom: 22px;
+}
+
+::ng-deep .mat-tab-body-content.ng-trigger.ng-trigger-translateTab {
+	background-color: white;
+	height: 534px;
+}
+
+.fontClass-for-label {
+	color: black;
+	font-size: 18px;
+	font-family: auto;
+}
+
+.common-for-row {
+	margin-top: 20px;
+	margin-left: 30px;
+}
+
+.tab-container {
+	top: 30px;
+}
+
+.cost-calculation {
+	margin-top: 20px;
+	margin-left: 30px;
+}
+
+.update-button {
+	cursor: pointer
+}
+
+.personal-info {
+	margin-left: 19px;
+}
+
+.about-your-self {
+	margin-top: 20px;
+	margin-left: 30px;
+}
+
+.div-Width{
+	width: 243px;
+    margin-left: 38px;
+}
+.passwordwidth{
+	margin: 31px auto 0;
+	width: 45%!important;
+}
+.linemargin{
+	margin: 22px;
+}
+.example-form-field {
+    width: 150px;     
+  }
+ .example-margin {
+    margin-left: 77px;
+}
+.example-section{
+	margin-left: 162px;
+	margin-top: -38px;
+}
+h4{
+	margin-top: 54px;
+    margin-left: 15px;
+}
+.timer{
+	margin-left: 218px;
+	margin-top: -28px;
+}
+.clocktimer{
+	margin-left: 217px;
+    margin-top: 11px;
+}
+mat-checkbox#mat-checkbox-6 {
+    margin-left: 89px !important
+}
+.mat-form-field-infix {
+    margin-left: 34px;
+}

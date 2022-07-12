@@ -1,0 +1,31 @@
+<ul class="video-controls">
+    <li>
+        <a class="cursor" id="white-board">
+            <!-- (click)="whiteboard()"> -->
+            <i class="material-icons">create</i>
+        </a>
+        <a class="cursor" id="screen-share">
+            <i class="material-icons">{{controls.screenShareStatus ? 'desktop_windows' : 'desktop_access_disabled'}}</i>
+        </a>
+        <a class="cursor" id="video-disable" [ngClass]="controls?.disableVideoControl ? 'video-control-disable' : 'none'">
+            <i class="material-icons">{{controls.videoStatus ? 'videocam' : 'videocam_off'}}</i>
+        </a>
+        <a class="cursor" id="audio-mute">
+            <i class="material-icons">{{controls.micStatus ? 'mic' : 'mic_off'}}</i>
+        </a>
+        <a class="chat-icon cursor" id="chat-control">
+            <!-- (click)="viewchats()" -->
+            <span id="chat-notification" class="chat-noti d-none"></span>
+            <i class="material-icons">chat</i>
+        </a>
+        <a class="cursor" *ngIf="iscreatePoll" id="create-poll">
+            <mat-icon (click)="newPoll()" matTooltip="Create Poll">poll</mat-icon>
+        </a>
+        <a class="cursor" *ngIf="iscreatePoll" id="analysis-poll">
+            <mat-icon (click)="getPollDetails()" matTooltip="Analysis Poll">pie_chart</mat-icon>
+        </a>
+        <a id="leave-room" class="end-call cursor">
+            <i class="material-icons">call_end</i>
+        </a>
+    </li>
+</ul>

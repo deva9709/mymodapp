@@ -1,0 +1,25 @@
+.text-align{
+    margin-top: 40px;
+}
+.drop-box-size{
+    display: block;
+    background-color: #f7f7f7;
+    border-radius: 5px;
+    border: 1px solid #CCC;
+    cursor: pointer;
+    width: 616px;
+    margin-top: 22px;
+}
+.submit-button{
+    margin-top: 9px;
+    margin-left: 203px;
+}
+.drop-input-field{
+    width: 100%;
+    height: 55px;
+    opacity: 0;
+    cursor: pointer;
+}
+.assignment-comment{
+    margin-top: 30px;
+}

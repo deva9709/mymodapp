@@ -1,0 +1,60 @@
+<div class="row mb-3">
+    <div class="col-12">
+        <button type="button" (click)="backToSession()" class="btn-icons btn-outline-info float-left" mat-button>
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h2>{{sessionTitle}}</h2>
+    </div>
+</div>
+
+<div class="content-block p-3 mb-3">
+    <div class="row mb-3">
+        <div class="col-6 text-right my-auto">
+            Session Audio Quality
+        </div>
+        <div class="col-6 my-auto">
+            <star-rating value="{{averageAudioQuality}}" totalstars="5" checkedcolor="orange" uncheckedcolor="grey" size="20px" readonly="{{isReadonly}}"></star-rating>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-6 text-right my-auto">
+            Session Video Quality
+        </div>
+        <div class="col-6 my-auto">
+            <star-rating value="{{averageVideoQuality}}" totalstars="5" checkedcolor="orange" uncheckedcolor="grey" size="20px" readonly="{{isReadonly}}"></star-rating>
+        </div>
+    </div>
+    <div class="row mb-3" *ngFor="let rating of otherRatingParameters">
+        <div class="col-6 text-right my-auto">
+            {{rating.description}}
+        </div>
+        <div class="col-6 my-auto">
+            <star-rating value="{{rating.averageRating}}" totalstars="5" checkedcolor="orange" uncheckedcolor="grey" size="20px" readonly="{{isReadonly}}"></star-rating>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-6 text-right my-auto">
+            Overall Trainer Rating
+        </div>
+        <div class="col-6 my-auto">
+            <star-rating value="{{averageMentorRating}}" totalstars="5" checkedcolor="orange" uncheckedcolor="grey" size="20px" readonly="{{isReadonly}}"></star-rating>
+        </div>
+    </div>
+</div>
+
+<div class="content-block p-3" *ngIf="sessionRatings && sessionRatings.length">
+    <div class="row mb-3">
+        <div class="col-12">
+            <h2>Users Feedback</h2>
+        </div>
+    </div>
+    <hr>
+    <div class="row mb-3" *ngFor="let sessionRating of sessionRatings">
+        <div class="col-3 text-right">
+            <b>{{sessionRating.userName}}</b>
+        </div>
+        <div class="col-9">
+            <p>{{sessionRating.generalFeedback}}</p>
+        </div>
+    </div>
+</div>

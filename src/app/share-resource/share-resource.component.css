@@ -1,0 +1,144 @@
+.upload-button {
+	height: 39px;
+}
+
+.btn_t {
+	float: right;
+	margin-right: 168px;
+}
+
+#skl {
+	width: 166px;
+	margin: 26px 5% 0 0;
+}
+
+#skll {
+	width: 166px;
+	margin: 26px 134px 0 0;
+}
+
+.skl {
+	width: 166px;
+}
+
+.frm {
+	margin-top: 79px;
+	width: 100%;
+}
+
+.skill {
+	margin-right: 14px;
+}
+
+.skill_l {
+	margin-right: 33px;
+}
+
+.skill_ml {
+	margin-right: 29px;
+}
+
+.skill_s {
+	margin-right: 40px;
+}
+
+.skill_t {
+	margin-right: 6%;
+}
+
+table {
+	font-family: arial, sans-serif;
+	width: 100%;
+}
+
+td,
+th {
+
+	text-align: left;
+	padding: 8px;
+}
+
+
+.td_l {
+	width: 207px;
+}
+
+.share_btn {
+	padding: 5px 20px;
+	margin-left: 82%;
+	background: #e4e3e3;
+}
+
+.txt {
+	margin-right: 150px;
+}
+
+.snd_div {
+	margin: 26px 0 0 64px;
+}
+
+.skill_u {
+	margin-right: 43px;
+}
+
+.tabs {
+	list-style: none;
+	margin-top: 16px;
+	width: 660px;
+	padding: 0;
+}
+
+.tabs li {
+	float: left;
+	padding: 10px 16px;
+	text-decoration: none;
+	position: relative;
+	border: 2px solid #676565;
+}
+
+.app_btn {
+	padding: 5px 20px;
+	margin: 5px 10px;
+}
+
+.form-ctrl {
+	width: 73%;
+	margin: 23px 0;
+	padding: 24px;
+}
+
+.cmt {
+	float: left;
+	padding: 26px 46px;
+}
+
+.btn_stp {
+	float: right;
+	margin-right: 65px;
+}
+
+.sk_in {
+	width: 200px;
+	margin: 17px 40px;
+}
+
+.f_div {
+	margin-top: 17px;
+}
+
+.lst {
+	list-style: none
+}
+
+.lbl {
+	margin: 0 21px;
+}
+
+.a_link {
+	color: #4380ef!important;
+}
+ 
+  
+ 
+ 
+  

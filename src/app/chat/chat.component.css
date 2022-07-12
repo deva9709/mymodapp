@@ -1,0 +1,82 @@
+
+
+.chat-form {
+  bottom: 0;
+  position: fixed;
+  background-color: #fff;
+  border-top: 1px solid #CCC;
+  width: 330px;
+}
+
+.chat-form .mat-form-field {
+  margin-left: 0px !important;
+}
+
+/* chat */
+::ng-deep .chat-column {
+  padding: 0 0 0 5px;
+}
+
+::ng-deep .chat-section {
+  background-color: #f1f1f1;
+  height: calc(100vh - 164px);
+  overflow-y: auto;
+}
+
+::ng-deep .chat-action {
+  position: absolute;
+  bottom: -19px;
+  left: 1;
+  padding: 0 10px;
+  background-color: #f1f1f1;
+  width: 100%;
+}
+
+::ng-deep .chat-section .chat-message .sender{
+  background-color: #e5e5f1;
+  padding: 10px;
+  border-radius: 3px;
+  margin-left: 1rem;
+  margin-top: 1rem;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+::ng-deep .chat-section .chat-message .sender .time-stamp {
+  font-size: 12px;
+  font-weight: 400;
+  color: #484644;
+}
+
+::ng-deep .chat-section .chat-message .sender .message {
+  font-size: 14px;
+  font-weight: 400;
+  color: #252423;
+  padding-top: 0.3rem;
+  word-wrap: break-word;
+  line-height: 1.5;
+}
+
+::ng-deep .chat-section .chat-message .receiver .message {
+  font-size: 14px;
+  font-weight: 400;
+  color: #252423;
+  padding-top: 0.3rem;
+  word-wrap: break-word;
+  line-height: 1.5;
+}
+
+::ng-deep .chat-section .chat-message .receiver {
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 3px;
+  margin-right: 1rem;
+  margin-top: 1rem;
+  margin-left: 0.5rem;
+}
+
+::ng-deep .chat-section .chat-message .receiver .identity {
+  font-size: 12px;
+  font-weight: 400;
+  color: #484644;
+}

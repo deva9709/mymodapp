@@ -1,0 +1,505 @@
+<div
+    *ngIf="isSuperAdmin&&isusersbarchart==false&&isTopTrainer==false&&isTrainerfeedback==false&&istrainerOnlineHourschart==false&&isTrainerengagementchart==false&&isTrendingsessionschart==false">
+    <div class="content-body">
+        <div class="row p-3">
+            <div class="col-3">
+                <mat-form-field>
+                    <mat-label>Select Tenant</mat-label>
+                    <mat-select name="tenant" [(ngModel)]="selectedTenant" required>
+                        <mat-option *ngFor="let tenant of tenantList" [value]="tenant.id" (click)="refresh()">
+                            {{tenant.tenantName}}
+                        </mat-option>
+                        <mat-option *ngIf="!tenantList.length">
+                            {{errorMessage.noMentorAvailable}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="isSuperAdmin==true||isSiteAdmin==true">
+    <section
+        *ngIf="isusersbarchart==false&&isTopTrainer==false&&isTrainerfeedback==false&&istrainerOnlineHourschart==false&&isTrainerengagementchart==false&&isTrendingsessionschart==false"
+        class="main-section horizontal-nav">
+        <div class="main-content">
+            <div class="container-fluid">
+                <div class="page-widgets page-widgets-style-1">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-6 col-xs-12" (click)="usersbarchart()">
+                            <div class="panel">
+                                <div class="panel-body text-center">
+                                    <p class="text-uppercase mar-btm text-sm">Total Users and Online Users</p>
+                                    <div class="icon">
+                                        <i class="fa fa-users fa-5x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 col-xs-12" (click)="trainerEngagementchart()">
+                            <div class="panel">
+                                <div class="panel-body text-center">
+                                    <p class="text-uppercase mar-btm text-sm">Trainer Engagement</p>
+                                    <div class="icon">
+                                        <i class="fas fa-chalkboard-teacher fa-5x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 col-xs-12" (click)=toptrainer()>
+                            <div class="panel">
+                                <div class="panel-body text-center">
+                                    <p class="text-uppercase mar-btm text-sm">Top Trainers</p>
+                                    <div class="icon">
+                                        <i class="fa fa-graduation-cap fa-5x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 col-xs-12" (click)=trainerfeedback()>
+                            <div class="panel">
+                                <div class="panel-body text-center">
+                                    <p class="text-uppercase mar-btm text-sm">Trainers Feedback</p>
+                                    <div class="icon">
+                                        <i class="fa fa-comments-o fa-5x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 col-xs-12" (click)="trendingSessionschart()">
+                            <div class="panel">
+                                <div class="panel-body text-center">
+                                    <p class="text-uppercase mar-btm text-sm">Trending Sessions</p>
+                                    <div class="icon">
+                                        <i class="fa fa-calendar fa-5x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 col-xs-12" (click)='trainerOnlineHourschart()'>
+                            <div class="panel">
+                                <div class="panel-body text-center">
+                                    <p class="text-uppercase mar-btm text-sm">Trainer Online Hours</p>
+                                    <div class="icon">
+                                        <i class="fas fa-user-clock fa-5x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div>
+        <div *ngIf="isusersbarchart==true">  
+            <div class="content-header">
+                <button type="button" class="btn-icons btn-outline-info mr-2" mat-button (click)="return('totalandonlineusers')">
+                    <mat-icon>keyboard_backspace</mat-icon>
+                </button>
+                <h2 class="col-11">Total Users and Online Users</h2>
+            </div>
+          <canvas baseChart
+                  [datasets]="barChartData"
+                  [labels]="barChartLabels"
+                  [options]="barChartOptions"
+                  [legend]="barChartLegend"
+                  [colors]="barChartColors"
+                  [chartType]="barChartType">
+          </canvas>
+        </div>
+      </div>
+    <!-- Trainer Engagement -->
+    <div class="container-fluid mb-2" *ngIf="isTrainerengagementchart==true">
+        <div class="content-block admin-dashboard">
+            <div class="content-header">
+                <div class="content-header">
+                    <button type="button" class="btn-icons btn-outline-info mr-2" mat-button (click)="return('totalengagement')">
+                        <mat-icon>keyboard_backspace</mat-icon>
+                    </button>
+                    <h2 class="col-11">Trainer Engagement</h2>
+                </div>
+
+                <button class="col-1 text-right btn-icons btn-outline-danger" type="button" mat-button
+                    (click)="closeChart(reportType[1])"
+                    *ngIf="showMentorEngagementChart || showNoReportsForMentorEngagement">
+                    <mat-icon matTooltip="Close chart">clear</mat-icon>
+                </button>
+            </div>
+            <div class="content-body">
+                <form [formGroup]="mentorEngagementForm">
+                    <div class="row p-5">
+                        <div class="col-3">
+                            <mat-form-field>
+                                <mat-label>Select Trainer</mat-label>
+                                <mat-select panelClass="dropView" name="DataType" formControlName="mentor"
+                                    disableOptionCentering>
+                                    <mat-option *ngFor="let mentor of mentors" [value]="mentor.platformUserId">
+                                        {{mentor.name}}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error *ngIf="mentorEngagementForm.get('mentor').errors?.required && totalMentors">
+                                    {{errorMessage.selectedMentorRequired}}</mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3">
+                            <mat-form-field>
+                                <input matInput [max]="minDate" [matDatepicker]="start" placeholder="Start Date"
+                                    formControlName="startDate" (click)="start.open()" readonly />
+                                <mat-datepicker-toggle matSuffix [for]="start"></mat-datepicker-toggle>
+                                <mat-datepicker #start disabled="false"></mat-datepicker>
+                                <mat-error *ngIf="mentorEngagementForm.get('startDate').errors?.required">
+                                    {{errorMessage.startDateRequired}}</mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3">
+                            <mat-form-field>
+                                <input matInput [min]="mentorEngagementForm.value.startDate" [max]="minDate"
+                                    [matDatepicker]="end" placeholder="End Date" [(ngModel)]="endDate" 
+                                    formControlName="endDate" (click)="end.open()" readonly />
+                                <mat-datepicker-toggle matSuffix [for]="end">
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #end disabled="false"></mat-datepicker>
+                                <mat-error *ngIf="mentorEngagementForm.get('endDate').errors?.required">
+                                    {{errorMessage.endDateRequired}}</mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3">
+                            <button type="button" class="btn btn_theme" (click)="getEngagementLevel()"
+                                [disabled]="mentorEngagementForm.invalid">Show
+                                Chart</button>
+                        </div>
+                    </div>
+                </form>
+                <div *ngIf="showNoReportsForMentorEngagement" class="empty">
+                    <p>No Reports Found</p>
+                </div>
+                <div class="row p-4" [hidden]="!showMentorEngagementChart">
+                    <button (click)="showChartForEngagement(chartType[1])"
+                        [ngClass]=" mentorEngagementChartType === chartType[1]  ? 'btn btn-dark btn-sm' : 'btn btn-outline-dark btn-sm'">PIE</button>
+                    <button (click)="showChartForEngagement(chartType[2])"
+                        [ngClass]=" mentorEngagementChartType === chartType[2] ? 'btn btn-dark btn-sm' : 'btn btn-outline-dark btn-sm'">BAR</button>
+                </div>
+                <div class="col-15 row p-2 canvas" [hidden]="!showMentorEngagementChart">
+                    <canvas id="mentorEngagement"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Top Trainers -->
+    <div class="container-fluid mb-2" *ngIf="isTopTrainer==true">
+        <div class="content-block admin-dashboard">
+            <div class="content-header">
+                <div class="content-header">
+                    <button type="button" class="btn-icons btn-outline-info mr-2" mat-button (click)="return('toptrainers')">
+                        <mat-icon>keyboard_backspace</mat-icon>
+                    </button>
+                    <h2 class="col-blue">Top Trainers</h2>
+                </div>
+            </div>
+            <div class="content-body">
+                <div class="row p-5" *ngIf="showTopTrainers">
+                    <table mat-table [dataSource]="dataSource" class="table">
+                        <ng-container matColumnDef="mentorName">
+                            <th mat-header-cell *matHeaderCellDef> Trainer Name </th>
+                            <td mat-cell *matCellDef="let element" class="middle"> {{element.trainerName}} </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="rating">
+                            <th mat-header-cell *matHeaderCellDef> Rating </th>
+                            <td mat-cell *matCellDef="let element">
+                                <star-rating value="{{element.rating | number : '1.1-1'}}" totalstars="5"
+                                    checkedcolor="gold" uncheckedcolor="gray" size="30px" readonly="true"></star-rating>
+                                <div class="ml-5">({{element.rating | number : '1.1-1'}})</div>
+                            </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="topMentors"></tr>
+                        <tr mat-row *matRowDef="let row; columns: topMentors;"></tr>
+                    </table>
+                </div>
+                <div *ngIf="!showTopTrainers" class="empty">
+                    <p>No Records Found</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Trainers Feedback -->
+    <div class="container-fluid mb-2" *ngIf="isTrainerfeedback==true">
+        <div class="content-block admin-dashboard">
+            <div class="content-header">
+                <div class="content-header">
+                    <button type="button" class="btn-icons btn-outline-info mr-2" mat-button (click)="return('trainerfeedback')">
+                        <mat-icon>keyboard_backspace</mat-icon>
+                    </button>
+                    <h2>Trainers Feedback</h2>
+                </div>
+            </div>
+            <div class="content-body">
+                <div class="row p-5" *ngIf="showTopTrainers">
+                    <table mat-table [dataSource]="dataSourceForFeedback" class="table">
+                        <ng-container matColumnDef="mentorName">
+                            <th mat-header-cell *matHeaderCellDef> Trainer Name </th>
+                            <td mat-cell *matCellDef="let element" class="middle"> {{element.trainerName}} </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="rating">
+                            <th mat-header-cell *matHeaderCellDef> Rating </th>
+                            <td mat-cell *matCellDef="let element">
+                                <star-rating value="{{element.rating | number : '1.1-1'}}" totalstars="5"
+                                    checkedcolor="gold" uncheckedcolor="gray" size="30px" readonly="true"></star-rating>
+                                <div class="ml-5">({{element.rating | number : '1.1-1'}})</div>
+                            </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="topMentors"></tr>
+                        <tr mat-row *matRowDef="let row; columns: topMentors;"></tr>
+                    </table>
+                </div>
+                <div *ngIf="!showTopTrainers" class="empty">
+                    <p>No Records Found</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Trending Sessions -->
+    <div class="container-fluid mb-2" *ngIf="isTrendingsessionschart==true">
+        <div class="content-block admin-dashboard">
+            <div class="content-header">
+                <div class="content-header">
+                    <button type="button" class="btn-icons btn-outline-info mr-2" mat-button (click)="return('trendingsession')">
+                        <mat-icon>keyboard_backspace</mat-icon>
+                    </button>
+                    <h2 class="col-11">Trending Sessions</h2>
+                </div>
+                <button class="col-1 text-right btn-icons btn-outline-danger" type="button" mat-button
+                    (click)="closeChart(reportType[2])"
+                    *ngIf="showTrendingSessionChart || showNoReportsForTrendingSession">
+                    <mat-icon matTooltip="Close chart">clear</mat-icon>
+                </button>
+            </div>
+            <div class="content-body">
+                <form [formGroup]="trendingSessionForm">
+                    <div class="row p-5">
+                        <div class="col-3">
+                            <mat-form-field>
+                                <input matInput [max]="minDate" [matDatepicker]="startDateForTrend"
+                                    placeholder="Start Date" formControlName="startDate"
+                                    (click)="startDateForTrend.open()" readonly />
+                                <mat-datepicker-toggle matSuffix [for]="startDateForTrend"></mat-datepicker-toggle>
+                                <mat-datepicker #startDateForTrend disabled="false"></mat-datepicker>
+                                <mat-error>{{errorMessage.startDateRequired}}</mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3">
+                            <mat-form-field>
+                                <input matInput [min]="trendingSessionForm.value.startDate" [max]="minDate"
+                                    [matDatepicker]="endDateForTrend" placeholder="End Date" formControlName="endDate"
+                                    (click)="endDateForTrend.open()" readonly />
+                                <mat-datepicker-toggle matSuffix [for]="endDateForTrend"> </mat-datepicker-toggle>
+                                <mat-datepicker #endDateForTrend disabled="false"></mat-datepicker>
+                                <mat-error>{{errorMessage.endDateRequired}}</mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3">
+                            <button type="button" class="btn btn_theme mr-3" (click)="getTrendingSessions()"
+                                [disabled]="trendingSessionForm.invalid">Show
+                                Chart</button>
+                        </div>
+                    </div>
+                </form>
+                <div *ngIf="showNoReportsForTrendingSession" class="empty">
+                    <p>No Reports Found</p>
+                </div>
+                <div class="col-15 row p-4" [hidden]="!showTrendingSessionChart">
+                    <button (click)="showChartForTrendingSession(chartType[1])"
+                        [ngClass]=" trendingSessionChartType === chartType[1]? 'btn btn-dark btn-sm' : 'btn btn-outline-dark btn-sm'">PIE</button>
+                    <button (click)="showChartForTrendingSession(chartType[2])"
+                        [ngClass]=" trendingSessionChartType === chartType[2]? 'btn btn-dark btn-sm' : 'btn btn-outline-dark btn-sm'">BAR</button>
+                </div>
+                <div class="col-15 row p-4 canvas" [hidden]="!showTrendingSessionChart">
+                    <canvas id="trendingSession"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Trainer Online Hours -->
+    <div class="container-fluid mb-2" *ngIf="istrainerOnlineHourschart==true">
+        <div class="content-block admin-dashboard">
+            <div class="content-header">
+                <div class="content-header">
+                    <button type="button" class="btn-icons btn-outline-info mr-2" mat-button (click)="return('traineronlinehours')">
+                        <mat-icon>keyboard_backspace</mat-icon>
+                    </button>
+                    <h2 class="col-11">Trainer Online Hours</h2>
+                </div>
+                <button class="col-1 text-right btn-icons btn-outline-danger" type="button" mat-button
+                    (click)="closeChart(reportType[3])"
+                    *ngIf="showMentorOnlineHoursChart || showNoReportsForOnlineHours">
+                    <mat-icon matTooltip="Close chart">clear</mat-icon>
+                </button>
+            </div>
+            <div class="content-body">
+                <form [formGroup]="mentorOnlineHoursForm">
+                    <div class="row p-5">
+                        <div class="col-3">
+                            <mat-form-field>
+                                <mat-label>Select Trainer</mat-label>
+                                <mat-select panelClass="dropView" name="DataType" formControlName="mentor"
+                                    disableOptionCentering required>
+                                    <mat-option *ngFor="let mentor of mentors" [value]="mentor.platformUserId">
+                                        {{mentor.name}}
+                                    </mat-option>
+                                    <mat-option *ngIf="!totalMentors">
+                                        {{errorMessage.noMentorAvailable}}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error *ngIf="totalMentors">{{errorMessage.selectedMentorRequired}}</mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3">
+                            <mat-form-field>
+                                <input matInput [max]="minDate" [matDatepicker]="datepicker"
+                                    placeholder="Month and Year" formControlName="startDate" (click)="datepicker.open()"
+                                    readonly required>
+                                <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
+                                <mat-datepicker #datepicker startView="multi-year"
+                                    (monthSelected)="onMonthSelect('start',$event, datepicker)" disabled="false">
+                                </mat-datepicker>
+                                <mat-error>{{errorMessage.startDateRequired}}</mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3">
+                            <mat-form-field>
+                                <input matInput [min]="mentorOnlineHoursForm.value.startDate" [max]="minDate"
+                                    [matDatepicker]="datepickerEnd" placeholder="Month and Year"
+                                    formControlName="endDate" (click)="datepickerEnd.open()" readonly required>
+                                <mat-datepicker-toggle matSuffix [for]="datepickerEnd">
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #datepickerEnd startView="multi-year"
+                                    (monthSelected)="onMonthSelect('end',$event, datepickerEnd)" disabled="false">
+                                </mat-datepicker>
+                                <mat-error>{{errorMessage.endDateRequired}}</mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3">
+                            <button type="button" class="btn btn_theme" (click)="getMentorOnlineHours()"
+                                [disabled]="mentorOnlineHoursForm.invalid || isPending">Show
+                                Chart</button>
+                        </div>
+                    </div>
+                </form>
+                <div *ngIf="showNoReportsForOnlineHours" class="empty">
+                    <p>No Reports Found</p>
+                </div>
+                <div class="col-15 row p-4" [hidden]="!showMentorOnlineHoursChart" #MentorOnlineHours>
+                    <button (click)="showChartForMentorOnlineHours(chartType[1])"
+                        [ngClass]=" onlineHourChartType === chartType[1] ? 'btn btn-dark btn-sm' : 'btn btn-outline-dark btn-sm'">PIE</button>
+                    <button (click)="showChartForMentorOnlineHours(chartType[2])"
+                        [ngClass]=" onlineHourChartType === chartType[2] ? 'btn btn-dark btn-sm' : 'btn btn-outline-dark btn-sm'">BAR</button>
+                </div>
+                <div class="col-15 row p-4 canvas" [hidden]="!showMentorOnlineHoursChart" #MentorOnlineHours>
+                    <canvas id="MentorOnlineHours"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid" *ngIf="this.currentUserType === userRoles['8']&&isusersbarchart==false&&isTopTrainer==false&&isTrainerfeedback==false&&istrainerOnlineHourschart==false&&isTrainerengagementchart==false&&isTrendingsessionschart==false">
+    <div class="row">
+        <div class="col-6">
+            <div class="content-block">
+                <div class="content-header">
+                    <h2 class="col-blue">Today`s Sessions</h2>
+                </div>
+                <div class="content-body">
+                    <div *ngFor="let session of todaySession">
+                        <div class="row">
+                            <div class="col-8 my-auto">
+                                <p>{{session.sessionTitle}}</p>
+                                <small>{{session.startDate | date:'h:mm a'}} to
+                                    {{session.endDate | date:'h:mm a'}}</small>
+                                <small>
+                                    <span class="ml-3 col-orange" *ngIf="session.timeleft && this.showtimer">Starts
+                                        in
+                                        {{this.showtimer}} minutes</span>
+                                </small>
+                                <button mat-button color="primary" *ngIf="showJoin && session.timeleft"
+                                    [routerLink]="['/app/mod-sessions']">View</button>
+                            </div>
+                            <div class="col-4 text-center my-auto">
+                                <p>By: {{session.participants[0].participantUser.name}}</p>
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+                    <div class="text-center mt-3 mb-3" *ngIf="!todaySession.length">No Sessions</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="content-block">
+                <div class="content-header">
+                    <h2 class="col-orange">Upcoming Sessions</h2>
+                </div>
+                <div class="content-body">
+                    <div *ngFor="let session of upcomingSessions">
+                        <div class="row">
+                            <div class="col-8 my-auto">
+                                <p>{{session.sessionTitle}}</p>
+                                <small>{{session.startDate | date:'h:mm a'}}
+                                    to {{session.endDate | date:'h:mm a'}}
+                                    ({{session.startDate | date:'d/M/yyyy'}})</small>
+                            </div>
+                            <div class="col-4 text-center my-auto">
+                                <p>By: {{session.participants[0].participantUser.name}}</p>
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+                    <div *ngIf="!upcomingSessions.length" class="text-center mt-3 mb-3">No Upcoming Sessions</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br /><br />
+<div
+    *ngIf="!isMenteeBlockFlag&&isusersbarchart==false&&isTopTrainer==false&&isTrainerfeedback==false&&istrainerOnlineHourschart==false&&isTrainerengagementchart==false&&isTrendingsessionschart==false">
+    <div class="content-header">
+        <div class="content-header">
+            <h2>
+                <button mat-raised-button (click)="editFeedback()" class="btnFeedback">Feedback Details</button>
+            </h2>
+        </div>
+        <div class="content-block mt-3 pt-1 pb-1">
+            <table [dataSource]="dataSourceFeedback" mat-table matSort class="table">
+                <ng-container matColumnDef="sessionTitle">
+                    <th mat-header-cell *matHeaderCellDef> Session Title </th>
+                    <td mat-cell *matCellDef="let element"> {{element.sessionTitle}} </td>
+                </ng-container>
+                <ng-container matColumnDef="trainerName">
+                    <th mat-header-cell *matHeaderCellDef> Trainer Name </th>
+                    <td mat-cell *matCellDef="let element"> {{element.trainerName}} </td>
+                </ng-container>
+                <ng-container matColumnDef="traineeRating">
+                    <th mat-header-cell *matHeaderCellDef> Trainee Rating </th>
+                    <td mat-cell *matCellDef="let element"> {{element.traineeRating}} </td>
+                </ng-container>
+                <ng-container matColumnDef="feedback">
+                    <th mat-header-cell *matHeaderCellDef> Feedback </th>
+                    <td mat-cell *matCellDef="let element"> <span class="feedbackdot"> {{element.feedback}}</span> </td>
+                </ng-container>
+                <ng-container matColumnDef="date">
+                    <th mat-header-cell *matHeaderCellDef> Date </th>
+                    <td mat-cell *matCellDef="let element"> {{element.date | date:'dd/MM/yyyy'}} </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="feedBackDetailsColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: feedBackDetailsColumns;">
+                </tr>
+            </table>
+            <mat-paginator [length]="dataSourceFeedback?.data.length" #paginator [pageSizeOptions]="[5]"
+                showFirstLastButtons></mat-paginator>
+        </div>
+    </div>
+</div>

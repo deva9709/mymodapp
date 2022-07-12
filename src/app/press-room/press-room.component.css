@@ -1,0 +1,53 @@
+.thumbnail {
+    max-width: 250px;
+    max-height: 250px;
+}
+
+.blog-posts .thumbnail .blog-thumbnail {
+    max-width: 235px;
+    max-height: 250px;
+}
+
+.blog-posts li small {
+    opacity: 0.6;
+}
+
+.blog-posts li div {
+    width: 100%;
+}
+
+.blog-posts li {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 15px 0;
+    border-bottom: 1px solid #e2e2e2;
+}
+
+/* .blog-posts li:first-child {
+    padding: 0 0 15px 0;
+} */
+.press-btn{
+    display: table;
+}
+
+.blog-posts li:after {
+    content: " ";
+    clear: both;
+    display: table;
+}
+
+.single-truncate {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ql-editor {
+    min-height: 30vh;
+}
+
+::ng-deep .blog-posts .press-contents img {
+    display: none;
+}

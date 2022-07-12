@@ -1,0 +1,38 @@
+.feedback {
+    background-color: #fff;
+    border-radius: 5px;
+    width: 60%;
+}
+
+.feedback-header {
+    padding: 15px;
+    border-bottom: 1px solid #ccc;
+    font-size: 1.4rem;
+    margin-bottom: 25px;
+}
+
+.title {
+    font-size: 1.3rem;
+}
+
+.feedback-content {
+    padding: 15px;
+}
+
+.ratings {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.ratings li {
+    margin-right: 10px;
+}
+
+.ratings li a {
+    color: orange;
+}
+
+.mentee-feedback-textArea{
+    margin-left: 17px;
+}

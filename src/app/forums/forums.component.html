@@ -1,0 +1,44 @@
+<div class="row">
+  <div class="col-9">
+    <app-forum-topic-list (topicId)="idFromForumList($event)" [topicData]="topicRouteData"
+      *ngIf="forumService.showForumList"></app-forum-topic-list>
+    <app-question [routerTopicId]="routeId" (backToForumLists)="loadTrendingSkillTopic()"
+      (deleteForumTopicList)="loadMyDiscussion()" *ngIf="forumService.showForumDiscussion"></app-question>
+  </div>
+  <div class="col-3">
+    <div class="text-right mt-4">
+      <button class="btn btn_theme " (click)="newTopic()">New Topic Discussion</button>
+    </div>
+    <div class="content-block p-3 mt-5">
+      <h3 class="mb-2">
+        Recent Activites
+      </h3>
+      <ul class="popular-skills mb-3">
+        <li>
+          <a (click)="loadMyQuestion()">
+            My Questions
+          </a>
+        </li>
+        <li *ngFor="let discussionTitle of discussionList">
+          <a (click)="routeToQuestionComponent(discussionTitle.id)">
+            {{discussionTitle?.title}}
+          </a>
+        </li>
+      </ul>
+      <hr class="mb-3">
+      <h3 class="mb-2">
+        Most Active Topics
+      </h3>
+      <ul class="popular-skills">
+        <li *ngIf="!trendingSkillList.length">
+          <div class="empty">No Topics found</div>
+        </li>
+        <li *ngFor="let trendingSkill of trendingSkillList">
+          <a (click)="loadTopicForSkill(trendingSkill.id)">
+            {{trendingSkill.name}}
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

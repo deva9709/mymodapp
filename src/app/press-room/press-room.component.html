@@ -1,0 +1,258 @@
+<mat-tab-group>
+    <mat-tab label="Global Press Room" class="tab-bodyColor">
+        <div class="row">
+            <div class="col-12">
+                <div class="content-block p-3">
+                    <ul class="blog-posts mb-2">
+                        <li *ngFor="let pressRelease of targetPressReleaseObservable | async">
+                            <div class="thumbnail">
+                                <img src="{{pressRelease.thumbnailURL}}" class="blog-thumbnail mr-3">
+                            </div>
+                            <div>
+                                <button type="button" class="btn-icons btn-outline-danger float-right "
+                                    matTooltip="Delete" mat-button (click)="deletePressRelease(pressRelease)">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                                <button type="button" class="btn-icons btn-outline-warning mr-2 float-right"
+                                    matTooltip="Edit" (click)="getPressReleaseDetails(pressRelease)" mat-button>
+                                    <mat-icon>edit</mat-icon>
+                                </button>
+                                <div class="mb-2">
+                                    <small>{{pressRelease.modifiedDate | date:'LLLL dd yyyy'}}</small>
+                                </div>
+                                <h2 class="mb-2">{{pressRelease.title}}</h2>
+                                <p class="mb-3 press-contents" [innerHtml]="pressRelease.description"></p>
+                                <button type="button" class="btn btn_theme sml-btn"
+                                    (click)="readMore(pressRelease.id)" mat-button>Read More</button>
+                            </div>
+                        </li>
+                    </ul>
+                    <div *ngIf="(targetPressReleaseDataSource && !targetPressReleaseDataSource.data.length) || targetPressReleaseDataSource == undefined"
+                        class="empty p-4 text-center">
+                        <p class="mb-3">No Records Found</p>
+                    </div>
+                    <mat-paginator [length]="targetPressReleaseDataSource?.data.length" #TargetPaginator
+                        [pageSizeOptions]="[10, 20, 30, 40, 50]" showFirstLastButtons></mat-paginator>
+                </div>
+            </div>
+        </div>
+    </mat-tab>
+    <mat-tab label="Press Room" *ngIf="(!canBeMentee || canBeMentor) && !readOnlyAccess" class="tab-bodyColor">
+        <div class="row mb-3">
+            <div class="col-12 text-right">
+                <button class="btn btn_theme" type="button" (click)="newPressRelease()" mat-button>New Press
+                    Release</button>
+            </div>
+        </div>
+        <div class="content-block p-3 mt-3 mb-3">
+            <form novalidate [formGroup]="viewPressReleaseForm" autocomplete="off">
+                <div class="row">
+                    <!-- For Super Admin -->
+                    <div class="col-3" *ngIf="isSuperAdmin">
+                        <mat-form-field>
+                            <mat-label>Select Tenant</mat-label>
+                            <mat-select name="tenant" formControlName="tenant" (openedChange)="tenantFilter.focus()">
+                                <div class="row dropdown-search-row">
+                                    <div class="col-10">
+                                        <input class="searchInput" #tenantFilter matInput type="text" autocomplete="off"
+                                            placeholder="Search" (keyup)="search($event.target.value)">
+                                    </div>
+                                    <div class="col-2 text-right">
+                                        <button mat-button *ngIf="tenantFilter.value" matSuffix mat-icon-button
+                                            class="clear-icon" matTooltip="Clear" matTooltipPosition="below"
+                                            (click)="tenantFilter.value=''; search('')">
+                                            <mat-icon>close</mat-icon>
+                                        </button>
+                                    </div>
+                                </div>
+                                <mat-divider></mat-divider>
+                                <mat-option *ngFor="let tenant of filteredTenantList" [value]="tenant.id"
+                                    (click)="filterTenantBasedRecords(tenant.id)">
+                                    {{tenant.tenantName}}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="viewPressReleaseForm.get('tenant').errors?.required">
+                                {{viewPressRoomFormValidationMessages.tenantRequired}}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-3">
+                        <mat-form-field>
+                            <mat-label>Role</mat-label>
+                            <mat-select panelClass="dropView" name="role" formControlName="role" disableOptionCentering>
+                                <mat-option *ngFor="let role of tenantRoles" [value]="role.id"
+                                    (click)="onRoleSelection()">
+                                    {{role.name}}
+                                </mat-option>
+                            </mat-select>
+                            <button mat-icon-button [disabled]="isRoleDisabled" color="primary" matSuffix
+                                (click)="onClearRole($event)">
+                                <mat-icon style="cursor: pointer;">clear</mat-icon>
+                            </button>
+                            <mat-error *ngIf="viewPressReleaseForm.get('role').errors?.required">
+                                {{viewPressRoomFormValidationMessages.roleRequired}}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-3">
+                        <mat-form-field>
+                            <mat-label>Batch</mat-label>
+                            <mat-select panelClass="dropView" name="batch" formControlName="batch"
+                                disableOptionCentering>
+                                <mat-option *ngFor="let batch of batchList" [value]="batch.batchId"
+                                    (click)="onBatchSelection()">
+                                    {{batch.name}}
+                                </mat-option>
+                            </mat-select>
+                            <button mat-icon-button [disabled]="isBatchDisabled" color="primary" matSuffix
+                                (click)="onClearBatch($event)">
+                                <mat-icon style="cursor: pointer;">clear</mat-icon>
+                            </button>
+                            <mat-error *ngIf="viewPressReleaseForm.get('batch').errors?.required">
+                                {{viewPressRoomFormValidationMessages.batchRequired}}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-3">
+                        <div class="col-2 my-auto">
+                            <button type="button" (click)="loadAllPressRelease()"
+                                [disabled]="!viewPressReleaseForm.valid" class="btn btn_theme">View</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="content-block p-3">
+                    <ul class="blog-posts mb-2">
+                        <li *ngFor="let pressRelease of pressReleaseObservable | async">
+                            <div class="thumbnail">
+                                <img src="{{pressRelease.thumbnailURL}}" class="blog-thumbnail mr-3">
+                            </div>
+                            <div>
+                            <div class="press-btn">
+                                <button type="button" class="btn-icons btn-outline-danger float-right "
+                                    matTooltip="Delete" mat-button (click)="deletePressRelease(pressRelease)">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                                <button type="button" class="btn-icons btn-outline-warning mr-2 float-right"
+                                    matTooltip="Edit" (click)="getPressReleaseDetails(pressRelease)" mat-button>
+                                    <mat-icon>edit</mat-icon>
+                                </button>
+                            </div> 
+                                <div class="mb-2">
+                                    <small>{{pressRelease.modifiedDate | date:'LLLL dd yyyy'}}</small>
+                                </div>
+                                <h2 class="mb-2">{{pressRelease.title}}</h2>
+                                <p class="mb-3 press-contents" [innerHtml]="pressRelease.description"></p>
+                                <button type="button" class="btn btn_theme sml-btn"
+                                    (click)="readMore(pressRelease.id)" mat-button>Read More</button>
+                            </div>
+                        </li>
+                    </ul>
+                    <div *ngIf="(pressReleaseDataSource && !pressReleaseDataSource.data.length) || pressReleaseDataSource == undefined"
+                        class="empty p-4 text-center">
+                        <p class="mb-3">No Records Found</p>
+                    </div>
+                    <mat-paginator [length]="pressReleaseDataSource?.data.length" #Paginator
+                        [pageSizeOptions]="[10, 20, 30, 40, 50]" showFirstLastButtons></mat-paginator>
+                </div>
+            </div>
+        </div>
+    </mat-tab>
+    <mat-tab label="View Press Releases" class="tab-bodyColor">
+        <div class="content-block p-3 mt-3 mb-3">
+            <form novalidate [formGroup]="targetPressReleaseForm" autocomplete="off">
+                <div class="row">
+                    <!-- For Super Admin -->
+                    <div class="col-3" *ngIf="isSuperAdmin">
+                        <mat-form-field>
+                            <mat-label>Select Tenant</mat-label>
+                            <mat-select name="tenant" formControlName="tenant" (openedChange)="tenantFilter.focus()">
+                                <div class="row dropdown-search-row">
+                                    <div class="col-10">
+                                        <input class="searchInput" #tenantFilter matInput type="text" autocomplete="off"
+                                            placeholder="Search" (keyup)="search($event.target.value)">
+                                    </div>
+                                    <div class="col-2 text-right">
+                                        <button mat-button *ngIf="tenantFilter.value" matSuffix mat-icon-button
+                                            class="clear-icon" matTooltip="Clear" matTooltipPosition="below"
+                                            (click)="tenantFilter.value=''; search('')">
+                                            <mat-icon>close</mat-icon>
+                                        </button>
+                                    </div>
+                                </div>
+                                <mat-divider></mat-divider>
+                                <mat-option *ngFor="let tenant of filteredTenantList" [value]="tenant.id">
+                                    {{tenant.tenantName}}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="targetPressReleaseForm.get('tenant').errors?.required">
+                                {{viewTargetPressRoomFormValidationMessages.tenantRequired}}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-3" *ngIf="!isSuperAdmin">
+                        <mat-form-field>
+                            <input matInput [matDatepicker]="start" [min]="minDate" formControlName="startDate"
+                                name="startDate" placeholder="Start Date" readonly (click)="start.open()" />
+                            <mat-datepicker-toggle matSuffix [for]="start"></mat-datepicker-toggle>
+                            <mat-datepicker #start disabled="false"></mat-datepicker>
+                            <mat-error *ngIf="targetPressReleaseForm.get('startDate').errors?.required">
+                                {{viewTargetPressRoomFormValidationMessages.startDateRequired}}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-3" *ngIf="!isSuperAdmin">
+                        <mat-form-field>
+                            <input matInput [matDatepicker]="end" [min]="endMinDate" formControlName="endDate"
+                                name="endDate" placeholder="End Date" readonly />
+                            <mat-datepicker-toggle matSuffix [for]="end"></mat-datepicker-toggle>
+                            <mat-datepicker #end disabled="false"></mat-datepicker>
+                            <mat-error *ngIf="targetPressReleaseForm.get('endDate').errors?.required">
+                                {{viewTargetPressRoomFormValidationMessages.endDateRequired}}</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-3">
+                        <div class="col-2 my-auto">
+                            <button type="button" (click)="getAllTargetPressRelease()"
+                                [disabled]="!targetPressReleaseForm.valid" class="btn btn_theme">View</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="content-block p-3">
+                    <ul class="blog-posts mb-2">
+                        <li *ngFor="let pressRelease of targetPressReleaseObservable | async">
+                            <div class="thumbnail">
+                                <img src="{{pressRelease.thumbnailURL}}" class="blog-thumbnail mr-3">
+                            </div>
+                            <div>
+                                <button type="button" class="btn-icons btn-outline-danger float-right "
+                                    matTooltip="Delete" mat-button (click)="deletePressRelease(pressRelease)">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                                <button type="button" class="btn-icons btn-outline-warning mr-2 float-right"
+                                    matTooltip="Edit" (click)="getPressReleaseDetails(pressRelease)" mat-button>
+                                    <mat-icon>edit</mat-icon>
+                                </button>
+                                <div class="mb-2">
+                                    <small>{{pressRelease.modifiedDate | date:'LLLL dd yyyy'}}</small>
+                                </div>
+                                <h2 class="mb-2">{{pressRelease.title}}</h2>
+                                <p class="mb-3 press-contents" [innerHtml]="pressRelease.description"></p>
+                                <button type="button" class="btn btn_theme sml-btn"
+                                    (click)="readMore(pressRelease.id)" mat-button>Read More</button>
+                            </div>
+                        </li>
+                    </ul>
+                    <div *ngIf="(targetPressReleaseDataSource && !targetPressReleaseDataSource.data.length) || targetPressReleaseDataSource == undefined"
+                        class="empty p-4 text-center">
+                        <p class="mb-3">No Records Found</p>
+                    </div>
+                    <mat-paginator [length]="targetPressReleaseDataSource?.data.length" #TargetPaginator
+                        [pageSizeOptions]="[10, 20, 30, 40, 50]" showFirstLastButtons></mat-paginator>
+                </div>
+            </div>
+        </div>
+    </mat-tab>
+</mat-tab-group>

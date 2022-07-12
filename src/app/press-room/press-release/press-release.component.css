@@ -1,0 +1,24 @@
+::ng-deep .blog-article h1, .blog-article h2, .blog-article h3, .blog-article h4, .blog-article h5, .blog-article h6, .blog-article p, .blog-article ul, .blog-article code, .blog-article img {
+    margin-bottom: 20px;
+    display: block;
+    color: #323538;
+}
+
+::ng-deep .blog-article img, .blog-article p img {
+    max-width: 650px;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+::ng-deep .blog-article p {
+    line-height: 1.9rem !important;
+}
+
+.user-comments .profile-pic {
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    border-radius: 50%;
+    background-color: #ccc;
+}

@@ -1,0 +1,11 @@
+.spinner-label {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 10px;
+    font-size: 0.7rem;
+    font-weight: 400;
+    display: inline-block;
+    width: 36px;
+    text-align: center;
+}

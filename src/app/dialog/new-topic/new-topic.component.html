@@ -1,0 +1,43 @@
+<div class="modal-header">
+  <h1>
+    {{dialogTitle}}
+  </h1>
+</div>
+<div class="modal-body">
+  <form action="">
+    <div class="row">
+      <div class="col-4 mb-3">
+        <mat-form-field>
+          <mat-label>Skills</mat-label>
+          <mat-select [formControl]="skillSet" [(ngModel)]=forumSelectedSkills multiple required>
+            <mat-option *ngFor="let skill of skillList" [(value)]="skill.id" required>{{skill.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-8 mb-3">
+        <mat-form-field>
+          <input matInput type="text" name="question" [(ngModel)]="forumQuestion" placeholder="Question" maxlength="100"
+            required />
+        </mat-form-field>
+      </div>
+      <div class="col-12 mb-3">
+        <mat-form-field>
+          <mat-label>Question Description</mat-label>
+          <input matInput type="text" name="description" [(ngModel)]="forumDescription"
+            placeholder="Question Description" required />
+        </mat-form-field>
+      </div>
+    </div>
+    <hr>
+    <div class="row">
+      <div class="col-12 text-right">
+        <button class="btn btn_theme mr-3" type="button" (click)="isUpdate ? updateQuestion() : createQuestion()">
+          Ask Question
+        </button>
+        <button class="btn btn-secondary" type="button" (click)="cancel()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

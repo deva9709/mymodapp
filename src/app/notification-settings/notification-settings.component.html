@@ -1,0 +1,31 @@
+<!-- Notify Me For Mentee Alerts -->
+<div class="col">
+    <button type="button" class="btn-icons btn-outline-info mb-2" mat-button (click)="back()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <p>Title: {{sessionTitle}}</p>
+  </div>
+  <form [formGroup]='formName'>
+    <div formArrayName="controllerArray">
+      <div *ngFor="let item of formName.get('controllerArray')['controls']; let i=index" [formGroupName]="i">
+        By default notify me via
+        <mat-form-field appearance="fill" class="notifytype">
+          <mat-label>Notification Type</mat-label>
+          <mat-select [(value)]="item.value.controlerInputName0" (selectionChange)="selectNotify($event.value,i)">
+            <mat-option *ngFor="let option of notificationTypes|enumToArray;let i=index" [value]="option.key">
+              {{option.value}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="example-form-field">
+          <input matInput formControlName="controlerInputName1">          
+        </mat-form-field>
+        minutes
+        before each event
+        <button class="btn btn_theme mr-3" (click)='removeInput(i)'>Remove</button>
+      </div>
+    </div>
+  </form>
+  <button class="btn btn_theme mr-3" (click)='addInput()'>Add a Notification</button>
+  <button type="button" class="btn btn_theme mr-3" (click)="saveChanges(1)" *ngIf="isSave==true" > Save </button>
+  <button type="button" class="btn btn_theme mr-3" (click)="saveChanges(2)" *ngIf="isUpdate==true" > Update </button>

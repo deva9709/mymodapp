@@ -1,0 +1,27 @@
+.header-holder {
+    font-family: Roboto,"Helvetica Neue",sans-serif;
+    border-bottom: solid 2px #dee2e6;
+    margin: 0px -24px 5px;
+    padding: 0px 24px;
+}
+
+.header-holder .header-block {
+    display: flex;
+    flex-direction: column;
+}
+
+.header-holder .header-block span,
+.header-holder .date-time-block span {
+    font-size: 20px;
+    color: var(--theme-blue) !important;
+}
+
+.header-holder .date-time-block {
+    display: flex;
+    justify-content: space-between;
+}
+
+.header-holder .date-time-block p {
+    font-size: 14px;
+    margin-top: 5px;
+}

@@ -1,0 +1,25 @@
+.btn:disabled{
+    pointer-events: none;
+    cursor: default;
+}
+
+.remove{
+    font-size:15px;
+    color:red;
+    cursor: pointer;
+}
+
+.drop-input {
+    height: 75px;
+}
+
+.search-form {
+    position: relative;
+}
+
+.search-form .btn-icons {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    z-index: 5;
+}

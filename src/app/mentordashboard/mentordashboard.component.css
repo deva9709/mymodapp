@@ -1,0 +1,12 @@
+.content-block .content-body ul li {
+    padding: 15px;
+    border-bottom: 1px solid #ccc;
+}
+.content-block .content-body ul li:after {
+    display: table;
+    clear: both;
+    content: "";
+}
+.content-block .content-body ul li:last-child {
+    border:none;
+}

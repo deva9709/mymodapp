@@ -1,0 +1,59 @@
+.logo{
+    background-image: url('assets/images/logo.png');
+    width: 250px;
+    height: 70px;
+    margin: 2px 0;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    font-size: 1px;
+    color: transparent;
+    display: block;
+}
+.logo:hover{
+    color: transparent;
+}
+header.preLogin {
+    position: absolute;
+    width: 100%;
+    z-index: 1;
+    background: -moz-linear-gradient(top,  rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+    background: -webkit-linear-gradient(top,  rgba(0,0,0,0.7) 0%,rgba(0,0,0,0) 100%);
+    background: linear-gradient(to bottom,  rgba(0,0,0,0.7) 0%,rgba(0,0,0,0) 100%);
+}
+header.preLogin .container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.navigations {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+.navigations li a {
+    display: block;
+    padding: .4rem .8rem;
+    margin-left: .9rem;
+    color: #01d8ff;
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+.navigations li a:hover {
+    color: #fff;
+}
+.introduction {
+    background-image: url('../../assets/images/banner.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding-top: 8rem;
+    padding-bottom: 2.5rem;
+    color: #fff;
+    text-shadow: 0 0 2px #000;
+}
+.register-form .row .col-6 .float-left, .register-form .row .col-6 .float-right {
+    width: 49%;
+}

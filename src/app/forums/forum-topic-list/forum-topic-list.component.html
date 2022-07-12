@@ -1,0 +1,47 @@
+<div class="content-block pt-3 pl-3 pr-3 pb-1 mb-3">
+  <div class="row mb-3">
+    <div class="col-3">
+      <mat-form-field>
+        <mat-label>Skills</mat-label>
+        <mat-select [formControl]="skillSet" [(ngModel)]=forumSelectedSkills>
+          <mat-option value="0" (click)="loadsearchTopic(true)">All</mat-option>
+          <mat-option *ngFor="let skill of skillList" [(value)]="skill.id" (click)="loadsearchTopic(true)">
+            {{skill.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-9 search-form">
+      <form action="">
+        <mat-form-field>
+          <input matInput type="text" name="searchWord" [(ngModel)]="searchWord" placeholder="Search Topic">
+        </mat-form-field>
+        <button class="btn-icons btn-outline-theme" type="submit" (click)="loadsearchTopic(true)" mat-button>
+          <mat-icon>search</mat-icon>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12">
+    <div *ngFor="let forumTopic of filterforumObservable | async">
+      <div class="content-block p-3 forum-topics mb-3" (click)="routeToForumComponent(forumTopic.id)">
+        <h4 class="mb-2">{{forumTopic.title}}</h4>
+        <div class="mb-3">
+          <small class="skills skill mr-1" *ngFor="let skill of forumTopic.skills">{{skill.name}}</small>
+        </div>
+        <ul class="mb-2">
+          <li class="mr-4 my-auto"><b>Created by :</b>{{forumTopic.creatorName}}</li>
+          <li class="mr-4 my-auto">{{forumTopic.createdOn | date:'dd/MM/yyyy'}}</li>
+          <li><span class="keywords">{{forumTopic.totalComment}} Comments</span></li>
+        </ul>
+      </div>
+    </div>
+    <div *ngIf="filterforumObservable && !forumTopicTotalCount" class="empty text-center">
+      <p>No Records Found</p>
+    </div>
+    <mat-paginator (page)="pageChangeEvent($event)" [length]="forumTopicTotalCount" [pageSize]="pageSize"
+      [pageIndex]="pageIndex" [pageSizeOptions]="[10, 20, 30]" showFirstLastButtons> </mat-paginator>
+  </div>
+</div>

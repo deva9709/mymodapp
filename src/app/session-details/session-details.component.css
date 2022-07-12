@@ -1,0 +1,18 @@
+p {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    font-family: -webkit-body;
+    font-size: large;
+}
+
+.mat-card-content {
+    margin: 36px;
+    font-family: -webkit-body;
+    font-size: large;
+}
+
+.dark-theme .mat-card{
+    background-color: #383663!important;
+}

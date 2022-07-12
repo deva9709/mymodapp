@@ -1,0 +1,339 @@
+﻿<div class="announcements" *ngIf="hasAnnouncement">
+    <ul>
+        <li *ngFor="let announcement of announcementList">
+            <a class="exit float-right" (click)="closeAnnouncement($event,announcement.announcementId)">
+                <mat-icon class="close">clear</mat-icon>
+            </a>
+            <mat-icon class="float-left">error_outline</mat-icon>
+            <p class="mr-5 ml-5">
+                {{announcement.message}}
+            </p>
+        </li>
+    </ul>
+</div>
+<header>
+    <div class="container-fluid">
+        <div class="main-logo">
+            <a>
+                <img class="default-logo" src="assets/images/logo.png" alt="Tieto Evry" />
+                <img class="white-logo" src="assets/images/logo-white.png" alt="Tieto Evry" />
+            </a>
+        </div>
+        <div class="main-search-bar">
+            <a *ngIf="isSearchButtonEnabled" class="user-search" (click)="routeToSearch()">
+                <mat-icon> search</mat-icon>
+            </a>
+            <a (click)="launchCodeLab()" class="code-lab">
+                <mat-icon matTooltip="Launch code lab">cloud_done</mat-icon>
+            </a>
+        </div>
+        <div class="header-actions">
+            <div class="d-flex">
+                <a class="user-notification" (click)="notificationEvent()">
+                    <mat-icon [matBadge]="notificationCount" matBadgeColor="warn" [matBadgeHidden]="hasNotification">
+                        notifications</mat-icon>
+                </a>
+                <div [ngClass]="showNotifications ? 'notification-list' : 'd-none'">
+                    <ul style="position:relative">
+                        <li *ngIf="notificationlists.length ==0">
+                            <p class="text-center">No New Notifications Available</p>
+                        </li>
+                        <li *ngFor="let notificationlist of notificationlists">
+                            <p>{{notificationlist.name}}</p>                           
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="dropdown user-options">
+                <img class="profile-pic" src="assets/images/profile.png" (click)="imgClick()"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" />
+                <div class="dropdown-menu-right">
+                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">                                            
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active" data-toggle="pill" href="#userInfo" role="tab"
+                                aria-controls="User-Info" aria-selected="true">User Info</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" data-toggle="pill" href="#userSetting" role="tab"
+                                aria-controls="User-Setting" aria-selected="false">Settings</a>
+                        </li>                       
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="userInfo" role="tabpanel"
+                            aria-labelledby="user-info-tab">
+                            <div class="card-body text-center">
+                                <div class="dropdown user-pro-body">
+                                    <div class="user-info">
+                                        <img alt="user-img" class="avatar avatar-xl brround mx-auto text-center"
+                                            src="assets/images/profile.png">
+                                        <a class="titlename" title="{{ userName | titlecase }}">{{ userName | titlecase
+                                            }} <br>
+                                            <small>{{ profileRole | titlecase }}</small>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <a class="dropdown-item pd-y-15 border-bottom border-top"
+                                [routerLink]="['/app/my-profile']">
+                                <div class="d-flex">
+                                    <div>
+                                        <h3 class="mb-0">My Profile</h3>
+                                        <p class="tx-12 mb-0 text-muted">Profile Personal information</p>
+                                    </div>
+                                </div>
+                                <div class="ml-auto mg-t-8">
+                                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-right"
+                                        fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
+                                    </svg>
+                                </div>
+                            </a>
+
+                            <a class="dropdown-item pd-y-15 border-bottom" (click)="logout()">
+                                <div class="d-flex">
+                                    <div>
+                                        <h3 class="mb-0">Sign Out</h3>
+                                        <p class="tx-12 mb-0 text-muted">Account Signout</p>
+                                    </div>
+                                </div>
+                                <div class="ml-auto mg-t-8">
+                                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-right"
+                                        fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
+                                    </svg>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="tab-pane fade" id="userSetting" role="tabpanel" aria-labelledby="user-setting-tab">
+                            <div class="card-body">
+                                <div class="swichermainleft">
+                                    <h4>Navigation Layout</h4>
+                                    <div class="switch_section">
+                                        <div class="switch-toggle">
+                                            <div>
+                                                <span>Horizontal Nav</span>
+                                                <label class="switch">
+                                                    <input type="radio" name="navSwitch" value="horizontalNav" checked
+                                                        (change)="ChangeNav('horizontalNav')" />
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="switch-toggle">
+                                            <div>
+                                                <span>Left Side Nav</span>
+                                                <label class="switch">
+                                                    <input type="radio" name="navSwitch" value="leftSideNav"
+                                                        (change)="ChangeNav('leftSideNav')" />
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="switch-toggle">
+                                            <div>
+                                                <span>Right Side Nav</span>
+                                                <label class="switch">
+                                                    <input type="radio" name="navSwitch" value="rightSideNav"
+                                                        (change)="ChangeNav('rightSideNav')" />
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                               
+                                                                               
+                                <div class="selecttenat" >
+                                    <mat-form-field *ngIf="isSuperAdmin==true">
+                                        <mat-label>Select Tenant</mat-label>
+                                        <form novalidate [formGroup]="roleForm" aria-hidden="true" autocomplete="off">
+                                        <select name="tenant"matNativeControl formControlName="tenant" [(ngModel)]="tenantId">
+                                            <div>
+                                                <div class="col-10">
+                                                    <input class="searchInput" #tenantFilter matInput type="text" autocomplete="off"
+                                                        placeholder="Search" (keyup)="search($event.target.value, 'tenant')">
+                                                </div>
+                                                <div class="col-2 text-right">
+                                                    <button mat-button *ngIf="tenantFilter.value" matSuffix mat-icon-button
+                                                        class="clear-icon" matTooltip="Clear" matTooltipPosition="below"
+                                                        (click)="tenantFilter.value=''; search('', 'tenant')">
+                                                        <mat-icon>close</mat-icon>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <mat-divider></mat-divider>
+                                            <option *ngFor="let tenant of filteredTenantList" [value]="tenant.id">
+                                                {{tenant.tenantName}}
+                                            </option>
+                                        </select>                                        
+                                        </form>
+                                    </mat-form-field>
+                                </div>  
+                                <div class="swichermainleft" *ngIf="isSuperAdmin==true || isSiteAdmin==true">
+                                    <h4>Themes</h4>
+                                    <div class="switch_section">
+                                        <div class="switch-toggle">
+                                            <div>
+                                                <span>Light Theme</span>
+                                                <label class="switch">
+                                                    <input type="radio" name="themeSwitch" value="lightTheme" 
+                                                        (change)="ChangeTheme('lightTheme')" [checked]="isLightTheme==true"/>
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="switch-toggle">
+                                            <div>
+                                                <span>Dark Theme</span>
+                                                <label class="switch">
+                                                    <input type="radio" name="themeSwitch" value="darkTheme"
+                                                        (change)="ChangeTheme('darkTheme')" [checked]="isDarkTheme==true"/>
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                               
+                                <div class="swichermainleft colorswicher" *ngIf="isSuperAdmin==true|| isSiteAdmin==true">
+                                    <h4>Theme Color</h4>
+                                    <div class="switch_section">
+                                        <div class="switch-toggle">
+                                            <label class="color-box blue">
+                                                <input type="radio" name="themeColor" value="blue" [checked]="isBlue==true"
+                                                    (click)="ChangeThemeColor('blue')" />
+                                                <span>
+                                                    <svg width="1em" height="1em" viewBox="0 0 16 16"
+                                                        class="bi bi-check" fill="currentColor"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd"
+                                                            d="M10.97 4.97a.75.75 0 0 1 1.071 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.236.236 0 0 1 .02-.022z" />
+                                                    </svg>
+                                                </span>
+                                            </label>
+                                        </div>
+                                        <div class="switch-toggle">
+                                            <label class="color-box purple">
+                                                <input type="radio" name="themeColor" value="purple"
+                                                    (click)="ChangeThemeColor('purple')"[checked]="isPurple==true" />
+                                                <span>
+                                                    <svg width="1em" height="1em" viewBox="0 0 16 16"
+                                                        class="bi bi-check" fill="currentColor"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd"
+                                                            d="M10.97 4.97a.75.75 0 0 1 1.071 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.236.236 0 0 1 .02-.022z" />
+                                                    </svg>
+                                                </span>
+                                            </label>
+                                        </div>
+                                        <div class="switch-toggle">
+                                            <label class="color-box green">
+                                                <input type="radio" name="themeColor" value="green"
+                                                    (click)="ChangeThemeColor('green')"[checked]="isGreen==true" />
+                                                <span>
+                                                    <svg width="1em" height="1em" viewBox="0 0 16 16"
+                                                        class="bi bi-check" fill="currentColor"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd"
+                                                            d="M10.97 4.97a.75.75 0 0 1 1.071 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.236.236 0 0 1 .02-.022z" />
+                                                    </svg>
+                                                </span>
+                                            </label>
+                                        </div>
+                                        <div class="switch-toggle">
+                                            <label class="color-box orange">
+                                                <input type="radio" name="themeColor" value="orange"
+                                                    (click)="ChangeThemeColor('orange')" [checked]="isOrange==true"/>
+                                                <span>
+                                                    <svg width="1em" height="1em" viewBox="0 0 16 16"
+                                                        class="bi bi-check" fill="currentColor"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path fill-rule="evenodd"
+                                                            d="M10.97 4.97a.75.75 0 0 1 1.071 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.236.236 0 0 1 .02-.022z" />
+                                                    </svg>
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>                                      
+                                <button type="button" class="btn btn_theme mr-3" (click)="saveChanges()" *ngIf="isSuperAdmin==true|| isSiteAdmin==true"> Save </button>                                  
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="main-section horizontal-nav">
+    <nav class="main-nav">
+        <ul>
+            <li *ngFor="let Feature of RePresentFeatureslist" class="dropdown">
+                
+                <!-- Handle branch node buttons here -->
+                <div *ngIf="Feature.submenu && Feature.submenu.length > 0">
+                    <a  mat-button [matMenuTriggerFor]="menu.childMenu" [disabled]="Feature.disabled">
+                        {{Feature.featureName}}
+                    </a>
+                    <app-menu-item #menu [items]="Feature.submenu"></app-menu-item>
+                </div>
+                <!-- Leaf node buttons here -->
+                <div *ngIf="!Feature.submenu || Feature.submenu.length === 0">
+                    <a mat-button color="primary" [routerLink]="Feature.path">
+                        {{Feature.featureName }}
+                    </a>
+                </div>
+            </li>
+            <form class="form-inline md-form form-sm active-cyan-2 frm_side side-search" novalidate [formGroup]="globalSearchForm">
+                <input class="form-control form-control-sm w-75 aside" type="text" formControlName="searchText"name="searchText" id="textSearch" placeholder="Search" [formControl]="control" [matAutocomplete]="auto" [(ngModel)]="searchText" 
+                   (keyup)="keyuphit($event)">
+                  <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngFor="let autoComplete of filteredAutoComplete | async" [value]="autoComplete">
+                      {{autoComplete}}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <mat-error *ngIf="globalSearchForm.get('searchText').errors?.required">
+                    {{globalSearchFormValidationMessages.searchTextRequired}}</mat-error>
+                    <button class="btn-icons bttn add_bt material-icons icon-theme btn-theme" type="button" mat-button (click)="globalSearchDialog()" [disabled]="!globalSearchForm.valid">
+                    <mat-icon style="font-size: 20px;" matTooltip="Search">search</mat-icon>
+                  </button>
+              <div class="content-block pt-3 pl-3 pr-3 pb-1 mb-3 offset-6 text-right" *ngIf="isGlobalTextSearched">
+                <div class="col-6">
+                  <div class="row">
+                    <div class="col-12 text-center">
+                      <p *ngFor="let searchList of globalSearchList">
+                        <span routerLink="/{{searchList.Link}}" [queryParams]="{globalSearch:'true',name:searchText}">
+                          <a id="searchlink">{{searchList.Description}}</a><br>
+                          <p>cdcdffdrdfdrfrd</p>
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </form>
+        </ul>
+
+    </nav>
+    <div class="main-content">
+        <div class="container-fluid">
+            <router-outlet *ngIf="loadChild"></router-outlet>
+
+        </div>
+        
+    </div>
+
+</section>
+<footer *ngIf="isNavbarVisible" class="main-footer">
+    <div class="a_bar">
+        <p  class="p_tag">
+            &copy; Copyright {{currentYear}} 
+        </p>
+        <p class="p_tagchld"> 
+            Contact us @ +91 93422 0222 (6 / 7) or mail us @
+            <a class="a_theme" href="mailto:techademy@iiht.com">techademy@iiht.com</a>
+        </p>
+    </div>
+</footer>

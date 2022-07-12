@@ -1,0 +1,76 @@
+<div class="content-block pt-3 pl-3 pr-3 pb-1 mb-3">
+    <div class="row mb-3">
+        <div class="col-9 search-form">
+            <form>
+                <mat-form-field>
+                    <input matInput placeholder="Search Topic, Tags ..." (keyup)="applyFilter($event.target.value)">
+                </mat-form-field>
+            </form>
+        </div>
+        <div class="col-3 text-right my-auto">
+            <button class="btn btn_theme" type="button" (click)="newArticle()">New Article</button>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-8">
+        <div class="content-block p-3">
+            <ul class="blog-posts mb-2">
+                <li *ngIf="!filterblogs.length">
+                    <div class="empty">No blogs found</div>
+                </li>
+                <li *ngFor="let blog of filterblogsObservable | async">
+                    <div class="thumbnail">
+                        <img src={{blog.thumbnailURL}} alt="{{blog.topic}}" class="blog-thumbnail mr-3">
+                    </div>
+                    <div class="w-100">
+                        <button type="button" class="btn-icons btn-outline-danger float-right" mat-button
+                            (click)="deleteBlog(blog)"
+                            *ngIf="blog.createdUserId === currentUserId || currentUserType === userRoles[1] || (currentUserType === userRoles[7] && blog.createdUserId !== 1)"
+                            matTooltip="Delete">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                        <button type="button" class="btn-icons btn-outline-warning float-right" mat-button
+                            *ngIf="blog.createdUserId === currentUserId || currentUserType === userRoles[1] || (currentUserType === userRoles[7] && blog.createdUserId !== 1)"
+                            (click)="editBlog(blog)" matTooltip="Edit">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                        <div class="mb-3">
+                            <small>{{blog.modifiedDate | date:'LLLL dd yyyy'}}</small>
+                        </div>
+                        <h2 class="mb-3">{{blog.topic}}</h2>
+                        <p class="mb-3 blog-contents" [innerHtml]="blog.content"></p>
+                        <div class="mb-3"><small class="skill mr-1"
+                                *ngFor="let tag of blog.tags.split(',')">{{tag}}</small></div>
+                        <button type="button" class="btn btn_theme sml-btn" (click)="readMore(blog.id)">Read
+                            More</button>
+                    </div>
+                </li>
+            </ul>
+            <mat-paginator [length]="filterblogsDataSource?.data.length" #paginator [pageSize]="10"
+                [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons>
+            </mat-paginator>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="content-block p-3">
+            <h2 class="mb-2">Most Popular Topics</h2>
+            <hr>
+            <ul class="popular-topics mt-2">
+                <li *ngIf="!popularBlogs.length">
+                    <div class="empty">No blogs found</div>
+                </li>
+                <li *ngFor="let popularBlog of popularBlogs" (click)="readMore(popularBlog.id)">
+                    <img src="{{popularBlog.thumbnailURL}}" alt="{{popularBlog.topic}}" class="topic-thumbnail mr-3">
+                    <div>
+                        <h3 class="mb-2">{{popularBlog.topic}}</h3>
+                        <div>
+                            <small>{{popularBlog.modifiedDate | date:'LLLL dd yyyy'}}</small>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

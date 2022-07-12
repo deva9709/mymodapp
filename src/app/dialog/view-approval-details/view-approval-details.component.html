@@ -1,0 +1,82 @@
+<div class="modal-header">  
+  <div class="row">
+    <h1>
+      <b> Session Title :</b> {{approvalData.sessionTitle}}                  
+    </h1>
+  </div>  
+</div>
+  <div class="modal-body">    
+    <div class="row">
+      <div class="col-6">
+        <div class="row">
+          <div class="col-6 text-right">
+            <b>Trainer Name:</b>
+          </div>
+          <div class="col-6">
+            {{approvalData.trainerName}}
+          </div>
+        </div>        
+      </div>  
+      <div class="col-6">   
+        <div class="row">
+          <div class="col-5 text-right">
+            <b>Start Date Time:</b>
+          </div>
+          <div class="col-7">
+            {{approvalData.startDate | date:'d/M/yyyy,   h:mm a'}}
+          </div>
+        </div>                    
+      </div>          
+    </div>    
+    <div class="row mt-1">
+      <div class="col-6">
+        <div class="row">
+          <div class="col-6 text-right">
+            <b>No of Trainees:</b>
+          </div>
+          <div class="col-6">
+            {{approvalData.traineeCount}}  
+          </div>
+        </div>                  
+      </div>  
+      <div class="col-6">            
+        <div class="row">
+          <div class="col-5 text-right">
+            <b>End Date Time:</b>
+          </div>
+          <div class="col-7 text-left">
+            {{approvalData.endDate | date:'d/M/yyyy,   h:mm a'}}
+          </div>
+        </div>                     
+      </div>          
+    </div> 
+    <div class="row mt-1">
+      <div class="col-6">
+        <div class="row">
+          <div class="col-6 text-right">
+            <b>Organiser:</b>
+          </div>
+          <div class="col-6">
+            {{approvalData.trainerName}}  
+          </div>
+        </div>                  
+      </div>  
+      <div class="col-6" *ngIf="approvalData.approvalRequestorTenant!=currentTenantId">            
+        <div class="row">
+          <div class="col-5 text-right">
+            <b>Organised By:</b>
+          </div>
+          <div class="col-7 text-left">
+            {{approvalData.approvalRequestorTenantName}}
+          </div>
+        </div>                     
+      </div>          
+    </div> 
+    <hr>
+    <div class="row offset-1">      
+      <h3><b>Session Approval Status : </b> {{sessionApprovalStatus[approvalData.sessionApprovalStatus]}} </h3>      
+    </div>
+    <div class="row mt-1">      
+      <h3>{{approvalData.description}}</h3>      
+    </div>
+  </div>

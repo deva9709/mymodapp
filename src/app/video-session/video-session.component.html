@@ -1,0 +1,96 @@
+<div class="container-fluid sessions">
+    <div class="row" id="collaboration-section" [ngClass]="callStatus ? 'd-none' : ''">
+        <div class="col-md-6">
+            <div id="local-media">
+            </div>
+        </div>
+    </div>
+    <div id="audio-tracks" [ngClass]="callStatus ? 'd-none' : ''">
+
+    </div>
+    <div class="white-board-view" [ngClass]="whiteBoard ? '' : 'd-none'" [ngClass]="callStatus ? 'd-none' : ''">
+        <app-whiteboard [hidden]="!whiteBoard"></app-whiteboard>
+    </div>
+    <ul class="video-controls" [ngClass]="callStatus ? 'd-none' : ''">
+        <li>
+            <a class="cursor" (click)="whiteboard()">
+                <i class="material-icons">create</i>
+            </a>
+            <!-- <a href="javascript:void(0)" [routerLink]="['/app/add-assignment']">
+                <i class="material-icons">assignment</i>
+            </a> -->
+            <a class="cursor" id="screen-share">
+                <i class="material-icons">{{screenShareStatus ? 'desktop_windows' : 'desktop_access_disabled'}}</i>
+            </a>
+            <a class="cursor" id="video-disable">
+                <i class="material-icons">{{videoStatus ? 'videocam' : 'videocam_off'}}</i>
+            </a>
+            <a class="cursor" id="audio-mute">
+                <i class="material-icons">{{micStatus ? 'mic' : 'mic_off'}}</i>
+            </a>    
+            <a id="leave-room" class="end-call cursor">
+                <i class="material-icons">call_end</i>
+            </a>
+        </li>
+    </ul>
+    <!-- <ul class="mini-member-list">
+    <li>
+      <span class="status">
+        <i class="material-icons">mic</i>
+      </span>
+      <video src="#"></video>
+    </li>
+    <li>
+      <span class="status">
+        <i class="material-icons">mic</i>
+      </span>
+      <video src="#"></video>
+    </li>
+    <li>
+      <span class="status">
+        <i class="material-icons">mic</i>
+      </span>
+      <video src="#"></video>
+    </li>
+    <li>
+      <span class="status">
+        <i class="material-icons">mic</i>
+      </span>
+      <video src="#"></video>
+    </li>
+    <li>
+      <span class="status">
+        <i class="material-icons">mic</i>
+      </span>
+      <video src="#"></video>
+    </li>
+    <li>
+      <span class="status">
+        <i class="material-icons">mic</i>
+      </span>
+      <video src="#"></video>
+    </li>
+    <li>
+      <span class="status">
+        <i class="material-icons">mic</i>
+      </span>
+      <video src="#"></video>
+    </li>
+    <li>
+      <span class="status">
+        <i class="material-icons">mic</i>
+      </span>
+      <video src="#"></video>
+    </li>
+    <li>
+      <button type="button" class="viewAll-members text-center" (click)="viewmember()">
+        <i class="material-icons">people</i>
+        40+
+      </button>
+    </li>
+  </ul> -->
+</div>
+
+<div class="chat-conversation" [ngClass]="openchat ? 'open' : ''">
+    <app-chat [roomId]="roomName"></app-chat>
+</div>

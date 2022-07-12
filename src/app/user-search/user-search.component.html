@@ -1,0 +1,171 @@
+<div class="session-list">
+  <mat-tab-group>
+    <mat-tab label="Search Session Status">
+      <div class="content-block p-3 mb-3">
+        <form [formGroup]="findSessionStatusForm" (ngSubmit)="findSessionStatus()" novalidate autocomplete="off">
+          <div class="row">
+            <!-- Skill -->
+            <div class="col-3" *ngIf="isShowTenant">
+              <mat-form-field>
+                <mat-label>Select Tenant</mat-label>
+                <mat-select formControlName="tenantId" panelClass="dropView" (selectionChange)="getSessionList($event)"
+                  (openedChange)="tenantFilter.focus()">
+                  <div class="row dropdown-search-row">
+                    <div class="col-10">
+                      <input class="searchInput" #tenantFilter matInput type="text" autocomplete="off"
+                        placeholder="Search" (keyup)="search($event.target.value, 'tenant')">
+                    </div>
+                    <div class="col-2 text-right">
+                      <button mat-button *ngIf="tenantFilter.value" matSuffix mat-icon-button class="clear-icon"
+                        matTooltip="Clear" (click)="tenantFilter.value=''; search('', 'tenant')">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                  <mat-divider></mat-divider>
+                  <mat-option *ngFor="let tenant of filteredTenant" [value]="tenant.id">
+                    {{ tenant.tenantName }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <!-- Session List -->
+            <div class="col-3">
+              <mat-form-field>
+                <mat-label>Select Session</mat-label>
+                <mat-select formControlName="sessionScheduleId" panelClass="dropView"
+                  (openedChange)="sessionFilter.focus()">
+                  <div class="row dropdown-search-row">
+                    <div class="col-10">
+                      <input class="searchInput" #sessionFilter matInput type="text" autocomplete="off"
+                        placeholder="Search" (keyup)="search($event.target.value, 'session')">
+                    </div>
+                    <div class="col-2 text-right">
+                      <button mat-button *ngIf="sessionFilter.value" matSuffix mat-icon-button class="clear-icon"
+                        matTooltip="Clear" (click)="sessionFilter.value=''; search('', 'session')">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                  <mat-divider></mat-divider>
+                  <mat-option *ngIf="filteredSession.length == 0">-None-</mat-option>
+                  <mat-option *ngFor="let session of filteredSession" [value]="session.id">
+                    {{ session.sessionTitle }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="findSessionStatusForm.get('sessionScheduleId').errors?.required">
+                  Please select session title
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <!--Attendance status-->
+            <div class="col-3">
+              <mat-form-field>
+                <mat-label>Select Attendance Status</mat-label>
+                <mat-select formControlName="attendanceStatus" panelClass="dropView">
+                  <mat-divider></mat-divider>
+                  <mat-option *ngFor="let status of statusList" [value]="status">
+                    {{ status }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <!--LateCommer Check-->
+            <div class="col-3">
+              <mat-checkbox formControlName="isLateComer">LateComers Only</mat-checkbox>
+            </div>
+            <!--search Button-->
+            <div class="col-3">
+              <button class="btn btn_theme" type="submit" [disabled]="!findSessionStatusForm.valid">
+                Search
+              </button>
+            </div>
+          </div>
+        </form>
+        <div class="row">
+          <div class="col-12">
+            <mat-card *ngIf=isShowSessionStatus class="user-theme">
+              <mat-card-header class="card-header">
+                <mat-card-title>Title: {{sessionTitle}}</mat-card-title>
+                <mat-card-title>Start Date: {{sessionStartDate | date:'dd/MM/yy h:mm:ss a'}}</mat-card-title>
+                <mat-card-title>End Date: {{sessionEndDate | date:'dd/MM/yy h:mm:ss a'}}</mat-card-title>
+                <!-- <mat-card-title *ngIf="isShowTenant">Tenant Name: {{tenantName}}</mat-card-title> -->
+              </mat-card-header>
+              <mat-card-content>
+                <div class="content-block pt-1 pb-1">
+                  <table mat-table [dataSource]="sessionStatusdataSource" matSort class="table">
+
+                    <ng-container matColumnDef="Name">
+                      <th mat-header-cell *matHeaderCellDef>Name</th>
+                      <td mat-cell *matCellDef="let element">
+                        {{element.name}}
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="Email">
+                      <th mat-header-cell *matHeaderCellDef>Email</th>
+                      <td mat-cell *matCellDef="let element">
+                        {{element.email}}
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="Status">
+                      <th mat-header-cell *matHeaderCellDef>Status</th>
+                      <td mat-cell *matCellDef="let element">
+                        {{element.status}}
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="In Time">
+                      <th mat-header-cell *matHeaderCellDef>In Time</th>
+                      <td mat-cell *matCellDef="let element">
+                        {{element.inTime == null ? 'N/A' : element.inTime | date:'dd/MM/yy h:mm:ss a'}}
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="Out Time">
+                      <th mat-header-cell *matHeaderCellDef>Out Time</th>
+                      <td mat-cell *matCellDef="let element">
+                        {{element.outTime == null ? 'N/A' : element.outTime | date:'dd/MM/yy h:mm:ss a'}}
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="Duration (Minutes)">
+                      <th mat-header-cell *matHeaderCellDef>Duration (Minutes)</th>
+                      <td mat-cell *matCellDef="let element">
+                        {{element.participantSessionDuration }}
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="LateComer">
+                      <th mat-header-cell *matHeaderCellDef>Latecomer</th>
+                      <td mat-cell *matCellDef="let element">
+                        {{element.isLateComer}}
+                      </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="sessionStatusColumn; sticky: true"></tr>
+                    <tr mat-row *matRowDef="let row; columns: sessionStatusColumn;"></tr>
+
+                  </table>
+                  <div *ngIf="sessionStatusdataSource && !sessionStatusdataSource.data.length"
+                    class="empty text-center">
+                    <p>No Records Found</p>
+                  </div>
+                  <mat-paginator (page)="pageChangeEvent($event)" [length]="sessionUserStatusDataSource?.data.length"
+                    #sessionStatuspaginator [pageSize]="5" [pageSizeOptions]="[5,10, 15, 20]" showFirstLastButtons>
+                  </mat-paginator>
+                </div>
+              </mat-card-content>
+              <div class="row mt-2" *ngIf="isExportCSV">
+                <div class=" offset-4 col-4">
+                  <button name="search" class="btn btn_theme ml-2" (click)="downloadAsCSV()">Export as CSV</button>
+                </div>
+              </div>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

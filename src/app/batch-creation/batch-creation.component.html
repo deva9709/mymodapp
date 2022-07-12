@@ -1,0 +1,350 @@
+<mat-tab-group (selectedTabChange)="tabChanged($event)" [(selectedIndex)]="index">
+   <mat-tab label="Create Batch" class="tab-bodyColor">
+      <form novalidate [formGroup]="batchCreationForm" autocomplete="off">
+        <div class="row tab-bodyColor">
+          <div class="col-3 batch-lebel">
+             <mat-label class="batch-name">Batch Name : </mat-label>
+         </div>
+          <div class="col-3" *ngIf="!isEditFlag && !isTenantFlag">
+                  <mat-form-field class="tenant-lebel">
+                    <mat-label>Select Tenant *</mat-label>
+                    <mat-select name="tenant" formControlName="tenantName"
+                       (openedChange)="tenantFilter.focus()">
+                       <div class="row dropdown-search-row">
+                          <div class="col-10">
+                             <input class="searchInput" #tenantFilter matInput type="text" autocomplete="off"
+                                placeholder="Search" (keyup)="search($event.target.value, 'tenant')">
+                          </div>
+                          <div class="col-2 text-right">
+                             <button mat-button *ngIf="tenantFilter.value" matSuffix mat-icon-button class="clear-icon"
+                                matTooltip="Clear" matTooltipPosition="below"
+                                (click)="tenantFilter.value=''; search('', 'tenant')">
+                                <mat-icon>close</mat-icon>
+                             </button>
+                          </div>
+                       </div>
+                       <mat-divider></mat-divider>
+                       <mat-option *ngFor="let tenant of filteredTenants" [value]="tenant.id"
+                          (click)="getTanentDetails(tenant)">
+                          {{tenant.tenantName}}
+                       </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="batchCreationForm.get('tenantName').errors?.required">
+                     {{batchCreationFormValidationMessages.tenantRequired}}</mat-error>
+                 </mat-form-field>
+          </div> 
+          <div class="col-3" *ngIf="isEditFlag">
+            <mat-form-field>
+              <input matInput placeholder="Tenant Name *" readonly formControlName="tenantName" [(ngModel)]="tenantVale" [disabled]=true>
+          </mat-form-field>
+      </div>
+      <div class="col-3" *ngIf="isTenantFlag">
+         <mat-form-field>
+           <input matInput placeholder="Tenant Name *"  readonly formControlName="tenantName" [(ngModel)]="tenantVale" [disabled]=true>
+       </mat-form-field>
+      </div>
+          <div class="col-3">
+              <mat-form-field>
+                <input matInput placeholder="Course Name *" name="courseName" formControlName="courseName" [(ngModel)]="course">
+                <mat-error *ngIf="batchCreationForm.get('courseName').errors?.required">
+                  {{batchCreationFormValidationMessages.courseNameMessage}}</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field>
+              <input matInput placeholder="Batch Name *" name="batchName" formControlName="batchName" [(ngModel)]="batch">
+              <mat-error *ngIf="batchCreationForm.get('batchName').errors?.required">
+               {{batchCreationFormValidationMessages.batchNameMessage}}</mat-error>
+          </mat-form-field>
+      </div>
+    </div>
+    <div class="row tab-bodyColor">
+       <div class="col-3 batch-creation">
+          <mat-label class="batch-description">Batch Description : </mat-label>
+      </div>
+       <div class="col-3">
+          <mat-form-field>
+              <input matInput placeholder="Batch Description" name="description" formControlName="description" [(ngModel)]="descriptionValue">
+          </mat-form-field>
+       </div>
+    </div>
+    <div class="row tab-bodyColor">
+       <div class="col-3" *ngIf="!isEditFlag">
+       <button class="btn btn_theme batch-button" (click)="batchCreation()" type="submit" [disabled]="!createBatchPermission">Create Batch</button>
+       </div>
+       <div class="col-3" *ngIf="isEditFlag">
+         <button class="btn btn_theme batch-create update-button" (click)="updateBatch()" type="submit" [disabled] ="!updateBatchPermission">Update Batch</button>
+      </div>
+      <div class="col-3" *ngIf="isEditFlag">
+         <button class="btn btn_theme batch-create" (click)="cancel()" type="submit" >Cancel</button>
+      </div>
+     </div>
+    <div class="row tab-bodyColor select-tenant-row">
+       <div class="col-3" *ngIf="!isTenantFlag">
+          <mat-form-field class="select-tenant-button">
+            <mat-label>Select Tenant</mat-label>
+            <mat-select name="tenant"
+               (openedChange)="tenantFilter.focus()">
+               <div class="row dropdown-search-row">
+                  <div class="col-10">
+                     <input class="searchInput" #tenantFilter matInput type="text" autocomplete="off"
+                        placeholder="Search" (keyup)="search($event.target.value, 'tenant')">
+                  </div>
+                  <div class="col-2 text-right">
+                     <button mat-button *ngIf="tenantFilter.value" matSuffix mat-icon-button class="clear-icon"
+                        matTooltip="Clear" matTooltipPosition="below"
+                        (click)="tenantFilter.value=''; search('', 'tenant')">
+                        <mat-icon>close</mat-icon>
+                     </button>
+                  </div>
+               </div>
+               <mat-divider></mat-divider>
+               <mat-option *ngFor="let tenant of filteredTenants" [value]="tenant.id"
+                  (click)="getTanentDetailsForBatch(tenant)">
+                  {{tenant.tenantName}}
+               </mat-option>
+            </mat-select>
+         </mat-form-field>
+       </div>
+    </div>
+      <div class="content-block mt-3 pt-1 pb-1">
+       
+        <table mat-table [dataSource]="dataSourceTable" matSort class="table">
+          <ng-container matColumnDef="tanentName">
+             <th mat-header-cell *matHeaderCellDef mat-sort-header>Tenant Name</th>
+             <td mat-cell *matCellDef="let element"> {{element.tenant.tenantName}} </td>
+         </ng-container>
+    
+         <ng-container matColumnDef="batchName" >
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Batch Name</th>
+          <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+        </ng-container>
+    
+       <ng-container matColumnDef="batchDescription">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Batch Description</th>
+          <td mat-cell *matCellDef="let element"> {{element.description}} </td>
+       </ng-container>
+    
+          <ng-container matColumnDef="createdByUser">
+             <th mat-header-cell *matHeaderCellDef mat-sort-header>Created By User</th>
+             <td mat-cell *matCellDef="let element"> {{element.createdByUser.name}} </td>
+         </ng-container>
+           <ng-container matColumnDef="action">
+               <th mat-header-cell *matHeaderCellDef>Action</th>
+               <td mat-cell *matCellDef="let element">
+                <button class="btn-icons btn-outline-warning mr-2" type="button" [disabled] ="!updateBatchPermission"
+                (click)="edtBatchDetails(element)" mat-button>
+                <mat-icon matTooltip="Edit">edit</mat-icon>
+                </button>
+                 <button class="btn-icons btn-outline-danger" type="button" [disabled]="!deleteBatchPermission"
+                (click)="deleteBatch(element)" mat-button [disabled]="!isDeleteFlag">
+                <mat-icon matTooltip="Delete">delete</mat-icon>
+                </button>
+               </td>
+           </ng-container>
+           <tr mat-header-row *matHeaderRowDef="displayedColumnsForBatchList"></tr>
+           <tr mat-row *matRowDef="let row; columns: displayedColumnsForBatchList;"></tr>
+       </table>
+       <div class="empty text-center p-5" *ngIf="showNoBatchList">
+           <p>No Batch Found</p>
+       </div>
+       <mat-paginator [length]="dataSourceTable?.data.length" #batchPaginator [pageSizeOptions]="[10, 20, 30, 40, 50]"
+       *ngIf="!showNoBatchList" showFirstLastButtons></mat-paginator>
+    </div>
+    </form>
+        </mat-tab>
+    <mat-tab label="Add Batch Member" class="tab-bodyColor">
+      <form novalidate [formGroup]="viewUserForm" autocomplete="off">
+      <div class="row add-bulk">
+         <!-- For Super Admin -->
+         <div class="col-3" *ngIf="isSuperAdmin">
+             <mat-form-field>
+                 <mat-label>Select Tenant *</mat-label>
+                 <mat-select name="tenant"  formControlName="tenant" 
+                     (openedChange)="tenantFilter.focus()">
+                     <div class="row dropdown-search-row">
+                         <div class="col-10">
+                             <input class="searchInput" #tenantFilter matInput type="text" autocomplete="off"
+                                 placeholder="Search" (keyup)="search($event.target.value,tenant)">
+                         </div>
+                         <div class="col-2 text-right">
+                             <button mat-button *ngIf="tenantFilter.value" matSuffix mat-icon-button
+                                 class="clear-icon" matTooltip="Clear" matTooltipPosition="below"
+                                 (click)="tenantFilter.value=''; search('')">
+                                 <mat-icon>close</mat-icon>
+                             </button>
+                         </div>
+                     </div>
+                     <mat-divider></mat-divider>
+                     <mat-option *ngFor="let tenant of filteredTenants" [value]="tenant.id"
+                         (click)="filterTenantRoles(tenant)">
+                         {{tenant.tenantName}}
+                     </mat-option>
+                 </mat-select>
+                 <mat-error *ngIf="viewUserForm.get('tenant').errors?.required">
+                     {{viewUserFormValidationMessages.tenantRequiredMessage}}</mat-error>
+             </mat-form-field>
+         </div>
+         <div class="col-3">
+             <mat-form-field>
+                 <mat-label>Role *</mat-label>
+                 <mat-select panelClass="dropView" name="role" formControlName="role" 
+                     disableOptionCentering>
+                     <mat-option *ngFor="let role of tenantRoles" [value]="role.id"  (click)="getRollValue(role)">
+                         {{role.name}}
+                     </mat-option>
+                 </mat-select>
+                 <mat-error *ngIf="viewUserForm.get('role').errors?.required">
+                     {{viewUserFormValidationMessages.roleRequired}}</mat-error>
+             </mat-form-field>
+         </div>
+     </div>
+     </form>
+
+<div class="content-block mt-3 pt-1 pb-1">
+ <table mat-table [dataSource]="userDetails" #batchSort= "matSort" matSort class="table">
+   <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox (change)="masterToggle();selectMemberValue($event)"
+              [checked]="selection.hasValue() && isAllSelected()" 
+              [indeterminate]="selection.hasValue() && !isAllSelected()">
+          </mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let element">
+          <mat-checkbox (click)="$event.stopPropagation()"
+              (change)="selection.toggle(element);selectMemberValue($event)"
+              [checked]="selection.isSelected(element)" >
+          </mat-checkbox>
+         
+      </td>
+  </ng-container>
+     <!-- Email Column -->
+     <ng-container matColumnDef="emailAddress">
+         <th mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
+         <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+     </ng-container>
+
+     <!-- Name Column -->
+     <ng-container matColumnDef="name">
+         <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+         <td mat-cell *matCellDef="let element"> {{element.name}}<span class= "ml-1" *ngIf="element?.externalTrainer">
+             <mat-chip color="primary" selected>Ext</mat-chip>
+         </span> </td>
+     </ng-container>
+
+     <!-- Surname Column -->
+     <ng-container matColumnDef="surname">
+         <th mat-header-cell *matHeaderCellDef mat-sort-header> Surname </th>
+         <td mat-cell *matCellDef="let element"> {{element.surName}} </td>
+     </ng-container>
+     <tr mat-header-row *matHeaderRowDef="usersDisplayedColumns"></tr>
+     <tr mat-row *matRowDef="let row; columns: usersDisplayedColumns;"></tr>
+ </table>
+ <div *ngIf="userDetails && !userDetails.data.length" class="empty text-center p-4">
+     <p>No Records Found</p>
+ </div>
+ <mat-paginator #addmemberPaginator [pageSizeOptions]="[10, 20, 30, 40, 50]" showFirstLastButtons>
+ </mat-paginator>
+</div>
+<div class="row tab-bodyColor">
+   <div class="col-3 add-member">
+   <button class="btn btn_theme batch-create" (click)="addMembers()" type="submit" *ngIf="isHideAndDisableFlag" >Add Member</button>
+   </div>
+      </div>
+    </mat-tab>
+    <mat-tab label="Manage Batch Member" class="tab-bodyColor">
+    <form novalidate [formGroup]="manageBatchMember" autocomplete="off">
+       <div class="row">
+         <div class="col-3" *ngIf="isSuperAdmin">
+            <mat-form-field>
+                <mat-label>Select Tenant</mat-label>
+                <mat-select (openedChange)="tenantFilter.focus()"  name="tenantForBatch" formControlName="tenantForBatch">
+                    <div class="row dropdown-search-row">
+                        <div class="col-10">
+                            <input class="searchInput" #tenantFilter matInput type="text" autocomplete="off"
+                                placeholder="Search" (keyup)="search($event.target.value,tenant)">
+                        </div>
+                        <div class="col-2 text-right">
+                            <button mat-button *ngIf="tenantFilter.value" matSuffix mat-icon-button
+                                class="clear-icon" matTooltip="Clear" matTooltipPosition="below"
+                                (click)="tenantFilter.value=''; search('')">
+                                <mat-icon>close</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <mat-option *ngFor="let tenant of filteredTenants" [value]="tenant.id"
+                        (click)="filterTenantRoles(tenant)">
+                        {{tenant.tenantName}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+     <div class="col-3">
+        <mat-form-field>
+            <mat-label>Select Batch *</mat-label>
+            <mat-select panelClass="dropView" name="batchValue" formControlName="batchValue" 
+                disableOptionCentering>
+                <mat-option *ngFor="let batch of batchListValue" [value]="batch"
+                     (click)="filterBatch(batch)">
+                     {{batch.name}}
+                 </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+       </div>
+      <div class="content-block mt-3 pt-1 pb-1">
+         <table mat-table [dataSource]="manageMembersDetails" matSort class="table">
+           <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef>
+                  <mat-checkbox (change)="masterToggleMembers();selectValue($event)"
+                      [checked]="selectionMembers.hasValue() && isAllSelectedMembers()"
+                      [indeterminate]="selectionMembers.hasValue() && !isAllSelectedMembers()">
+                  </mat-checkbox>
+              </th>
+              <td mat-cell *matCellDef="let element">
+                  <mat-checkbox (click)="$event.stopPropagation()"
+                      (change)="selectionMembers.toggle(element);selectValue($event)"
+                      [checked]="selectionMembers.isSelected(element)">
+                  </mat-checkbox>
+              </td>
+          </ng-container>
+             <!-- Email Column -->
+             <ng-container matColumnDef="emailAddress">
+                 <th mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
+                 <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+             </ng-container>
+        
+             <!-- Name Column -->
+             <ng-container matColumnDef="name">
+                 <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+                 <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+             </ng-container>
+        
+             <!-- Surname Column -->
+             <ng-container matColumnDef="surname">
+                 <th mat-header-cell *matHeaderCellDef mat-sort-header> Surname </th>
+                 <td mat-cell *matCellDef="let element"> {{element.surName}} </td>
+             </ng-container>
+             <ng-container matColumnDef="userCode">
+               <th mat-header-cell *matHeaderCellDef mat-sort-header> User Code </th>
+               <td mat-cell *matCellDef="let element"> {{element.mentorCode}} </td>
+           </ng-container>
+
+             <tr mat-header-row *matHeaderRowDef="membersDisplayedColumns"></tr>
+             <tr mat-row *matRowDef="let row; columns: membersDisplayedColumns;"></tr>
+         </table>
+         <div *ngIf="userDetails && !userDetails.data.length" class="empty text-center p-4">
+             <p>No Records Found</p>
+         </div>
+         <mat-paginator #usersPaginator [pageSizeOptions]="[10, 20, 30, 40, 50]" showFirstLastButtons>
+         </mat-paginator>
+         <div class="row">
+         <div class="col-3 delete-member-div">
+            <button class="btn btn_theme batch-create delete-member-button"  (click)="deleteMembers()" *ngIf="isHideAndDisableFlag" type="submit">Delete Member</button>
+            </div>
+            </div>
+        </div>
+    </form>
+       </mat-tab>
+    </mat-tab-group>

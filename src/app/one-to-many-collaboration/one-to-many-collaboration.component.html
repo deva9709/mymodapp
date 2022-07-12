@@ -1,0 +1,47 @@
+<div class="container-fluid" id="video-collaboration">
+
+  <div class="row">
+    <div class="video-section" [ngClass]="isShowChat ? 'col-10': 'col-12'">
+      <!-- Remote video stream -->
+      <div class="row">
+        <div class="col-12" id="collaboration-section">
+
+        </div>
+      </div>
+      <!-- Local video stream -->
+      <div #localMediaDiv class="row local-media-self">
+        <div class="col-12">
+          <div id="local-media" #localmedia></div>
+        </div>
+      </div>
+
+      <div id="participants-content" class="row flex-nowrap participants-row">
+        <!-- <div class="col-1 participants-section"
+          *ngFor="let mentee of [1, 3, 3, 3, 3,1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]">
+          <p class="participant">DK</p>
+        </div> -->
+      </div>
+
+    </div>
+
+    <div class="white-board-view" [ngClass]="whiteBoard ? '' : 'd-none'" [ngClass]="callStatus ? 'd-none' : ''">
+      <app-whiteboard [hidden]="!whiteBoard"></app-whiteboard>
+    </div>
+
+    <div class="chat-column" [ngClass]="isShowChat ? 'col-2': 'd-none'">
+      <app-chat [roomId]="roomName"></app-chat>
+    </div>
+  </div>
+
+</div>
+<!-- 
+  <div class="row" *ngIf="!isCollaborationStart" class="local-media-self">
+    <div class="col-md-12">
+      <div id="local-media" #localmedia></div>
+    </div>
+  </div> -->
+
+<div id="audio-tracks">
+
+</div>
+<app-collaboration-controls [controls]="controls"></app-collaboration-controls>

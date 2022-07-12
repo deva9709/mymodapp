@@ -1,0 +1,22 @@
+<div class="row">
+  <div class="col">
+    <button type="button" class="btn-icons btn-outline-info mb-2" mat-button (click)="back()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <p>Title: {{sessionTitle}}</p>
+  </div>
+  <div class="col text-right">
+    <button *ngIf="isJoinSessionEnabled" class="btn .btn_theme" mat-button (click)='joinSession(sessionDetails)'>
+      Join
+    </button>
+  </div>
+</div>
+
+<mat-tab-group>
+  <mat-tab label="Session Details">
+    <app-session-details [sessionScheduleId]="sessionId"></app-session-details>
+  </mat-tab>
+  <mat-tab label="Participants Details">
+    <app-participant-details [sessionScheduleId]="sessionId"></app-participant-details>
+  </mat-tab>
+</mat-tab-group>

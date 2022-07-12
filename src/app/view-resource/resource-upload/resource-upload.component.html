@@ -1,0 +1,21 @@
+<div class=" pt-3 pl-3 pr-3 pb-1 mb-3">
+  <div class="example-full-width" class="file_box">
+    <label><b>Resource Title : </b>{{reviewDetails.
+      resourceDetails.resourceTitle}}</label>
+    </div>
+  <div class="example-full-width" class="file_box">    
+    <label><b>Trainee : </b>{{reviewDetails.traineeResourceDetails.trainee.name}}</label>
+  </div>
+  <br>
+  <mat-form-field class="example-full-width txt_are" >
+    <textarea matInput placeholder="Comment" [(ngModel)]="comment" name="comment"></textarea>
+  </mat-form-field>
+    <div class="btn-group btn_align">
+  <button class="btn btn_theme share_btn app_btn" (click)="reviewStatus(1)">   
+    Approve
+</button> 
+<button class="btn btn_theme share_btn app_btn" (click)="reviewStatus(0)">   
+  Reject
+</button> 
+  </div>
+</div>

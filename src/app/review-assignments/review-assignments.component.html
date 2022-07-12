@@ -1,0 +1,75 @@
+<div class="row mb-3">
+  <div class="col-12 my-auto">
+    <h1 class="session-title">
+      <button type="button" class="btn-icons btn-outline-info mr-2" mat-button [routerLink]="['/app/mod-sessions']">
+        <mat-icon>keyboard_backspace</mat-icon>
+      </button>
+      {{assignments.sessionName}} - Assignments Review
+    </h1>
+  </div>
+</div>
+<div class="empty" *ngIf="!isAssignmentsAvailable">No Assignments</div>
+<mat-accordion *ngIf="isAssignmentsAvailable">
+  <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false"
+    *ngFor="let assignments of assignments.sessionAssignments">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="col-5">
+        {{assignments.mentee.name}}
+      </mat-panel-title>
+      <mat-panel-description class="col-5">
+        {{assignments.mentee.tenantName}}
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <div>
+      <div [ngClass]="viewAssignments ? 'd-none' : 'assignments'">
+
+        <div class="row assignment-details" *ngFor="let assignment of assignments.assignment">
+          <div class="col-5 my-auto">
+            <b class="d-block mb-1">{{assignment.assignmentTitle}}</b>
+            <small class="skills skill mr-1" *ngFor="let skill of assignment.skills.split(',')">{{skill}}</small>
+
+          </div>
+          <div class="col-4 my-auto" *ngIf="assignment.iscompleted != completionStatus.NotCompleted">
+            <a class="keywords mr-1" (click)="downloadDocument(assignment)">
+              Documents <mat-icon>cloud_download</mat-icon>
+            </a>
+          </div>
+          <div class="col-4 my-auto" *ngIf="assignment.iscompleted == completionStatus.NotCompleted">Submission Pending</div>
+          <div class="col-3 my-auto text-right">
+            <button type="button" class="btn btn-secondary sml-btn" (click)="submitAssignments(assignment)"
+              [disabled]="assignment.iscompleted == completionStatus.NotCompleted || assignment.isEvaluated == evaluation.Evaluated">{{ assignment.iscompleted == completionStatus.Completed && assignment.isEvaluated == evaluation.Evaluated ? 'Reviewed' : 'Review'}}</button>
+          </div>
+        </div>
+      </div>
+      <div [ngClass]="viewAssignments ? 'submit-assignment' : 'd-none'">
+        <div class="row assignment-details mb-3">
+          <div class="col-12 my-auto">
+            <b class="d-block mb-1">{{selectedAssignment.assignmentTitle}}</b>
+            <small class="skills skill mr-1" *ngFor="let skill of skillList">{{skill}}</small>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-3">
+            <mat-form-field>
+              <mat-label>Select Grade</mat-label>
+              <mat-select panelClass="dropView" [(ngModel)]="grade">
+                <mat-option *ngFor="let grade of grades" [value]="grade.value">
+                  {{grade.viewValue}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-9">
+            <mat-form-field class="example-full-width">
+              <input matInput placeholder="Feedback Message" value="" [(ngModel)]="feedback">
+            </mat-form-field>
+          </div>
+          <div class="col-12 text-right">
+            <button type="button" class="btn btn_theme mr-3" (click)="sendFeedback()" [disabled]="grade==null">Submit</button>
+            <button type="button" class="btn btn-secondary" (click)="back()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>

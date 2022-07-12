@@ -1,0 +1,35 @@
+<h2>Upload Assignment</h2>
+<div class="row">
+  <div class="col-6">
+    <mat-form-field>
+      <input matInput placeholder="Assignment Title" value={{assignmentTitle}} [readonly]="isReadOnlyField">
+    </mat-form-field>
+  </div>
+  <div class="col-6">
+    <mat-form-field>
+      <input matInput placeholder="Trainer" value={{trainer}} [readonly]="isReadOnlyField">
+    </mat-form-field>
+  </div>
+</div>
+<div class="row">
+  <div class="col-6">
+    <div class="text-align">*Only <strong>PDF,Word,Zip</strong> files can be uploaded.</div>
+    <div class="drop-box-size">
+       <input type="file" id="document" #fileInput1 (click)="fileInput1.value = null" value="" class="drop-input-field"
+        (change)="selectFiles($event)" 
+        accept="text/plain, application/pdf,.doc,.dot,.docx,.dotz,.xls,.xlt,.xla,.zip,.rar,.7zip" />
+      <label for="document">Upload Documents</label>
+    </div>
+  </div>
+</div>
+<div class="row assignment-comment">
+  <div class="col-8">
+    <mat-form-field>
+      <mat-label>Comment</mat-label>
+      <textarea matInput placeholder="Comment" [(ngModel)]="comments"></textarea>
+    </mat-form-field>
+  </div>
+</div>
+<div class="row">
+  <div><button class="btn btn_theme mr-2 submit-button" (click)="submitAssignment()" [disabled]="!isSubmitEnabled">Submit</button></div>
+</div>

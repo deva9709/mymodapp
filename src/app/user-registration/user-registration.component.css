@@ -1,0 +1,23 @@
+.accordian-item {
+	margin-top: 32px;
+	box-shadow: none;
+}
+
+.registerButton {
+	margin-top: 38px;
+}
+
+.divContainer {
+	margin-right: 152px;
+}
+
+.pageHeading {
+	margin-top: 15px;
+}
+
+.addMore {
+	margin-top: 28px;
+}
+.error-class{
+	color:red;
+}

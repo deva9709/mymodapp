@@ -1,0 +1,12 @@
+<div class="modal-body">
+  <p class="text-center mb-3" *ngIf="!removeFlage">Are you sure you want to delete this Batch?</p>
+  <p *ngIf="removeFlage">Are you sure you want to delete member ?</p>
+</div>
+<div class="modal-footer">
+  <button type="button" (click)='removeBatch()'
+      class="btn btn-sm btn_theme mr-3" *ngIf="!removeFlage">Delete</button>
+      <button type="button" (click)='removeMembers()'
+      class="btn btn-sm btn_theme mr-3" *ngIf="removeFlage">Delete Member</button>
+  <button type="button" class="btn btn-sm btn-secondary" (click)="cancelMember()" *ngIf="removeFlage">Cancel</button>
+  <button type="button" class="btn btn-sm btn-secondary" (click)="cancel()" *ngIf="!removeFlage">Cancel</button>
+</div>

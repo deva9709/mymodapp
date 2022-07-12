@@ -1,0 +1,32 @@
+<div class="modal-body">
+    <div *ngIf="showPoll">
+        <table mat-table [dataSource]="dataSource" matSort class="table">
+            <ng-container matColumnDef="pollName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Poll Name</th>
+                <td mat-cell *matCellDef="let element"> {{element.pollName}} </td>
+            </ng-container>
+            <ng-container matColumnDef="analysisPoll">
+                <th mat-header-cell *matHeaderCellDef>Analysis Poll</th>
+                <td mat-cell *matCellDef="let element">
+                    <button class="btn btn_theme sml-btn" type="button" (click)="analysisPoll(element.id)">
+                        Analysis
+                    </button>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="ViewPollColumns; sticky: true"></tr>
+            <tr mat-row *matRowDef="let row; columns: ViewPollColumns;"></tr>
+        </table>
+        <div *ngIf="dataSource && !dataSource.data.length" class="empty text-center p-4">
+            <p>No Records Found</p>
+        </div>
+        <mat-paginator [pageSizeOptions]="[5, 10]" showFirstLastButtons></mat-paginator>
+    </div>
+</div>
+<div *ngIf="showPollAnalysis">
+    <div class="mb-2 p-2">
+        <button type="button" class="btn-icons btn-outline-info" mat-button (click)="backToViewPoll()">
+            <mat-icon>keyboard_backspace</mat-icon>
+        </button>
+    </div>
+    <div id="pollAnalyticsContainer"></div>
+</div>

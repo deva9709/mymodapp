@@ -1,0 +1,15 @@
+<div class="row mb-3">
+    <div class="col-12 my-auto">
+        <button type="button" mat-button class="btn-icons btn-outline-info float-left mr-3" (click)="back()">
+            <mat-icon>keyboard_arrow_left</mat-icon>
+        </button>
+        <h1>{{title}}</h1>
+    </div>
+</div>
+<div class="content-block p-3 blog-article mb-3">
+    <div [innerHtml]="description"></div>
+    <div class="mt-3 mb-3">
+        <hr>
+    </div>
+    <img src="{{thumbnailUrl}}" alt="">
+</div>

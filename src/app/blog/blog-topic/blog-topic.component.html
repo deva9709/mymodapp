@@ -1,0 +1,100 @@
+<div class="row mb-3" *ngIf="blog">
+  <div class="col-12 my-auto">
+    <button type="button" class="btn-icons btn-outline-danger float-right" (click)="deleteBlog()"
+      *ngIf="blog.createdUserId === currentUserId || currentUserType === userRoles[1] || (currentUserType === userRoles[7] && blog.createdUserId !== 1)"
+      matTooltip="Delete" mat-button>
+      <mat-icon>delete</mat-icon>
+    </button>
+    <button type="button" class="btn-icons btn-outline-warning float-right" (click)="editBlog()"
+      *ngIf="blog.createdUserId === currentUserId || currentUserType === userRoles[1] || (currentUserType === userRoles[7] && blog.createdUserId !== 1)"
+      matTooltip="Edit" mat-button>
+      <mat-icon>edit</mat-icon>
+    </button>
+    <button type="button" mat-button class="btn-icons btn-outline-info float-left mr-3" [routerLink]="['/app/blogs']">
+      <mat-icon>keyboard_arrow_left</mat-icon>
+    </button>
+    <h1>{{blog.topic}}</h1>
+  </div>
+</div>
+<div class="content-block p-3 blog-article mb-3" *ngIf="blog">
+  <div class="mb-3" [innerHtml]="blog.content"></div>
+  <img src={{blog.thumbnailURL}} alt="{{blog.topic}}">
+  <div class="mb-3"><small class="skills skill mr-1" *ngFor="let tag of blog.tags.split(',')">{{tag}}</small></div>
+  <div class="row mt-3">
+    <div class="col-12 my-auto">
+      <button type="button" class="btn-icons btn-outline-info" (click)="like()" mat-button>
+        <mat-icon>thumb_up_alt</mat-icon>
+      </button>
+      <span class="keywords mr-5">{{blog.upVoteCount}}</span>
+      <button type="button" class="btn-icons btn-outline-info" (click)="dislike()" mat-button>
+        <mat-icon>thumb_down_alt</mat-icon>
+      </button>
+      <span class="keywords mr-5">{{blog.downVoteCount}}</span>
+      <button type="button" class="btn-icons btn-outline-info" mat-button (click)="focusComment()"
+        [disabled]="!commentsEnabled">
+        <mat-icon>reply</mat-icon>
+      </button>
+      <span class="keywords">{{commentsEnabled ? blogComments.length : 0}}</span> Comments
+    </div>
+  </div>
+</div>
+
+<div class="content-block reply-form p-3 mb-3" *ngIf="commentsEnabled">
+  <form [formGroup]="commentForm">
+    <div class="row">
+      <div class="col-12 mb-2">
+        <mat-form-field>
+          <mat-label>Comment</mat-label>
+          <textarea matInput placeholder="Comment" formControlName="newComment" #comment></textarea>
+        </mat-form-field>
+      </div>
+      <div class="col-12 text-right">
+        <button class="btn btn_theme btm-sml mr-3" type="button" *ngIf="!isEditComment" (click)="addComment()"
+          [disabled]="commentForm.invalid">
+          Submit
+        </button>
+        <button class="btn btn_theme btm-sml mr-3" type="button" *ngIf="isEditComment" (click)="updateComment()"
+          [disabled]="commentForm.invalid">
+          Update comment
+        </button>
+        <button class="btn btn-secondary btm-sml" type="button" (click)="resetComment()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+<div *ngIf="!commentsEnabled">Comments are disabled for this blog</div>
+
+<div class="row" *ngIf="commentsEnabled">
+  <div class="col-12" *ngIf="!blogComments.length">
+    <p>No comments found</p>
+  </div>
+  <div class="col-12 mb-3" *ngFor="let blogComment of blogComments">
+    <div class="content-block p-3 user-comments">
+      <div class="row">
+        <div class="col-12 my-auto">
+          <button type="button" class="btn-icons btn-outline-danger float-right" (click)="deleteComment(blogComment.id)"
+            *ngIf="blogComment.userId === currentUserId || currentUserType === userRoles[1] || (currentUserType === userRoles[7] && blogComment.userId !== 1)"
+            matTooltip="Delete" mat-button>
+            <mat-icon>delete</mat-icon>
+          </button>
+          <button type="button" class="btn-icons btn-outline-warning float-right" (click)="editComment(blogComment)"
+            mat-button matTooltip="Edit" *ngIf="blogComment.userId === currentUserId">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <span class="profile-pic float-left mr-3"></span>
+          <div class="float-left">
+            <h3>{{blogComment.userName}}</h3> <br>
+            <small>{{blogComment.modifiedDate | date:'dd/MM/yyyy'}}</small>
+          </div>
+        </div>
+        <div class="col-12 mt-3 mb-3">
+          <p>
+            {{blogComment.comment}}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,66 @@
+.tab-bodyColor {
+	background-color: white;
+	margin-left: 1px;
+	width: 1078px;
+}
+.batch-create{
+	margin-left: 602px;
+    margin-bottom: 6px;
+    width: 151px !important;
+}
+.batch-button{
+	margin-left: 828px;
+    margin-bottom: 6px;
+    width: 151px !important;
+}
+.batch-lebel{
+	margin-top: 19px;
+	margin-left: 0px;
+}
+.batch-name{
+	margin-left: 24px;
+	font-size: 18px; 
+	font-weight: 400;
+}
+.tenant-lebel{
+	width: 194px;
+}
+.batch-creation{
+	margin-top: 19px;
+	margin-left: 0px;
+}
+.batch-description{
+	margin-left: 24px;
+	font-size: 18px; 
+	font-weight: 400;
+}
+.update-button{
+	margin-left: 697px;
+}
+.select-tenant-row{
+	margin-top: 19px;
+}
+.select-tenant-button{
+	width: 194px;
+}
+.add-bulk{
+	margin-left: 1px;
+	margin-top: 16px;
+}
+.view-button{
+	height: 40px;
+	margin-top: 5px;
+}
+.add-member{
+	margin-top: 7px;
+}
+.delete-member-div{
+	margin-top: 7px;
+}
+.delete-member-button{
+	width: 158px !important;
+	margin-left: 888px;
+}
+th.mat-sort-header-sorted {
+	color: black;
+  }

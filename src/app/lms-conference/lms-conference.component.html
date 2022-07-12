@@ -1,0 +1,16 @@
+<mat-spinner class="mod-spinner" *ngIf="dataService.isLoading" mode="indeterminate" strokeWidth="3" [diameter]="60">
+</mat-spinner>
+<div *ngIf="!dataService.isLoading && !dataService.isCallDisconnected">
+    <div *ngIf="dataService.isSessionStarted">
+        <app-one-to-many-collaboration></app-one-to-many-collaboration>
+    </div>
+    <div *ngIf="!dataService.isSessionParticipant && !dataService.isSessionStarted">
+        <p>You are not part of the session please contact administrator</p>
+    </div>
+    <div *ngIf="!dataService.isSessionStarted && dataService.isSessionParticipant">
+        <p>Session not yet started, please try after some time</p>
+    </div>
+</div>
+<div *ngIf="dataService.isCallDisconnected" class="session-completed">
+    <p>Thank you</p>
+</div>

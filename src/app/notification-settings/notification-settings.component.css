@@ -1,0 +1,20 @@
+.example-form-field {
+    width: 150px; 
+    margin-left: 6px;   
+  }
+
+.notifytype{
+    width: 200px;
+  }
+
+  button {
+    margin: 10px;
+}
+
+p {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  font-size: large;
+}

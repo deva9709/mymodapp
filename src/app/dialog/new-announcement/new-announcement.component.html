@@ -1,0 +1,99 @@
+<div class="modal-header">
+    <h1>
+        {{dialogTitle}}
+    </h1>
+</div>
+<form novalidate [formGroup]="announcementForm" autocomplete="off">
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-12">
+                <mat-form-field>
+                    <input matInput type="text" name="title" [(ngModel)]="title" formControlName="title"
+                        placeholder="Announcement Title" />
+                    <mat-error *ngIf="announcementForm.get('title').errors?.required">
+                        {{announcementFormValidationMessages.titleRequired}}</mat-error>
+                </mat-form-field>
+            </div>
+            <div class="col-6 mt-2">
+                <mat-form-field>
+                    <input matInput [matDatepicker]="start" [min]="minDate" formControlName="startDate" name="startDate"
+                        [(ngModel)]="startDate" placeholder="Start Date"
+                        (dateChange)="onSessionTimeChange('startDate',$event.value)" readonly (click)="start.open()" />
+                    <mat-datepicker-toggle matSuffix [for]="start"></mat-datepicker-toggle>
+                    <mat-datepicker #start disabled="false"></mat-datepicker>
+                    <mat-error *ngIf="announcementForm.get('startDate').errors?.required">
+                        {{announcementFormValidationMessages.startDateRequired}}</mat-error>
+                </mat-form-field>
+            </div>
+            <div class="col-6 mt-2">
+                <mat-form-field>
+                    <input matInput [matDatepicker]="end" [min]="endMinDate" formControlName="endDate" name="endDate"
+                        [(ngModel)]="endDate" placeholder="End Date" readonly />
+                    <mat-datepicker-toggle matSuffix [for]="end"></mat-datepicker-toggle>
+                    <mat-datepicker #end disabled="false"></mat-datepicker>
+                    <mat-error *ngIf="announcementForm.get('endDate').errors?.required">
+                        {{announcementFormValidationMessages.endDateRequired}}</mat-error>
+                </mat-form-field>
+            </div>
+            <!-- For Super Admin -->
+            <div class="col-6 mt-2" *ngIf="showTenantField">
+                <mat-form-field>
+                    <mat-label>Select Tenants</mat-label>
+                    <mat-select name="tenant" formControlName="tenant" [(ngModel)]="selectedTenant"
+                        (openedChange)="tenantFilter.focus()">
+                        <div class="row dropdown-search-row">
+                            <div class="col-10">
+                                <input class="searchInput" #tenantFilter matInput type="text" autocomplete="off"
+                                    placeholder="Search" (keyup)="search($event.target.value, 'tenant')">
+                            </div>
+                            <div class="col-2 text-right">
+                                <button mat-button *ngIf="tenantFilter.value" matSuffix mat-icon-button
+                                    class="clear-icon" matTooltip="Clear" matTooltipPosition="below"
+                                    (click)="tenantFilter.value=''; search('', 'tenant')">
+                                    <mat-icon>close</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                        <mat-divider></mat-divider>
+                        <mat-option *ngFor="let tenant of filteredTenantList" (click)="filterTenantRoles(tenant.id)"
+                            [value]="tenant.id">
+                            {{tenant.tenantName}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="announcementForm.get('tenant').errors?.required">
+                        {{announcementFormValidationMessages.tenantRequired}}</mat-error>
+                </mat-form-field>
+            </div>
+            <div class="col-6 mt-2">
+                <mat-form-field>
+                    <mat-label>Role</mat-label>
+                    <mat-select panelClass="dropView" name="role" formControlName="role" [(ngModel)]="roleId"
+                        disableOptionCentering>
+                        <mat-option *ngFor="let role of tenantRoles" [value]="role.id">
+                            {{role.name}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="announcementForm.get('role').errors?.required">
+                        {{announcementFormValidationMessages.roleRequired}}</mat-error>
+                </mat-form-field>
+            </div>
+            <div class="col-12 mt-2">
+                <mat-form-field>
+                    <input matInput type="text" formControlName="message" name="message" [(ngModel)]="message"
+                        placeholder="Message" maxlength="200" />
+                    <mat-error *ngIf="announcementForm.get('message').errors?.required">
+                        {{announcementFormValidationMessages.messageRequired}}</mat-error>
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer text-right">
+        <button type="button" (click)='updateData ? updateAnnouncement() : addAnnouncements()'
+            [disabled]="!announcementForm.valid" class="btn btn_theme mr-3">
+            {{submitButtonName}}
+        </button>
+        <button type="button" (click)="cancelAnnouncements()" class="btn btn-secondary">
+            Cancel
+        </button>
+    </div>
+</form>

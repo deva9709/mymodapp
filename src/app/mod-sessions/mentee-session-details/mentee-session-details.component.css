@@ -1,0 +1,41 @@
+::ng-deep .mat-dialog-container {
+    padding: 0 !important;
+}
+
+.assignments {
+    border-top: 1px solid #ccc;
+    padding: 0 15px !important
+}
+
+.assignments .assignment-details, .submit-assignment .assignment-details {
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+}
+
+.assignments .assignment-details:last-child {
+    border-bottom: none;
+}
+
+.ratings-view {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.submit-assignment .drop-box .drop-input {
+    height: 67px;
+}
+
+mat-icon.done {
+    color: green;
+    font-size: 20px;
+}
+
+.feedback {
+    word-break: break-word;
+}
+
+.btn:disabled{
+    pointer-events: none;
+    cursor: default;
+}

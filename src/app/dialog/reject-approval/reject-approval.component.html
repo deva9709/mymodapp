@@ -1,0 +1,10 @@
+<div class="modal-body">
+  <p class="text-center mb-3"><b>Are you sure you want to reject session approval?</b></p>
+  <div class="row">
+    <label>Description (Optional) :</label><span><input matInput type="text" name="description" [(ngModel)]="description"/></span>
+  </div>  
+</div>
+<div class="modal-footer">
+  <button type="button" (click)="rejectApproval()" class="btn btn-sm btn_theme mr-3">Reject</button>
+  <button type="button" (click)="cancel()" class="btn btn-sm btn-secondary">Cancel</button>
+</div>

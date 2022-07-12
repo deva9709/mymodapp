@@ -1,0 +1,46 @@
+<div class="modal-header">
+  <h1>
+    Add Skill
+  </h1>
+</div>
+<form novalidate (ngSubmit)="addSkills()" [formGroup]="categoryForm" autocomplete="off">
+  <div class="modal-body">
+    <div class="col-3">
+      <mat-form-field>
+        <mat-label>Select Trainer</mat-label>
+        <mat-select name="trainer" [(ngModel)]="selectedTrainerDisplay" required>
+          <mat-option *ngFor="let trainer of trainersList" [value]="trainer.id" (click)="getTrainerDetails(trainer)">
+            {{trainer.name}} <span class= "ml-1" *ngIf="trainer?.externalTrainer && element?.tenant.id==currentTenantId">
+              <mat-chip color="primary" selected>Ext</mat-chip>
+          </span>
+          </mat-option>
+          <mat-option *ngIf="!trainersList.length">
+            --none--
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="content-block p-3">
+          <div class="row">
+              <div class="col-6">
+                  <mat-form-field>
+                      <input matInput type="text" formControlName="skills"
+                          placeholder="Skill" />
+                  </mat-form-field>
+              </div>
+              <div class="col-6">
+                  <mat-form-field>
+                      <input matInput type="text" formControlName="technologies"
+                          placeholder="Technology" />
+                  </mat-form-field>
+              </div>
+          </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+  <button type="submit" class="btn btn_theme" mat-button>Add New Skill</button>
+    <button type="button" (click)="closeAddSkill()" class="btn btn-secondary">
+      Close
+    </button>
+  </div>
+</form>  

@@ -1,0 +1,4 @@
+::ng-deep .mat-card-header-text {
+    margin: 0 16px;
+    font-family: -webkit-body;
+}

@@ -1,0 +1,111 @@
+<div class="modal-header">
+    <h1>
+        {{session.sessionTitle}}
+    </h1>
+    <ul class="ratings-view">
+        <li class="mr-3">
+            <strong>Overall Ratings</strong>
+            <star-rating class="star-center" [value]="5" checkedcolor="#ffb711" uncheckedcolor="#8b8b8b57"
+                readonly="true"></star-rating>
+        </li>
+        <li>
+            <strong>My Rating</strong>
+            <star-rating class="star-center" [value]="3" checkedcolor="#ffb711" uncheckedcolor="#8b8b8b57">
+            </star-rating>
+        </li>
+    </ul>
+</div>
+<div class="modal-body">
+    <div class="row mb-3">
+        <div class="col-3 mb-2">
+            <b>Session Type: </b>{{sessionType[session.sessionType]}}
+        </div>
+        <div class="col-3 mb-2">
+            <b>Date: </b>{{session.startDate | date:'d/M/yyyy'}}
+        </div>
+        <div class="col-3 mb-2">
+            <b>Start Time </b>{{session.startDate  | date: 'h:mm a'}}
+        </div>
+        <div class="col-3 mb-2">
+            <b>End Time </b>{{session.endDate  | date: 'h:mm a'}}
+        </div>
+        <div class="col-6 mb-2">
+            <b>Trainer Name: </b> {{session.participants[0].participantUser.name}}
+        </div>
+        <div class="col-3 mb-3">
+            <b>Attendees: </b> {{session.participantCount - 1}}
+        </div>
+        <div class="col-3 mb-3">
+            <b>Assignments: </b> {{assignmentCount}}
+        </div>
+    </div>
+</div>
+<div class="modal-body">
+    <div [ngClass]="viewAssignments ? 'd-none' : 'assignments'">
+        <div class="row assignment-details" *ngFor="let assignment of assignments ; let i = index">
+            <div class="col-5 my-auto">
+                <b class="d-block mb-1 feedback">{{assignment.title}}</b>
+                <small class="skills skill mr-1" *ngFor="let skill of assignment.skillList">{{skill}}</small>
+            </div>
+            <div [ngClass]="viewFeedback[i] ? 'd-none' : 'col-5 my-auto'">
+                <a class="keywords mr-1" (click)="viewDocuments(assignment,documentFileType[1])">
+                    Documents <mat-icon>pageview</mat-icon>
+                </a>
+                <a class="keywords" (click)="viewDocuments(assignment,documentFileType[2])">
+                    Resources <mat-icon>pageview</mat-icon>
+                </a>
+            </div>
+            <div [ngClass]="viewFeedback[i] ? 'col-5 feedback' : 'd-none'">
+                {{assignment.feedback}}
+            </div>
+            <div>
+                <div class="col-2 my-auto text-right"
+                    *ngIf="assignment.isCompleted === completionStatus.Completed && assignment.isEvaluated != evaluation.Evaluated">
+                    Pending Review
+                </div>
+                <div class="col-2 my-auto text-right"
+                    *ngIf="assignment.isEvaluated === evaluation.Retry && assignment.isCompleted === completionStatus.NotCompleted">
+                    <button class="btn-icons" type="button" (click)="submitAssignments(assignment)">
+                        <mat-icon>redo</mat-icon>
+                    </button>
+                </div>
+                <div class="col-2 my-auto text-right"
+                    *ngIf="assignment.isCompleted === completionStatus.NotCompleted && assignment.isEvaluated === evaluation.NotEvaluated">
+                    <button type="button" class="btn btn_theme sml-btn" (click)="submitAssignments(assignment)"
+                        [disabled]="session.sessionStatus != sessionStatus.Completed">Submit</button>
+                </div>
+                <div class="col-2 my-auto text-right" *ngIf="assignment.isEvaluated === evaluation.Evaluated " (click)="viewReview(i)">
+                    <button class="btn-icons btn-outline-theme" type="button" mat-button>
+                        <mat-icon>done</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="showNoAssignments" class="empty">No Assignments</div>
+    <div [ngClass]="viewAssignments ? 'submit-assignment' : 'd-none'">
+        <div class="row assignment-details mb-2">
+            <div class="col-12 my-auto">
+                <b class="d-block mb-1">{{assignmentName}}</b>
+                <small class="skills skill mr-1" *ngFor="let skill of skillList">{{skill}}</small>
+            </div>
+        </div>
+        <form action="">
+            <div class="row">
+                <div class="col-12 mb-2">
+                    <div class="drop-box">
+                        <input type="file" class="drop-input" #fileInput id="fileInput" (change)="onFileChange($event)"
+                            accept=".zip" />
+                        <label for="fileInput">Upload your files here&hellip;</label>
+                    </div>
+                </div>
+                <div class="col-12 text-left"><small>*Upload only zip files</small></div>
+                <div class="col-12 text-right">
+                    <button type="button" class="btn btn_theme mr-3" (click)="submitAssignment()"
+                        [disabled]="!enableSubmit">Submit</button>
+                    <button type="button" class="btn btn-secondary" (click)="back()">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

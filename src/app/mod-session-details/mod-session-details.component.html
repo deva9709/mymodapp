@@ -1,0 +1,171 @@
+<div class="row mb-2">
+    <div class="col-12">
+        <button type="button" class="btn-icons btn-outline-info mr-2" mat-button [routerLink]="['/app/mod-sessions']">
+            <mat-icon>keyboard_backspace</mat-icon>
+        </button>
+        <h1>
+            {{sessionDetails.sessionTitle}}
+        </h1>
+    </div>
+</div>
+<div class="content-block p-3 mb-3">
+    <div class="row">
+        <div class="col-4">
+            <strong>Session Type: </strong> {{sessionType[sessionDetails.sessionType]}}
+        </div>
+        <div class="col-4">
+            <strong>Trainer Name: </strong> {{sessionDetails.participants[0].participantUser.name}}
+        </div>
+        <div class="col-4">
+            <strong>Trainee(s): </strong> {{sessionDetails.participantCount - 1}}
+        </div>
+        <div class="col-4 mt-2">
+            <strong>Date: </strong> {{sessionDetails.startDate  | date: 'dd/MM/yyyy'}}
+        </div>
+        <div class="col-4 mt-2">
+            <strong>Start Time: </strong> {{sessionDetails.startDate  | date: 'h:mm a'}}
+        </div>
+        <div class="col-4 mt-2">
+            <strong>End Time: </strong> {{sessionDetails.endDate  | date: 'h:mm a'}}
+        </div>
+    </div>
+</div>
+
+<div [ngClass]="viewAssignment ? 'content-block p-3 mb-3' : 'mb-3'">
+    <div class="row">
+        <div class="col-9" [ngClass]="viewAssignment ? 'col-9' : 'd-none'">
+            <mat-form-field>
+                <input matInput placeholder="Search Assignments" (focusOut)="autoResult()"
+                    (keyup)="applyFilter($event.target.value)" [(ngModel)]="searchAssignment" />
+                <button (click)="clearSearch()" mat-button matSuffix mat-icon-button>
+                    <mat-icon matTooltip="clear search">clear</mat-icon>
+                </button>
+            </mat-form-field>
+            <div class="autocomplete content-block" *ngIf="autoComplete">
+                <table mat-table [dataSource]="assignmentSearch" class="table">
+
+                    <ng-container matColumnDef="title">
+                        <th mat-header-cell *matHeaderCellDef> Assignment Title </th>
+                        <td mat-cell *matCellDef="let element"> {{element.title}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="skill">
+                        <th mat-header-cell *matHeaderCellDef> Skills </th>
+                        <td mat-cell *matCellDef="let element"> {{element.skills}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="download">
+                        <th mat-header-cell *matHeaderCellDef> Attachments </th>
+                        <td mat-cell *matCellDef="let element">
+                            <a class="keywords mr-1" (click)="viewDocuments(element,documentFileType[1])"> Documents
+                                <mat-icon>pageview</mat-icon></a>
+                            <a class="keywords" (click)=viewDocuments(element,documentFileType[2])> Resources <mat-icon>
+                                    pageview</mat-icon></a>
+                        </td>
+                    </ng-container>
+
+                    <div *ngIf="!isSuperAdmin">
+                        <ng-container matColumnDef="action">
+                            <th mat-header-cell *matHeaderCellDef class="text-right"> Actions </th>
+                            <td mat-cell *matCellDef="let element" class="text-right">
+                                <mat-checkbox [disabled]="assignmentIds.includes(element.id)"
+                                    [checked]="selectedAssignment.includes(element)"
+                                    (change)="updateAssignment($event,element)">
+                                </mat-checkbox>
+                        </ng-container>
+                    </div>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+                <div [ngClass]="showNoAssignments ? 'empty' : 'd-none'">
+                    No Assignments
+                </div>
+            </div>
+        </div>
+        <div class="text-right my-auto" [ngClass]="viewAssignment ? 'col-3' : 'col-12'">
+            <button type="button" class="btn btn_theme" [ngClass]="viewAssignment ? 'd-none' : 'btn btn_theme'"
+                (click)="addAttendance()" style="margin-right:20px">Add Attendance</button>
+                <button type="button" class="btn btn_theme" [ngClass]="viewAssignment ? 'd-none' : 'btn btn_theme'"
+                (click)="addAssignment()" *ngIf="!isSuperAdmin">Add Assignment</button>
+            <div [ngClass]="viewAssignment ? '' : 'd-none'">
+                <button type="button" class="btn btn_theme mr-2" (click)="update()"
+                    [disabled]="!selectedAssignment.length">Update</button>
+                <button type="button" class="btn btn-secondary" (click)="addAssignment()">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <div [ngClass]="selectedAssignment.length ? 'col-12' : 'd-none'">
+        <table class="table">
+            <tbody>
+                <tr *ngFor="let assignment of selectedAssignment">
+                    <td>
+                        {{assignment.title}}
+                    </td>
+                    <td>
+                        {{assignment.skills}}
+                    </td>
+                    <td>
+                        {{assignment.createdDate | date:'d/M/yyyy'}}
+                    </td>
+                    <td>
+                        {{assignment.modifiedDate | date:'d/M/yyyy'}}
+                    </td>
+                    <td>
+                        <a class="keywords mr-1" (click)="viewDocuments(assignment,documentFileType[1])">
+                            Documents <mat-icon>pageview</mat-icon></a>
+                        <a class="keywords" (click)=viewDocuments(assignment,documentFileType[2])>
+                            Resources <mat-icon>pageview</mat-icon></a>
+                    </td>
+                    <td>
+                        <button class="btn-icons btn-outline-danger" type="button" mat-button>
+                            <mat-icon (click)="removeSelected(assignment.id)">clear
+                            </mat-icon>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="content-block">
+    <table mat-table [dataSource]="assignmentSource" class="table">
+
+        <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef> Assignment Title </th>
+            <td mat-cell *matCellDef="let element"> {{element.title}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="skill">
+            <th mat-header-cell *matHeaderCellDef> Skills </th>
+            <td mat-cell *matCellDef="let element"> {{element.skills}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="download">
+            <th mat-header-cell *matHeaderCellDef> Attachments </th>
+            <td mat-cell *matCellDef="let element">
+                <a class="keywords mr-1" (click)="viewDocuments(element,documentFileType[1])"> Documents <mat-icon>
+                        pageview</mat-icon></a>
+                <a class="keywords" (click)=viewDocuments(element,documentFileType[2])> Resources <mat-icon>pageview
+                    </mat-icon></a>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef class="text-right"> Actions </th>
+            <td mat-cell *matCellDef="let element" class="text-right">
+                <button type="button" class="btn-icons btn-outline-danger" matTooltip="Delete" mat-button
+                    *ngIf="element.userId === userId" (click)="removeAsssignment(element.id)">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <div [ngClass]="isAssignmentAvailable ? 'd-none' : 'empty text-center p-4'">
+        <p>No Assignments Found</p>
+    </div>
+</div>

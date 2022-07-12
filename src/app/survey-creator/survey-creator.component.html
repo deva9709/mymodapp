@@ -1,0 +1,8 @@
+<div *ngIf="isSurveyCreator" class="mb-3">
+  <button type="button" class="btn-icons btn-outline-info mb-2" mat-button (click)="back()" [disabled]="isRoutetoSurveyList">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+</div>
+<ng-container>
+    <div id="surveyCreatorContainer"></div>
+</ng-container>

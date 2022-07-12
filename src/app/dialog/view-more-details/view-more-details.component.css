@@ -1,0 +1,37 @@
+.accordian-item {
+	width: 1076px;
+	margin-left: 8px;
+	background-color: #f1f1f1;
+	margin-top: 16px;
+	box-shadow: none;
+}
+
+.line-of-row {
+	border: 1px solid #ccc;
+	width: 988px;
+	margin-bottom: 9px;
+}
+
+.fontClass-for-label {
+	font-size: 18px;
+	font-family: Montserrat-Bold;
+}
+
+.scrollBar {
+	overflow: auto;
+	height: 400px;
+}
+
+.line-bar {
+	border: 1px solid #ccc;
+	width: 795px;
+	margin-top: 34p;
+}
+
+.div-container {
+	margin-top: 20px;
+}
+
+.cancel-button {
+	float: right;
+}

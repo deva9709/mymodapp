@@ -1,0 +1,186 @@
+﻿<header class="preLogin">
+   <div class="container">
+       <a href="javascript:void(0)" class="logo" [routerLink]="['/account/landing']">
+           Virtutor
+       </a>
+       <ul class="navigations">
+           <li>
+               <a href="javascript:void(0)" [routerLink]="['/account/landing']">
+                   Home
+               </a>
+           </li>
+           <li>
+               <a href="javascript:void(0)">
+                   About us
+               </a>
+           </li>
+           <li>
+               <a href="javascript:void(0)">
+                   Trainership
+               </a>
+           </li>
+           <li>
+               <a href="javascript:void(0)">
+                   Contact us
+               </a>
+           </li>
+           <li>
+               <a href="javascript:void(0)" [routerLink]="['/account/register']">
+                   Join as Trainer
+               </a>
+           </li>
+       </ul>
+   </div>
+</header>
+<section class="introduction">
+   <div class="container text-right">
+       <h4>Trainer Registration</h4>
+   </div>
+</section>
+<section class="register-form mt-4">
+   <div class="container">
+       <form action="#" autocomplete="off">
+           <h1 class="mt-5 mb-5">Personal Information</h1>
+           <div class="row">
+               <div class="col-6 mb-4">
+                   <mat-form-field>
+                       <input matInput placeholder="First Name">
+                   </mat-form-field>
+               </div>
+               <div class="col-6 mb-4">
+                   <mat-form-field>
+                       <input matInput placeholder="Last Name">
+                   </mat-form-field>
+               </div>
+               <div class="col-6 mb-4">
+                   <mat-form-field>
+                       <input matInput placeholder="Email">
+                   </mat-form-field>
+               </div>
+               <div class="col-6 mb-4">
+                   <mat-form-field>
+                       <input matInput placeholder="Phone">
+                   </mat-form-field>
+               </div>
+               <div class="col-6 mb-4">
+                   <mat-form-field>
+                       <input matInput placeholder="Known Languages">
+                   </mat-form-field>
+               </div>
+               <div class="col-6 mb-4">
+                   <div class="float-left">
+                       <mat-form-field>
+                           <input matInput placeholder="City">
+                       </mat-form-field>
+                   </div>
+                   <div class="float-right">
+                       <mat-form-field>
+                           <input matInput placeholder="Country">
+                       </mat-form-field>
+                   </div>
+               </div>
+           </div>
+           <h1 class="mt-5 mb-5">Educational Qualifications</h1>
+           <div class="row">
+               <div class="col-6 mb-4">
+                   <mat-form-field>
+                       <mat-select placeholder="Select Qualifications">
+                           <mat-option value="option">Qualifications</mat-option>
+                       </mat-select>
+                   </mat-form-field>
+               </div>
+               <div class="col-6 mb-4">
+                   <mat-form-field>
+                       <input matInput placeholder="Institution">
+                   </mat-form-field>
+               </div>
+               <div class="col-6 mb-4">
+                   <mat-form-field>
+                       <input matInput placeholder="Board/ University">
+                   </mat-form-field>
+               </div>
+               <div class="col-6 mb-4">
+                   <div class="float-left">
+                       <mat-form-field>
+                           <input matInput placeholder="Enroll Month">
+                       </mat-form-field>
+                   </div>
+                   <div class="float-right">
+                       <mat-form-field>
+                           <input matInput placeholder="Enroll Year">
+                       </mat-form-field>
+                   </div>
+               </div>
+               <div class="col-6 mb-4">
+                   <mat-form-field>
+                       <input matInput placeholder="Division/ Grage">
+                   </mat-form-field>
+               </div>
+               <div class="col-6 mb-4">
+                   <div class="float-left">
+                       <mat-form-field>
+                           <input matInput placeholder="Passing Month">
+                       </mat-form-field>
+                   </div>
+                   <div class="float-right">
+                       <mat-form-field>
+                           <input matInput placeholder="Passing Year">
+                       </mat-form-field>
+                   </div>
+               </div>
+               <div class="col-6 mb-4">
+                   <mat-form-field>
+                       <input matInput placeholder="% of Marks">
+                   </mat-form-field>
+               </div>
+               <div class="col-6 mb-4">
+                   <mat-form-field>
+                       <input matInput placeholder="Grade Points">
+                   </mat-form-field>
+               </div>
+               <div class="col-12 text-center mb-2">
+                   <a href="javascript:void(0)">+ Add Another</a>
+               </div>
+           </div>
+           <h1 class="mt-5 mb-5">Trainership On<br><small><sup class="col-red">*</sup> These are mandatory</small></h1>
+           <div class="row">
+               <div class="col-6 mb-4">
+                   <div class="text-right"><a href="javascript:void(0)">+ Add Another Domain</a></div>
+                   <mat-form-field>
+                       <mat-select placeholder="Select Domain">
+                           <mat-option value="option">Domain</mat-option>
+                       </mat-select>
+                   </mat-form-field>
+               </div>
+               <div class="col-6 mb-4">
+                   <div class="text-right"><a href="javascript:void(0)">+ Add Another Certification</a></div>
+                   <mat-form-field>
+                       <mat-select placeholder="Select Certification">
+                           <mat-option value="option">Certification</mat-option>
+                       </mat-select>
+                   </mat-form-field>
+               </div>
+               <div class="col-6 mb-4">
+                   <mat-form-field>
+                       <textarea matInput placeholder="Skills seperated by ,"></textarea>
+                   </mat-form-field>
+               </div>
+               <div class="col-6 mb-4">
+                   <mat-form-field>
+                       <input matInput placeholder="Accredations">
+                   </mat-form-field>
+               </div>
+           </div>
+           <div class="row mt-3">
+               <div class="col-12 mb-5">
+                   <mat-checkbox>I Agree to the Terms and Conditions.</mat-checkbox>
+               </div>
+               <div class="col-12 text-center mb-5">
+                   <button class="btn btn-primary" type="button">
+                       Register
+                   </button>
+               </div>
+           </div>
+       </form>
+   </div>
+</section>

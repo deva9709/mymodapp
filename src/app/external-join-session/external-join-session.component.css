@@ -1,0 +1,10 @@
+.mod-spinner {
+    position: fixed !important;
+    top: 50%;
+    left: 50%;
+    z-index: 10;
+}
+
+::ng-deep .mat-progress-spinner circle, .mat-spinner circle {
+    stroke: #1c8adb !important;
+}

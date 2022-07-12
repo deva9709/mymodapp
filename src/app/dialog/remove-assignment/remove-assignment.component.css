@@ -1,0 +1,7 @@
+::ng-deep .mat-dialog-container {
+    padding: 24 !important;
+}
+
+.modal-footer {
+    justify-content: center;
+}

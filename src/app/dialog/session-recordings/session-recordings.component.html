@@ -1,0 +1,50 @@
+<div class="header-holder">
+  <div class="header-block">
+    <span>Session Title</span>
+    <p>{{sessionRecordingsData.sessionTitle}}</p>
+  </div>
+  <div class="date-time-block">
+    <div>
+      <span>Start Date & Time</span>
+      <p>{{sessionRecordingsData.startDate | date:'dd/MM/yy h:mm a'}}</p>
+    </div>
+    <div>
+      <span>End Date & Time</span>
+      <p>{{sessionRecordingsData.endDate | date:'dd/MM/yy h:mm a'}}</p>
+    </div>
+  </div>
+</div>
+<mat-dialog-content>
+  <div class="mb=2" id="viewTable">
+    <table mat-table [dataSource]="dataSource" class="table">
+      <ng-container matColumnDef="startTime">
+        <th mat-header-cell *matHeaderCellDef> Start Time </th>
+        <td mat-cell *matCellDef="let element"> {{element.startTime | date:'dd/MM/yy h:mm:ss a'}} </td>
+      </ng-container>
+      <ng-container matColumnDef="endTime">
+        <th mat-header-cell *matHeaderCellDef> End Time </th>
+        <td mat-cell *matCellDef="let element"> {{element.endTime | date:'dd/MM/yy h:mm:ss a'}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="url">
+        <th mat-header-cell *matHeaderCellDef> Action </th>
+        <td mat-cell *matCellDef="let element">
+          <button type="button" class="btn-icons btn-outline-warning mr-2" matTooltip="Play session recording(s)"
+            (click)="openRecording(element.url)">
+            <mat-icon>play_arrow</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <div *ngIf="sessionRecordingsData.recordingData && !sessionRecordingsData.recordingData.length"
+      class="empty text-center">
+      <p>No Records Found</p>
+    </div>
+    <mat-paginator [length]="sessionRecordingsData.recordingData.length" #recordingsPaginator [pageSize]="5"
+      [pageSizeOptions]="[5,10,15,20]" showFirstLastButtons>
+    </mat-paginator>
+  </div>
+</mat-dialog-content>

@@ -1,0 +1,994 @@
+<div *ngIf="isSuperAdmin">
+    <form #form="ngForm" ngNativeValidate>
+        <div class="row mt-5 pt-3">
+            <div class="col-8">
+                <div class="content-block mb-3">
+                    <div class="content-header" *ngIf="!editProfile">
+                        <button class="btn-icons float-right btn-outline-warning" mat-button (click)="updateProfile()">
+                            <mat-icon>create</mat-icon>
+                        </button>
+                        <h1>{{profile.firstname}} {{profile.lastname}}</h1>
+                    </div>
+                    <div class="content-body">
+                        <div class="row view-basic-details" *ngIf="!editProfile">
+                            <div class="col-6 mb-3">
+                                <div class="mb-1"><strong>Username</strong></div>
+                                {{profile.email}}
+                            </div>
+                            <div class="col-12" *ngIf="currentUserRole === userRoles[9]">
+                                <div class="mb-1"><strong>Skills</strong></div>
+                                <small class="skill mr-2" *ngFor="let skill of skillList">{{skill}}</small>
+                            </div>
+                        </div>
+                        <div class="row" *ngIf="editProfile">
+                            <div class="col-6 mb-3">
+                                <mat-form-field>
+                                    <input matInput placeholder="Name" name="firstname" type="text"
+                                        [(ngModel)]="profile.firstname" minlength="3" required>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <mat-form-field>
+                                    <input matInput placeholder="Surname" name="lastname" [(ngModel)]="profile.lastname"
+                                        minlength="3">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <mat-form-field>
+                                    <input matInput placeholder="Email / UserName" name="email"
+                                        [(ngModel)]="profile.email" disabled>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-12 mt-3 text-right">
+                                <button class="btn btn_theme mr-3" type="submit" (click)="UpdateProfile()">
+                                    Update
+                                </button>
+                                <button type="button" class="btn btn-secondary" (click)="updateProfile()">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="content-block p-3">
+                    <span class="profile-pic">
+                        <img src="../../assets/images/profile.png" alt="Name">
+                    </span>
+                    <div class="text-center">
+                        <div class="designation mb-3">
+                        </div>
+                        <div class="name mb-3">
+                            <strong>{{profile.firstname}} {{profile.lastname}}</strong>
+                        </div>
+                        <ul class="quick-links">
+                            <li>
+                                <a (click)="updatePasscode()" class="d-none">
+                                    Update Password
+                                </a>
+                                <a (click)="resetPassword()">
+                                    Update Password
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="modal-cover" [ngClass]="updatePassword ? '' : 'd-none'" (click)="resetPassword()">
+    </div>
+    <div class="modal-content w-35 modal-content-theme" [ngClass]="updatePassword ? '' : 'd-none'">
+        <h2 class="text-center">Update Password</h2>
+        <form novalidate (ngSubmit)="changePassword(parentFormGroup.value)" class="update-password"
+            [formGroup]="parentFormGroup">
+            <div class="row mt-4 mb-4">
+                <div class="col-12">
+                    <mat-form-field>
+                        <input matInput id="currentPassword" type="password" name="CurrentPassword"
+                            formControlName="currentPassword" placeholder="Current Password" required minlength="2"
+                            maxlength="32" i18n-placeholder="@@currentPassword" />
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-12" [formGroup]="passwordsFormGroup" formGroupName="passwords">
+                    <mat-form-field>
+                        <input matInput id="newPassword" formControlName="newPassword" type="password"
+                            name="NewPassword" placeholder="New Password" required minlength="2" maxlength="32"
+                            i18n-placeholder="@@newPassword" />
+                        <mat-error *ngIf="passwordsFormGroup.controls.newPassword.errors">
+                            Passwords must be at least 8 characters, contain a lowercase, uppercase, and number
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row mb-4" formGroupName="passwords">
+                <div class="col-12">
+                    <mat-form-field>
+                        <input matInput id="repeatNewPassword" formControlName="repeatNewPassword" type="password"
+                            name="RepeatNewPassword" placeholder="Confirm New Password"
+                            [errorStateMatcher]="equalMatcher" required minlength="2" maxlength="32"
+                            i18n-placeholder="@@repeatNewPassword" />
+                        <mat-error *ngIf="passwordsFormGroup.errors &&
+                passwordsFormGroup.errors.areEqual &&
+                passwordsFormGroup.controls.newPassword.touched
+                ">
+                            Passwords do not match
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-field text-center">
+                        <button class="btn btn_theme update-button" type="submit"
+                            [disabled]="!parentFormGroup.valid">Update
+                            Password</button>
+                        <button class="btn btn-secondary ml-2 update-button" type="button"
+                            (click)="resetPassword()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div *ngIf="!isSuperAdmin">
+    <mat-tab-group (selectedTabChange)="tabChanged($event)" [(selectedIndex)]="index">
+        <mat-tab label="Personal Info" class="tab-bodyColor">
+            <div class="editButton" *ngIf="!isEditPersonalInfo">
+                <button mat-button color="primary" (click)="editPersonalInfo()">Edit Profile</button>
+            </div>
+            <div *ngIf="!isEditPersonalInfo" class="tab-container">
+                <div class="row common-for-row">
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Name</label></div>
+                        {{personalInfo?.name}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Sur Name</label></div>
+                        {{personalInfo?.surName}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Email</label></div>
+                        {{personalInfo?.email}}
+                    </div>
+                </div>
+                <div class="row common-for-row">
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Phone Number</label></div>
+                        {{personalInfo?.phoneNumber}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Location</label></div>
+                        {{personalInfo?.location}}
+                    </div>
+                    <div class="col-4 mb-3" *ngIf="isTrainer">
+                        <div class="mb-1"><label class="fontClass-for-label">Spoken Language</label></div>
+                        {{personalInfo?.languages}}
+                    </div>
+                </div>
+                <div class="row about-your-self" *ngIf="isTrainer">
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">About Your Self</label></div>
+                        {{personalInfo?.aboutYourself}}
+                    </div>
+                </div>
+            </div>
+            <form novalidate [formGroup]="personalInforMationForm" autocomplete="off">
+                <div class="tab-bodyColor" *ngIf="isEditPersonalInfo">
+                    <div class="row info-body">
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Name *" name="firstName" [(ngModel)]="firstname"
+                                    formControlName="firstname">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="SurName *" name="lastName" [(ngModel)]="lastName"
+                                    formControlName="lastName">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Email *" name="email" [(ngModel)]="email"
+                                    formControlName="email" readonly>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row info-body">
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Phone Number *" [(ngModel)]="phoneNumber"
+                                    name="phoneNumber" formControlName="phoneNumber">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Location *" name="location" [(ngModel)]="location"
+                                    formControlName="location">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-4 mb-4" *ngIf="isTrainer">
+                            <ng-multiselect-dropdown [placeholder]="'Spoken Language'" [data]="allLanguage"
+                                [(ngModel)]="selectedLanguage" [settings]="langugeDropdownSettings"
+                                (onSelect)="onLanguageSelect($event)" (onDeSelect)="onLanguageDeSelect($event)"
+                                (onSelectAll)="onLanguageSelectAll($event)"
+                                (onDeSelectAll)="onDeselectLanguageAll($event)" formControlName="selectedLanguage">
+                            </ng-multiselect-dropdown>
+                        </div>
+                        <div class="col-4 mb-4" *ngIf="isTrainer">
+                            <mat-form-field>
+                                <input matInput placeholder="About Yourself in  max 4 lines" [(ngModel)]="aboutDetails"
+                                    name="about" formControlName="aboutDetails">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-field text-center">
+                                <button class="btn btn_theme update-button" (click)="updatePersonalInfo()"
+                                    type="submit">Update</button>
+                                <button class="btn btn-secondary ml-2 update-button" type="button"
+                                    (click)="cancelPersonalInfo()">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </mat-tab>
+        <mat-tab label="Availability">
+            <div class="editButton" *ngIf="!isEditAvailabilityInfo">
+                <button mat-button color="primary" (click)="editAvailabityInfo()">Edit Availability</button>
+            </div>
+            <h4>Working Days</h4>
+            <section class="example-section">
+                <div>
+                    <mat-checkbox class="example-margin" [disabled]="!isEditAvailabilityInfo" [(ngModel)]="isMonday">
+                        Monday</mat-checkbox>
+                    <mat-checkbox class="example-margin" [disabled]="!isEditAvailabilityInfo" [(ngModel)]="isTuesday">
+                        Tuesday</mat-checkbox>
+                    <mat-checkbox class="example-margin" [disabled]="!isEditAvailabilityInfo" [(ngModel)]="isWednesday">
+                        Wednesday</mat-checkbox>
+                    <mat-checkbox class="example-margin" [disabled]="!isEditAvailabilityInfo" [(ngModel)]="isThursday">
+                        Thursday</mat-checkbox>
+                </div>
+                <div class="EditAvailabilityInfo">
+                    <mat-checkbox class="example-margin" [disabled]="!isEditAvailabilityInfo" [(ngModel)]="isFriday">
+                        Friday</mat-checkbox>
+                    <mat-checkbox class="example-margin" [disabled]="!isEditAvailabilityInfo" [(ngModel)]="isSaturday">
+                        Saturday</mat-checkbox>
+                    <mat-checkbox class="example-margin" [disabled]="!isEditAvailabilityInfo" [(ngModel)]="isSunday">
+                        Sunday</mat-checkbox>
+                </div>               
+            </section>
+            <h4>Working Time</h4>
+            <!-- Start time -->
+            <div class="timer">
+                Login Time:
+                <mat-label *ngIf="isEditAvailabilityInfo==false">{{loginTime}}</mat-label>
+                <mat-form-field class="example-form-field" *ngIf="isEditAvailabilityInfo==true">
+                    <input [disabled]="!isNgxLogin" [ngxTimepicker]="logintime" [(ngModel)]="ngxloginTime" matInput>
+                    <mat-icon matSuffix>timer</mat-icon>
+                    <ngx-material-timepicker #logintime>
+                    </ngx-material-timepicker>
+                </mat-form-field>                
+            </div>
+            <!-- End time -->
+            <div class="clocktimer">
+                Logout Time:
+                <mat-label *ngIf="isEditAvailabilityInfo==false">{{logoutTime}}</mat-label>
+                <mat-form-field class="example-form-field" *ngIf="isEditAvailabilityInfo==true">
+                    <input [disabled]="!isNgxLogin" [min]="ngxMinlogOutTime" [ngxTimepicker]="logoutTime" [(ngModel)]="ngxlogoutTime" matInput>
+                    <mat-icon matSuffix>timer</mat-icon>
+                    <ngx-material-timepicker #logoutTime>
+                    </ngx-material-timepicker>
+                </mat-form-field>
+            </div>
+            <div class="row" *ngIf="isEditAvailabilityInfo==true">
+                <div class="col-12">
+                    <div class="form-field text-center">
+                        <button class="btn btn_theme update-button" type="button"
+                                (click)="resetAvailability()">Reset</button>
+                        <button class="btn btn_theme update-button" type="button"
+                            (click)="updateAvailabilityInfo()">Update</button>                       
+                        <button class="btn btn-secondary update-button ml-2" type="button"
+                            (click)="cancelEditAvailabilityInfo()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </mat-tab>
+        <mat-tab label="Education" *ngIf="isTrainer">
+            <div class="editButton" *ngIf="!editEducation">
+                <button mat-button color="primary" (click)="editEducationDetails()">Edit Profile</button>
+            </div>
+            <div *ngIf="!editEducation" class="tab-container">
+                <div class="row cost-calculation">
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Qualification</label>
+                        </div>
+                        {{qualificationvalue}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Specialization</label></div>
+                        {{specializationvalue}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Conference Papers seperated by,</label>
+                        </div>
+                        {{educationQualification?.conferencePapers}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Honors & Awards seperated by,</label></div>
+                        {{educationQualification?.honorsAndAwards}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Conferences/Seminars attended seperated by
+                                ,</label>
+                        </div>
+                        {{educationQualification?.attentedConferenceAndSeminars}}
+                    </div>
+                </div>
+            </div>
+            <div class="tab-bodyColor" *ngIf="editEducation">
+                <form novalidate [formGroup]="qualificationAndSpecializationForm" autocomplete="off">
+                    <div class="row info-body">
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Qualification seperated by ," name="Qualification"
+                                    formControlName="qualification" [(ngModel)]="qualificationvalue">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Specialization seperated by ," name="Specialization"
+                                    formControlName="specialization" [(ngModel)]="specializationvalue">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Conference Papers seperated by ,"
+                                    formControlName="conferencePaper" [(ngModel)]="conferencePapervalue">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Honors & Awards seperated by ,"
+                                    formControlName="honorsAndAwards" [(ngModel)]="honorsAndAwardsvalue">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Conferences/Seminars attended seperated by ,"
+                                    formControlName="conferenceAttende" [(ngModel)]="conferenceAttendevalue">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-field text-center">                                
+                                <button class="btn btn_theme update-button" type="button"
+                                    (click)="updateEducationAndQualification()">Update</button>                                    
+                                <button class="btn btn-secondary update-button ml-2" type="button"
+                                    (click)="cancelEditEducation()">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </mat-tab>
+        <mat-tab label="R & D" *ngIf="isTrainer">
+            <div class="editButton" *ngIf="!isEditResearch">
+                <button mat-button color="primary" (click)="editResearchInfo()">Edit Profile</button>
+            </div>
+            <div *ngIf="!isEditResearch" class="tab-container">
+                <div class="row common-for-row">
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Research paper/White Paper seperated
+                                by</label>
+                        </div>
+                        {{researchDeveloment?.resarchPaperName}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Research paper link</label></div>
+                        {{researchDeveloment?.paperLink}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Research/Project Guidance</label></div>
+                        {{researchDeveloment?.researchOrProjectGuidance}}
+                    </div>
+                </div>
+                <div class="row common-for-row">
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Research projects</label></div>
+                        {{researchDeveloment?.researchProjects}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Journal Publication</label></div>
+                        {{researchDeveloment?.journalPublication}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Books Published seperated by,</label></div>
+                        {{researchDeveloment?.booksPublished}}
+                    </div>
+                </div>
+            </div>
+            <div class="tab-bodyColor" *ngIf="isEditResearch">
+                <form novalidate [formGroup]="researchDevelopmentForm" autocomplete="off">
+                    <div class="row common-for-row">
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Research paper/White Paper  seperated by ,"
+                                    name="researchWhitePaper" [(ngModel)]="researchPapers"
+                                    formControlName="researchWhitePaper">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Research paper link" [(ngModel)]="researchPaperLinks"
+                                    name="researchPaperLinks" formControlName="researchPaperLink">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Research/Project Guidance"
+                                    [(ngModel)]="researchOrProjectGuidances" formControlName="researchProjectGuidance">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row common-for-row">
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Research projects" [(ngModel)]="researchProjects"
+                                    formControlName="researchProject">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Journal Publication" [(ngModel)]="journalPublication"
+                                    formControlName="journalPublication">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Books Published seperated by ,"
+                                    [(ngModel)]="booksPublished" formControlName="bookPublished">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-field text-center">
+                                <button class="btn btn_theme update-button" type="submit"
+                                    (click)="updateResearchInfo()">Update</button>
+                                <button class="btn btn-secondary update-button ml-2" type="button"
+                                    (click)="cancelResearchInfo()">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </mat-tab>
+        <mat-tab label="Organization" *ngIf="isTrainer">
+            <div class="editButton" *ngIf="!isEditOrganizationDetails">
+                <button mat-button color="primary" (click)="editOrganizationDetails()">Edit Profile</button>
+            </div>
+            <div *ngIf="!isEditOrganizationDetails" class="tab-container">
+                <div class="row cost-calculation">
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Association with professional
+                                bodies</label>
+                        </div>
+                        {{organizationDetails?.associationWithProfessionalBodies}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Department</label></div>
+                        {{organizationDetails?.department}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Designation</label></div>
+                        {{organizationDetails?.designation}}
+                    </div>
+                </div>
+                <div class="row cost-calculation">
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Administrative assignments</label></div>
+                        {{organizationDetails?.administrativeAssignments}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Date of joining the institution</label>
+                        </div>
+                        {{organizationDetails?.dateOfJoiningInstitute | date:'dd/MM/yyyy'}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">TrainerCode/EmployeeId</label></div>
+                        {{organizationDetails?.mentorCode}}
+                    </div>
+                </div>
+            </div>
+            <div class="tab-bodyColor" *ngIf="isEditOrganizationDetails">
+                <form novalidate [formGroup]="organizatioDetailsForm" autocomplete="off">
+                    <div class="row info-body">
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Association with professional bodies"
+                                    name="associationWithProfessionalBodies"
+                                    formControlName="associationWithProfessionalBodies"
+                                    [(ngModel)]="associationWithProfessionalBodies">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Department" name="department" formControlName="department"
+                                    [(ngModel)]="department">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Designation" name="designation"
+                                    formControlName="designation" [(ngModel)]="designation">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row info-body">
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Administrative assignments "
+                                    formControlName="administrativeAssignments" [(ngModel)]="administrativeAssignments">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Date of joining the institution *" [matDatepicker]="end"
+                                    [min]="endMinDate" name="dateOfJoining" [(ngModel)]="dateOfJoining"
+                                    formControlName="dateOfJoining" readonly />
+                                <mat-datepicker-toggle matSuffix [for]="end"></mat-datepicker-toggle>
+                                <mat-datepicker #end disabled="false"></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="TrainerCode/EmployeeId " name="trainerCodeEmployeeCode"
+                                    [(ngModel)]="trainerCodeEmployeeCode" formControlName="trainerCodeEmployeeCode"
+                                    readonly>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-field text-center updateButton">
+                                <button class="btn btn_theme update-button" type="submit"
+                                    (click)="updateOrganizatioDetails()">Update</button>
+                                <button class="btn btn-secondary update-button ml-2" type="button"
+                                    (click)="canceleditOrganizationDetails()">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </mat-tab>
+        <mat-tab label="Experiences" *ngIf="isTrainer">
+            <div class="editButton" *ngIf="!isEditExperienceDetails">
+                <button mat-button color="primary" (click)="editExperienceDetails()">Edit Profile</button>
+            </div>
+            <div *ngIf="!isEditExperienceDetails" class="tab-container">
+                <div class="row cost-calculation">
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Primary Technology</label></div>
+                        {{primaryTechnology}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Primary Skills</label></div>
+                        {{primarySkills}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Micro Tutoring</label></div>
+                        {{microtutoringValue}}
+                    </div>
+                </div>
+                <div class="row cost-calculation">
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Training/Project Taken</label></div>
+                        {{trainingsOrProjectTaken}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Subject Taught- UG LEVEL</label></div>
+                        {{subjectTaughtUgLevel}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Subject Taught - PG LEVEL</label></div>
+                        {{subjectTaughtPgLevel}}
+                    </div>
+                </div>
+                <div class="row cost-calculation">
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Certifications</label></div>
+                        {{certiFicationsValue}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Total Experience</label></div>
+                        {{experienceDetails?.totalExperience}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Relevant Experience</label></div>
+                        {{experienceDetails?.relaventExperience}}
+                    </div>
+                </div>
+            </div>
+            <div class="tab-bodyColor" *ngIf="isEditExperienceDetails">
+                <form novalidate [formGroup]="experienceDetailsForm" autocomplete="off">
+                    <div class="row info-body">
+                        <div class="col-6 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Total Experience *" name="totalExperience"
+                                    [(ngModel)]="totalExperience" formControlName="totalExperience">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-6 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Relevant Experience *" name="relevantExperience"
+                                    [(ngModel)]="relevantExperience" formControlName="relevantExperience">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row info-body">
+                        <div class="col-6 mb-4">
+                            <mat-form-field>
+                                <mat-label>Primary Technology *</mat-label>
+                                <mat-select placeholder="Primary Technology *" formControlName="primaryTechnology"
+                                    name="primaryTechnology" [(ngModel)]="primaryTechnology"
+                                    (selectionChange)="changeTechnology($event)" [disabled]="true">
+                                    <div class="row dropdown-search-row">
+                                    </div>
+                                    <mat-divider></mat-divider>
+                                    <mat-option *ngFor="let item of allTechnology" [value]="item.name">
+                                        {{item.name}}
+                                    </mat-option>
+                                </mat-select>
+
+                            </mat-form-field>
+                        </div>
+                        <div class="col-6 mb-4">
+                            <mat-form-field>
+                                <mat-label>Primary Skills *</mat-label>
+                                <mat-select placeholder="Primary Skills * " formControlName="primarySkills"
+                                    name="primarySkills" [(ngModel)]="primarySkills" [disabled]="true">
+                                    <div class="row dropdown-search-row">
+                                    </div>
+                                    <mat-divider></mat-divider>
+                                    <mat-option *ngFor="let item of allSkills" [value]="item.name">
+                                        {{item.name}}
+                                    </mat-option>
+                                </mat-select>
+
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <!-- <div class="row info-body">
+                        <div class="col-6 mb-4">
+                            <ng-multiselect-dropdown [placeholder]="'Primary Technology'" [data]="allTechnology"
+                                [(ngModel)]="primaryTechnology" [settings]="technologyAndSkillDropdownSettings"
+                                (onSelect)="onTechnologySelect($event)" (onDeSelect)="onTechnologyDeSelect($event)"
+                                (onSelectAll)="onTechnologySelectAll($event)"
+                                (onDeSelectAll)="onTechnologyDeSelectAll($event)" formControlName="primaryTechnology">
+                            </ng-multiselect-dropdown>
+                        </div>
+                        <div class="col-6 mb-4">
+                            <ng-multiselect-dropdown [placeholder]="'Primary Skill'" [data]="allSkills"
+                                [(ngModel)]="primarySkills" [settings]="technologyAndSkillDropdownSettings"
+                                (onSelect)="onSkillSelect($event)" (onDeSelect)="onSkillDeSelect($event)"
+                                (onSelectAll)="onSkillSelectAll($event)" (onDeSelectAll)="onSkillDeSelectAll($event)"
+                                formControlName="primarySkills">
+                            </ng-multiselect-dropdown>
+                        </div>
+                    </div> -->
+                    <div class="row info-body">
+                        <div class="col-6 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Micro Tutoring" name="microtutoring"
+                                    [(ngModel)]="microtutoring" formControlName="microtutoring">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-6 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Trainings/Project Taken" name="trainingProjectName"
+                                    [(ngModel)]="trainingProjectName" formControlName="trainingProjectName">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row info-body">
+                        <div class="col-6 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Subject Taught- UG LEVEL" name="subjectTaughtUGLevel"
+                                    [(ngModel)]="subjectTaughtUGLevel" formControlName="subjectTaughtUGLevel">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-6 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Subject Taught - PG LEVEL" name="subjectTaughtPGLevel"
+                                    [(ngModel)]="subjectTaughtPGLevel" formControlName="subjectTaughtPGLevel">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row info-body">
+                        <div class="col-6 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="Certifications" name="certiFication"
+                                    [(ngModel)]="certiFication" formControlName="certiFication">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-field text-center updateButton">
+                                <button class="btn btn_theme update-button" type="submit"
+                                    (click)="updateExperienceDetails()">Update</button>
+                                <button class="btn btn-secondary update-button ml-2" type="button"
+                                    (click)="cancelExperienceDetails()">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </mat-tab>
+        <mat-tab label="Cost Calculation" *ngIf="isTrainer">
+            <div class="editButton" *ngIf="!isEditCostCalculationDetails">
+                <button mat-button color="primary" (click)="eidtCostCalCulation()">Edit Profile</button>
+            </div>
+            <div *ngIf="!isEditCostCalculationDetails" class="tab-container">
+                <div class="row cost-calculation">
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Cost for 15 Min</label></div>
+                        {{costFor15Minutes}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Cost for 30 Min</label></div>
+                        {{costFor30Minutes}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Cost for 45 Min</label></div>
+                        {{costFor45Minutes}}
+                    </div>
+                </div>
+                <div class="row cost-calculation">
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Cost for 1 Hour</label></div>
+                        {{costFor1Hour}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Cost for 4 Hour</label></div>
+                        {{costFor4Hour}}
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Cost for 8 Hour</label></div>
+                        {{costFor8Hour}}
+                    </div>
+                </div>
+                <div class="row cost-calculation">
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Cost for long terms assignment</label>
+                        </div>
+                        {{costForLongTerms}}
+                    </div>
+                </div>
+            </div>
+            <div class="tab-bodyColor" *ngIf="isEditCostCalculationDetails">
+                <form novalidate [formGroup]="costCalCulationDetailsForm" autocomplete="off">
+                    <div class="row info-body">
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="cost For 15 Minutes" [(ngModel)]="costFor15Minutes"
+                                    formControlName="costFor15Minutes">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="cost For 30 Minutes" [(ngModel)]="costFor30Minutes"
+                                    formControlName="costFor30Minutes">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="cost For 45 Minutes" [(ngModel)]="costFor45Minutes"
+                                    formControlName="costFor45Minutes">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row info-body">
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="cost For 1 Hour " [(ngModel)]="costFor1Hour"
+                                    formControlName="costFor1Hour">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="cost For 4 Hour " [(ngModel)]="costFor4Hour"
+                                    formControlName="costFor4Hour">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="cost For 8 Hour " [(ngModel)]="costFor8Hour"
+                                    formControlName="costFor8Hour">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row info-body">
+                        <div class="col-4 mb-4">
+                            <mat-form-field>
+                                <input matInput placeholder="cost For Long Terms" [(ngModel)]="costForLongTerms"
+                                    formControlName="costForLongTerms">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-field text-center updateButton">
+                                <button class="btn btn_theme update-button" type="submit"
+                                    (click)="updateCostCalCulation()">Update</button>
+                                <button class="btn btn-secondary ml-2 update-button" type="button"
+                                    (click)="cancelEidtCalCulationDetails()">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </mat-tab>
+        <mat-tab label="Documents" class="tab-bodyColor">
+            <div class="editButton" *ngIf="!isEditUploadDocument">
+                <button mat-button color="primary" (click)="editDocument()">Edit Document</button>
+            </div>
+            <div *ngIf="!isEditUploadDocument" class="tab-container">
+                <div class="row cost-calculation">
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">video Url</label></div>
+                        <a href="{{videoUrl}}" target="_blank" *ngIf="videoUrl">Click on Video Profile </a>
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Image</label></div>
+                        <a href="{{imageUrl}}" target="_blank" *ngIf="imageUrl"> Click on Profile Image </a>
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="mb-1"><label class="fontClass-for-label">Document</label></div>
+                        <a href="{{documentUrl}}" target="_blank" *ngIf="documentUrl"> Click on Document </a>
+                    </div>
+                </div>
+            </div>
+            <form novalidate [formGroup]="updateDocumentForm" autocomplete="off">
+                <div class="tab-bodyColor" *ngIf="isEditUploadDocument">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <mat-form-field class="div-Width">
+                                <ngx-mat-file-input #imageFile formControlName="image" placeholder="Select Image"
+                                    (change)="handleInputChange($event)" [accept]="'.jpg, .jpeg, .png'">
+                                </ngx-mat-file-input>
+                                <button mat-icon-button matSuffix
+                                    (click)="imageFile.empty ? '' : imageFile.clear($event)">
+                                    <mat-icon>{{imageFile.empty ? 'attach_file' : 'clear'}}</mat-icon>
+                                </button>
+                            </mat-form-field>
+
+                        </div>
+                        <div class="col-md-4">
+                            <mat-form-field class="div-Width">
+                                <ngx-mat-file-input #docFile formControlName="document" placeholder="Select Document"
+                                    [accept]="'.pdf, .doc, .docx'">
+                                </ngx-mat-file-input>
+                                <button mat-icon-button matSuffix (click)="docFile.empty ? '' : docFile.clear($event)">
+                                    <mat-icon>{{docFile.empty ? 'attach_file' : 'clear'}}</mat-icon>
+                                </button>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-4">
+                            <mat-form-field class="div-Width">
+                                <ngx-mat-file-input #videoFile formControlName="videoProfileBlobUrl"
+                                    placeholder="Select Video" [accept]="'.webm, .mp4, .avi, .wmv'">
+                                </ngx-mat-file-input>
+                                <button mat-icon-button matSuffix
+                                    (click)="videoFile.empty ? '' : videoFile.clear($event)">
+                                    <mat-icon>{{videoFile.empty ? 'attach_file' : 'clear'}}</mat-icon>
+                                </button>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-field text-center">
+                                <button class="btn btn_theme update-button" (click)="updateDocument()"
+                                    type="submit">Update</button>
+                                <button class="btn btn-secondary ml-2 update-button" type="button"
+                                    (click)="cancelUploadDocument()">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </mat-tab>
+        <mat-tab label="Change Password" class="tab-bodyColor">
+            <div class="col-4 float-right">
+                <div class="content-block p-3">
+                    <!-- <span class="profile-pic">
+                        <img src="../../assets/images/profile.png" alt="Name">
+                    </span> -->
+                    <div class="text-center">
+                        <div class="designation mb-3">
+                        </div>
+                        <div class="name mb-3">
+                            <strong>{{profile.firstname}} {{profile.lastname}}</strong>
+                        </div>
+                        <ul class="quick-links">
+                            <li>
+                                <a (click)="updatePasscode()" class="d-none">
+                                    Change Password
+                                </a>
+                                <a (click)="resetPassword()">
+                                    Change Password
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-content w-35 modal-content-theme passwordwidth"
+                [ngClass]="updatePassword ? '' : 'd-none'">
+                <h2 class="text-center">Change Password</h2>
+                <form novalidate (ngSubmit)="changePassword(parentFormGroup.value)" class="update-password linemargin"
+                    [formGroup]="parentFormGroup">
+                    <div class="row mt-4 mb-4">
+                        <div class="col-12">
+                            <mat-form-field>
+                                <input matInput id="currentPassword" type="password" name="CurrentPassword"
+                                    formControlName="currentPassword" placeholder="Current Password" required
+                                    minlength="2" maxlength="32" i18n-placeholder="@@currentPassword" />
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-12" [formGroup]="passwordsFormGroup" formGroupName="passwords">
+                            <mat-form-field>
+                                <input matInput id="newPassword" formControlName="newPassword" type="password"
+                                    name="NewPassword" placeholder="New Password" required minlength="2" maxlength="32"
+                                    i18n-placeholder="@@newPassword" />
+                                <mat-error *ngIf="passwordsFormGroup.controls.newPassword.errors">
+                                    Passwords must be at least 8 characters, contain a lowercase, uppercase, and number
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row mb-4" formGroupName="passwords">
+                        <div class="col-12">
+                            <mat-form-field>
+                                <input matInput id="repeatNewPassword" formControlName="repeatNewPassword"
+                                    type="password" name="RepeatNewPassword" placeholder="Confirm New Password"
+                                    [errorStateMatcher]="equalMatcher" required minlength="2" maxlength="32"
+                                    i18n-placeholder="@@repeatNewPassword" />
+                                <mat-error *ngIf="passwordsFormGroup.errors &&
+                        passwordsFormGroup.errors.areEqual &&
+                        passwordsFormGroup.controls.newPassword.touched
+                        ">
+                                    Passwords do not match
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-field text-center">
+                                <button class="btn btn_theme update-button" type="submit"
+                                    [disabled]="!parentFormGroup.valid">Change
+                                    Password</button>
+                                <button class="btn btn-secondary ml-2 update-button" type="button"
+                                    (click)="resetPassword()">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </mat-tab>
+
+    </mat-tab-group>
+</div>

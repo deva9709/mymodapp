@@ -1,0 +1,100 @@
+﻿<form autocomplete="off" #editUserModal="ngForm" (ngSubmit)="save()">
+  <h1 mat-dialog-title i18n="@@editUser">EditUser</h1>
+  <mat-dialog-content style="width:800px;height:250px;">
+    <mat-tab-group>
+      <mat-tab i18n-label="@@userdetails" label="UserDetails">
+        <br />
+        <div class="row-fluid">
+          <div class="col-md-6">
+            <mat-form-field>
+              <input
+                matInput
+                name="UserName"
+                placeholder="UserName"
+                [(ngModel)]="user.userName"
+                required
+                minlength="2"
+                maxlength="32"
+                i18n-placeHolder="@@userName"
+              />
+            </mat-form-field>
+            <mat-form-field>
+              <input
+                matInput
+                name="Name"
+                placeholder="Name"
+                [(ngModel)]="user.name"
+                required
+                maxlength="32"
+                i18n-placeHolder="@@name"
+              />
+            </mat-form-field>
+            <div class="checkbox-wrapper">
+              <mat-checkbox i18n="@@isActive" name="IsActive" [(ngModel)]="user.isActive">
+                IsActive
+              </mat-checkbox>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <mat-form-field>
+              <input
+                matInput
+                name="EmailAddress"
+                placeholder="EmailAddress"
+                [(ngModel)]="user.emailAddress"
+                type="email"
+                required
+                maxlength="256"
+                pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{1,})+$"
+                i18n-placeHolder="@@email"
+              />
+            </mat-form-field>
+            <mat-form-field>
+              <input
+                matInput
+                name="Surname"
+                placeholder="Surname"
+                [(ngModel)]="user.surname"
+                required
+                maxlength="32"
+                i18n-placeHolder="@@surname"
+              />
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab i18n-label="@@userRoles" label="UserRoles">
+        <br />
+        <div class="row-fluid">
+          <ng-template ngFor let-role [ngForOf]="roles">
+            <div class="col-sm-6">
+              <div class="checkbox-wrapper">
+                <mat-checkbox
+                  [checked]="isRoleChecked(role.normalizedName)"
+                  (change)="onRoleChange(role, $event)"
+                >
+                  {{ role.name }}
+                </mat-checkbox>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-dialog-content>
+  <div mat-dialog-actions align="end">
+    <button i18n="@@cancel" mat-button type="button" [disabled]="saving" (click)="close(false)">
+      Cancel
+    </button>
+    <button
+    i18n="@@save"
+      mat-flat-button
+      type="submit"
+      flex="15"
+      color="primary"
+      [disabled]="!editUserModal.form.valid || saving"
+    >
+      Save
+    </button>
+  </div>
+</form>

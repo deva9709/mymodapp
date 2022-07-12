@@ -1,0 +1,511 @@
+<section class="introduction">
+   <div class="container text-right">
+      <h4 class="pageHeading">Single User Registration</h4>
+   </div>
+</section>
+<div class="container divContainer">
+   <form novalidate [formGroup]="singleRegistrationForm" autocomplete="off">
+      <mat-expansion-panel [expanded]="true" class="accordian-item">
+         <mat-expansion-panel-header>
+            <h1 class="mt-5 mb-5">Site Information</h1>
+         </mat-expansion-panel-header>
+         <ng-template matExpansionPanelContent>
+            <div class="row">
+               <!-- For Super Admin -->
+               <div class="col-4" *ngIf="isSuperAdmin">
+                  <mat-form-field>
+                     <mat-label>Select Tenant</mat-label>
+                     <mat-select name="tenant" formControlName="tenant" [(ngModel)]="tenantId"
+                        (openedChange)="tenantFilter.focus()">
+                        <div class="row dropdown-search-row">
+                           <div class="col-10">
+                              <input class="searchInput" #tenantFilter matInput type="text" autocomplete="off"
+                                 placeholder="Search" (keyup)="search($event.target.value, 'tenant')">
+                           </div>
+                           <div class="col-2 text-right">
+                              <button mat-button *ngIf="tenantFilter.value" matSuffix mat-icon-button class="clear-icon"
+                                 matTooltip="Clear" matTooltipPosition="below"
+                                 (click)="tenantFilter.value=''; search('', 'tenant')">
+                                 <mat-icon>close</mat-icon>
+                              </button>
+                           </div>
+                        </div>
+                        <mat-divider></mat-divider>
+                        <mat-option *ngFor="let tenant of filteredTenants" [value]="tenant.id"
+                           (click)="filterTenantRoles(tenant.id)">
+                           {{tenant.tenantName}}
+                        </mat-option>
+                     </mat-select>
+                     <mat-error *ngIf="singleRegistrationForm.get('tenant').errors?.required">
+                        {{registrationFormValidationMessages.tenantRequired}}</mat-error>
+                  </mat-form-field>
+               </div>
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <mat-label>Select Role *</mat-label>
+                     <mat-select name="role" formControlName="role">
+                        <div class="row dropdown-search-row">
+                        </div>
+                        <mat-divider></mat-divider>
+                        <mat-option *ngFor="let role of tenantRoles" [value]="role.name">
+                           {{role.name}}
+                        </mat-option>
+                     </mat-select>
+                     <mat-error *ngIf="singleRegistrationForm.get('role').errors?.required">
+                        {{registrationFormValidationMessages.roleRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+            </div>
+         </ng-template>
+      </mat-expansion-panel>
+      <mat-expansion-panel class="accordian-item">
+         <mat-expansion-panel-header>
+            <h1 class="mt-5 mb-5">Personal Information</h1>
+         </mat-expansion-panel-header>
+         <ng-template matExpansionPanelContent>
+            <div class="row">
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Name *" name="firstName" formControlName="firstName">
+                     <mat-error *ngIf="singleRegistrationForm.get('firstName').errors?.required">
+                        {{registrationFormValidationMessages.fNameRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="SurName *" name="lastName" formControlName="lastName">
+                     <mat-error *ngIf="singleRegistrationForm.get('lastName').errors?.required">
+                        {{registrationFormValidationMessages.lastNameRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Email *" name="email" formControlName="email">
+                     <mat-error *ngIf="singleRegistrationForm.get('email').errors?.required">
+                        {{registrationFormValidationMessages.emailRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+            </div>
+            <div class="row">
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Phone Number *" name="phoneNumber" formControlName="phoneNumber">
+                     <mat-error *ngIf="singleRegistrationForm.get('phoneNumber').errors?.required">
+                        {{registrationFormValidationMessages.phoneNumberRequired}}
+                     </mat-error>
+                     <div *ngIf="singleRegistrationForm.get('phoneNumber').errors?.pattern"  class="error-class">*Please enter valid phone number</div>                  
+                  </mat-form-field>
+               </div>
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Location *" name="location" name="location"
+                        formControlName="location">
+                     <mat-error *ngIf="singleRegistrationForm.get('location').errors?.required">
+                        {{registrationFormValidationMessages.locationRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Spoken Language" name="spokenLanguage"
+                        formControlName="spokenLanguage">
+                     <mat-error *ngIf="singleRegistrationForm.get('spokenLanguage').errors?.required">
+                        {{registrationFormValidationMessages.languageRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+            </div>
+            <div class="row">
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="About Yourself in  max 4 lines" name="aboutYourSelf"
+                        formControlName="aboutYourSelf">
+                     <mat-error *ngIf="singleRegistrationForm.get('aboutYourSelf').errors?.required">
+                        {{registrationFormValidationMessages.aboutYourSelfRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+               <div class="col-2 my-auto">
+                  <mat-checkbox formControlName="canBeTrainer" [(ngModel)]="canBeTrainer" name="canBeTrainer"
+                     value="true">Can be a Trainer
+                  </mat-checkbox>
+               </div>
+               <div class="col-2 my-auto">
+                  <mat-checkbox formControlName="canBeTrainee" [(ngModel)]="canBeTrainee" name="canBeTrainee"
+                     value="true">Can be a Trainee
+                  </mat-checkbox>
+               </div>
+            </div>
+         </ng-template>
+      </mat-expansion-panel>
+      <!-- User Profile Document -->
+      <mat-expansion-panel class="accordian-item">
+         <mat-expansion-panel-header>
+            <h1 class="mt-5 mb-5">User Profile Document</h1>
+         </mat-expansion-panel-header>
+         <ng-template matExpansionPanelContent>
+            <div class="row">
+               <div class="col-md-4">
+                  <mat-form-field>
+                     <ngx-mat-file-input #imageFile formControlName="image" placeholder="Select Image"
+                        [accept]="'.jpg, .jpeg, .png'">
+                     </ngx-mat-file-input>
+                     <button mat-icon-button matSuffix (click)="imageFile.empty ? '' : imageFile.clear($event)">
+                        <mat-icon>{{imageFile.empty ? 'attach_file' : 'clear'}}</mat-icon>
+                     </button>
+                  </mat-form-field>
+               </div>
+               <div class="col-md-4">
+                  <mat-form-field>
+                     <ngx-mat-file-input #docFile formControlName="document" placeholder="Select Document"
+                        [accept]="'.pdf, .doc, .docx'">
+                     </ngx-mat-file-input>
+                     <button mat-icon-button matSuffix (click)="docFile.empty ? '' : docFile.clear($event)">
+                        <mat-icon>{{docFile.empty ? 'attach_file' : 'clear'}}</mat-icon>
+                     </button>
+                  </mat-form-field>
+               </div>
+               <div class="col-md-4">
+                  <mat-form-field>
+                     <ngx-mat-file-input #videoFile formControlName="videoProfileBlobUrl" placeholder="Select Video"
+                        [accept]="'.webm, .mp4, .avi, .wmv'">
+                     </ngx-mat-file-input>
+                     <button mat-icon-button matSuffix (click)="videoFile.empty ? '' : videoFile.clear($event)">
+                        <mat-icon>{{videoFile.empty ? 'attach_file' : 'clear'}}</mat-icon>
+                     </button>
+                  </mat-form-field>
+               </div>
+            </div>
+         </ng-template>
+      </mat-expansion-panel>
+      <mat-expansion-panel class="accordian-item">
+         <mat-expansion-panel-header>
+            <h1 class="mt-5 mb-5">Education Qualification</h1>
+         </mat-expansion-panel-header>
+         <ng-template matExpansionPanelContent>
+            <div formArrayName="addQualification">
+               <div
+                  *ngFor="let addQualification of singleRegistrationForm.controls.addQualification.controls; let i=index">
+                  <div class="row" [formGroupName]="i">
+                     <div class="col-4 mb-4">
+                        <mat-form-field>
+                           <input matInput placeholder="qualification" name="qualification"
+                              formControlName="qualification">
+                           <mat-error *ngIf="singleRegistrationForm.get('qualification').errors?.required">
+                              {{registrationFormValidationMessages.qualificationRequired}}
+                           </mat-error>
+                        </mat-form-field>
+                     </div>
+                     <div class="col-4 mb-4">
+                        <mat-form-field>
+                           <input matInput placeholder="specialization" name="specialization"
+                              formControlName="specialization">
+                           <mat-error *ngIf="singleRegistrationForm.get('specialization').errors?.required">
+                              {{registrationFormValidationMessages.specializationRequired}}
+                           </mat-error>
+                        </mat-form-field>
+                     </div>
+                     <div class="col-4 mb-4 addMore">
+                        <a (click)="addQualiFication()">+ Add More</a>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="row">
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Conference Papers seperated by ," formControlName="conferencePapers">
+                  </mat-form-field>
+               </div>
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Honors & Awards seperated by ," formControlName="awards">
+                  </mat-form-field>
+               </div>
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Conferences/Seminars attended seperated by ,"
+                        formControlName="conferenceAttende">
+                  </mat-form-field>
+               </div>
+            </div>
+         </ng-template>
+      </mat-expansion-panel>
+      <mat-expansion-panel class="accordian-item">
+         <mat-expansion-panel-header>
+            <h1 class="mt-5 mb-5">Research & Development </h1>
+         </mat-expansion-panel-header>
+         <ng-template matExpansionPanelContent>
+            <div class="row">
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Research Paper/White Paper seperated by ," name="researchWhitePaper"
+                        formControlName="researchWhitePaper">
+                     <mat-error *ngIf="singleRegistrationForm.get('researchWhitePaper').errors?.required">
+                        {{registrationFormValidationMessages.researchWhitePaperRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Research Paper Link" name="researchPaperLink"
+                        formControlName="researchPaperLink">
+                     <mat-error *ngIf="singleRegistrationForm.get('researchPaperLink').errors?.required">
+                        {{registrationFormValidationMessages.researchPaperLinkRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Research/Project Guidance seperated by , "
+                        formControlName="researchProjectGuidance">
+                  </mat-form-field>
+               </div>
+            </div>
+            <div class="row">
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Research Projects seperated by ," formControlName="researchProject">
+                  </mat-form-field>
+               </div>
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Journal Publication seperated by ,"
+                        formControlName="journalPublication">
+                  </mat-form-field>
+               </div>
+               <div class="col-6 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Books Published seperated by ," formControlName="bookPublished">
+                  </mat-form-field>
+               </div>
+            </div>
+         </ng-template>
+      </mat-expansion-panel>
+      <mat-expansion-panel class="accordian-item">
+         <mat-expansion-panel-header>
+            <h1 class="mt-5 mb-5">Organization Details </h1>
+         </mat-expansion-panel-header>
+         <ng-template matExpansionPanelContent>
+            <div class="row">
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Association with Professional Bodies seperated by ,"
+                        name="associationWithProfessionalBodies" formControlName="associationWithProfessionalBodies">
+                  </mat-form-field>
+               </div>
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Department" name="department" formControlName="department">
+                     <mat-error *ngIf="singleRegistrationForm.get('department').errors?.required">
+                        {{registrationFormValidationMessages.departmentRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Designation" name="designation" formControlName="designation">
+                     <mat-error *ngIf="singleRegistrationForm.get('designation').errors?.required">
+                        {{registrationFormValidationMessages.designationRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+            </div>
+            <div class="row">
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Administrative Assignments seperated by ,"
+                        formControlName="administrative">
+                  </mat-form-field>
+               </div>
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Date of Joining the Institution" [matDatepicker]="end"
+                        [min]="endMinDate" [(ngModel)]="endDate" name="dateOfJoining" formControlName="dateOfJoining"
+                        readonly />
+                     <mat-datepicker-toggle matSuffix [for]="end"></mat-datepicker-toggle>
+                     <mat-datepicker #end disabled="false"></mat-datepicker>
+                     <mat-error *ngIf="singleRegistrationForm.get('dateOfJoining').errors?.required">
+                        {{registrationFormValidationMessages.dateOfJoiningRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="TrainerCode/EmployeeId* " name="trainerCodeEmployeeCode"
+                        formControlName="trainerCodeEmployeeCode">
+                     <mat-error *ngIf="singleRegistrationForm.get('trainerCodeEmployeeCode').errors?.required">
+                        {{registrationFormValidationMessages.trainerCodeEmployeeCodeRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+            </div>
+         </ng-template>
+      </mat-expansion-panel>
+      <mat-expansion-panel class="accordian-item">
+         <mat-expansion-panel-header>
+            <h1 class="mt-5 mb-5">Experiences </h1>
+         </mat-expansion-panel-header>
+         <ng-template matExpansionPanelContent>
+            <div class="row">
+               <div class="col-6 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Primary Technology *" name="primaryTechnology"
+                        formControlName="primaryTechnology">
+                     <mat-error *ngIf="singleRegistrationForm.get('primaryTechnology').errors?.required">
+                        {{registrationFormValidationMessages.primaryTechnologyRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+               <div class="col-6 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Primary Skills *" name="primarySkills"
+                        formControlName="primarySkills">
+                     <mat-error *ngIf="singleRegistrationForm.get('primarySkills').errors?.required">
+                        {{registrationFormValidationMessages.primarySkillsRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+            </div>
+            <div class="row">
+               <div class="col-6 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Micro Tutoring" name="microtutoring" formControlName="microtutoring">
+                     <mat-error *ngIf="singleRegistrationForm.get('microtutoring').errors?.required">
+                        {{registrationFormValidationMessages.microtutoringRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+               <div class="col-6 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Trainings/Project Taken seperated by ," name="trainingProjectName"
+                        formControlName="trainingProjectName">
+                     <mat-error *ngIf="singleRegistrationForm.get('trainingProjectName').errors?.required">
+                        {{registrationFormValidationMessages.trainingProjectNameRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+            </div>
+            <div class="row">
+               <div class="col-6 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Subject Taught- UG LEVEL seperated by ," name="subjectTaughtUGLevel"
+                        formControlName="subjectTaughtUG">
+                  </mat-form-field>
+               </div>
+               <div class="col-6 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Subject Taught - PG LEVEL seperated by ," name="subjectTaughtPGLevel"
+                        formControlName="subjectTaughtPG">
+                  </mat-form-field>
+               </div>
+            </div>
+            <div class="row">
+               <div class="col-6 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Total Experience *" name="totalExperience"
+                        formControlName="totalExperience">
+                     <mat-error *ngIf="singleRegistrationForm.get('totalExperience').errors?.required">
+                        {{registrationFormValidationMessages.totalExperienceRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+               <div class="col-6 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Relevant Experience *" name="relevantExperience"
+                        formControlName="relevantExperience">
+                     <mat-error *ngIf="singleRegistrationForm.get('relevantExperience').errors?.required">
+                        {{registrationFormValidationMessages.relevantExperienceRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Certification " name="certifications"
+                        formControlName="certifications">
+                  </mat-form-field>
+               </div>
+            </div>
+         </ng-template>
+      </mat-expansion-panel>
+      <mat-expansion-panel class="accordian-item">
+         <mat-expansion-panel-header>
+            <h1 class="mt-5 mb-5">Cost Calculation </h1>
+         </mat-expansion-panel-header>
+         <ng-template matExpansionPanelContent>
+            <div class="row">
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Cost for 15 Min" name="costOf15Min" formControlName="costOf15Min">
+                     <mat-error *ngIf="singleRegistrationForm.get('costOf15Min').errors?.required">
+                        {{registrationFormValidationMessages.costOf15MinRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Cost for 30 Min" name="costOf30Min" formControlName="costOf30Min">
+                     <mat-error *ngIf="singleRegistrationForm.get('costOf30Min').errors?.required">
+                        {{registrationFormValidationMessages.costOf30MinRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Cost for 45 Min" name="costOf45Min" formControlName="costOf45Min">
+                     <mat-error *ngIf="singleRegistrationForm.get('costOf45Min').errors?.required">
+                        {{registrationFormValidationMessages.costOf45MinRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+            </div>
+            <div class="row">
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Cost for 1 Hour" name="costOf1Hour" formControlName="costOf1Hour">
+                     <mat-error *ngIf="singleRegistrationForm.get('costOf1Hour').errors?.required">
+                        {{registrationFormValidationMessages.costOf1HourRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Cost for 4 Hour " name="costOf4Hour" formControlName="costOf4Hour">
+                     <mat-error *ngIf="singleRegistrationForm.get('costOf4Hour').errors?.required">
+                        {{registrationFormValidationMessages.costOf4HourRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Cost for 8 Hour" name="costOf8Hour" formControlName="costOf8Hour">
+                     <mat-error *ngIf="singleRegistrationForm.get('costOf8Hour').errors?.required">
+                        {{registrationFormValidationMessages.costOf8HourRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+            </div>
+            <div class="row">
+               <div class="col-4 mb-4">
+                  <mat-form-field>
+                     <input matInput placeholder="Cost for long terms assignment" name="costOfLongTerm"
+                        formControlName="costOfLongTerm">
+                     <mat-error *ngIf="singleRegistrationForm.get('costOfLongTerm').errors?.required">
+                        {{registrationFormValidationMessages.costOfLongTermRequired}}
+                     </mat-error>
+                  </mat-form-field>
+               </div>
+            </div>
+         </ng-template>
+      </mat-expansion-panel>
+      <div class="col-12 text-center mb-5 registerButton">
+         <button class="btn btn_theme" type="button" (click)="submitRegistrationDetails()">
+            Register
+         </button>
+      </div>
+   </form>
+</div>
